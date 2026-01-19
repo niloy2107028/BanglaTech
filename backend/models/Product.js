@@ -16,16 +16,16 @@ const productSchema = new mongoose.Schema(
       type: String,
       required: [true, "Category is required"],
       enum: [
-        "Laptop",
-        "Desktop",
-        "Monitor",
-        "Components",
-        "Accessories",
-        "Networking",
-        "Storage",
-        "Gaming",
-        "Software",
-        "Mobile",
+        "Electronics",
+        "Fashion",
+        "Home & Living",
+        "Beauty & Health",
+        "Sports & Outdoors",
+        "Books & Stationery",
+        "Toys & Games",
+        "Automotive",
+        "Food & Groceries",
+        "Mobile & Accessories",
       ],
     },
     price: {
@@ -76,7 +76,7 @@ const productSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 // Calculate inStock based on stock quantity

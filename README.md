@@ -1,14 +1,30 @@
-# BanglaTech - Tech E-commerce Website
+# BanglaMart - General E-commerce Website
 
-A full-stack tech e-commerce platform built with the MERN stack (MongoDB, Express, React, Node.js).
+A full-stack e-commerce platform built with the MERN stack (MongoDB, Express, React, Node.js). Shop everything from electronics to fashion, home goods, and more!
 
 ## Features
 
-- Product listing with card-based display
+- Category-based browsing with dedicated category pages
+- Featured products showcase
+- Product filtering by price (low to high, high to low) and brand
 - Full CRUD operations for products
 - MongoDB database integration
-- Responsive design inspired by StarTech BD and Dazzle BD
+- Responsive design inspired by Bikroy.com
 - Clean and modern UI
+- 10 diverse product categories
+
+## Product Categories
+
+- Electronics
+- Fashion
+- Home & Living
+- Beauty & Health
+- Sports & Outdoors
+- Books & Stationery
+- Toys & Games
+- Automotive
+- Food & Groceries
+- Mobile & Accessories
 
 ## Tech Stack
 

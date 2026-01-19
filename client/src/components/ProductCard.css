@@ -11,7 +11,7 @@
 }
 
 .product-card:hover {
-  transform: translateY(-8px);
+  transform: translateY(-1px);
   box-shadow: var(--shadow-hover);
 }
 

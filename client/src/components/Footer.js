@@ -9,10 +9,12 @@ const Footer = () => {
         <div className="footer-content">
           {/* Company Info */}
           <div className="footer-section">
-            <h3>BanglaTech</h3>
-            <p>Your trusted partner for all tech needs in Bangladesh.</p>
+            <h3>BanglaMart</h3>
+            <p>
+              Your trusted online shopping destination for everything you need.
+            </p>
             <p className="tagline">
-              Quality Products • Best Prices • Fast Delivery
+              Wide Selection • Best Prices • Fast Delivery
             </p>
           </div>
 
@@ -40,16 +42,16 @@ const Footer = () => {
             <h4>Categories</h4>
             <ul>
               <li>
-                <a href="#laptops">Laptops</a>
+                <a href="#electronics">Electronics</a>
               </li>
               <li>
-                <a href="#components">Components</a>
+                <a href="#fashion">Fashion</a>
               </li>
               <li>
-                <a href="#accessories">Accessories</a>
+                <a href="#home">Home & Living</a>
               </li>
               <li>
-                <a href="#monitors">Monitors</a>
+                <a href="#beauty">Beauty & Health</a>
               </li>
             </ul>
           </div>
@@ -59,7 +61,7 @@ const Footer = () => {
             <h4>Get In Touch</h4>
             <ul className="contact-list">
               <li>
-                <FaEnvelope /> info@banglatech.com
+                <FaEnvelope /> info@banglamart.com
               </li>
               <li>📞 +880 1234-567890</li>
               <li>📍 Dhaka, Bangladesh</li>
@@ -80,7 +82,7 @@ const Footer = () => {
 
         <div className="footer-bottom">
           <p>
-            © {new Date().getFullYear()} BanglaTech. All rights reserved. Made
+            © {new Date().getFullYear()} BanglaMart. All rights reserved. Made
             with <FaHeart className="heart-icon" /> using MERN Stack
           </p>
         </div>

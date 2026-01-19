@@ -9,13 +9,13 @@ const Navbar = () => {
         <div className="navbar-content">
           {/* Logo */}
           <div
+            onClick={() => window.location.href = '/'}
             className="navbar-brand"
-            onClick={() => (window.location.href = "/")}
-            style={{ cursor: "pointer" }}
+            style={{ textDecoration: "none", cursor: "pointer" }}
           >
             <h2>
               <span className="bangla-text">Bangla</span>
-              <span className="tech-text">Tech</span>
+              <span className="mart-text">Mart</span>
             </h2>
           </div>
 

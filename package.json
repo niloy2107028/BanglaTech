@@ -1,7 +1,7 @@
 {
-  "name": "banglatech",
+  "name": "banglamart",
   "version": "1.0.0",
-  "description": "Tech E-commerce Website using MERN Stack",
+  "description": "General E-commerce Website using MERN Stack",
   "main": "server.js",
   "scripts": {
     "start": "node backend/server.js",
