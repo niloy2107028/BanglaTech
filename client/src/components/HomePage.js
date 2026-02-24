@@ -1,53 +1,102 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
+// Used to send HTTP requests to backend
+
 import { useNavigate } from "react-router-dom";
+// Used to change page programmatically (navigate to another route).
+
 import CategoryCard from "./CategoryCard";
 import ProductCard from "./ProductCard";
 import ProductModal from "./ProductModal";
+
 import "./HomePage.css";
 
-const HomePage = ({ products = [] }) => {
+const HomePage = ({ products = [], setProducts }) => {
+  // This is a functional component.
+  // It receives products as props.
+
   const [showModal, setShowModal] = useState(false);
+  // Controls whether modal is open or closed.
   const [modalMode, setModalMode] = useState("view");
+  // Stores modal mode:
+  // "view" → just viewing
+  // "edit" → editing product
+
   const [currentProduct, setCurrentProduct] = useState(null);
+  // Stores the selected product.
+
+  const [categories, setCategories] = useState([]);
+  // Stores categories list.
+
   const navigate = useNavigate();
+  // Used to go to another page like:
+  // navigate("/category/Electronics")
 
-  const categories = [
-    "Electronics",
-    "Fashion",
-    "Home & Living",
-    "Beauty & Health",
-    "Sports & Outdoors",
-    "Books & Stationery",
-    "Toys & Games",
-    "Automotive",
-    "Food & Groceries",
-    "Mobile & Accessories",
-  ];
+  useEffect(() => {
+    fetchCategories();
+  }, []);
 
-  const getCategoryProductCount = (category) => {
-    return products.filter((p) => p.category === category).length;
+  const fetchCategories = async () => {
+    try {
+      const response = await axios.get("/api/categories");
+      setCategories(response.data.data);
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+    }
   };
 
+  // Count Products Per Category
+  const getCategoryProductCount = (categoryName) => {
+    return products.filter((p) => {
+      const productCategory =
+        typeof p.category === "object" ? p.category.name : p.categoryName;
+      return productCategory === categoryName;
+    }).length;
+  };
+
+  // Featured Products
   const featuredProducts = products.filter((p) => p.featured);
 
+  // When user clicks view:
+  // Store selected product
+  // Set mode to view
+  // Open modal
   const handleView = (product) => {
+    // a function
     setCurrentProduct(product);
     setModalMode("view");
     setShowModal(true);
   };
 
+  // Same as view but mode is "edit".
   const handleEdit = (product) => {
     setCurrentProduct(product);
     setModalMode("edit");
     setShowModal(true);
   };
 
+  // Create New Product
+  const handleCreate = () => {
+    setCurrentProduct(null);
+    setModalMode("create");
+    setShowModal(true);
+  };
+
+  // Delete Product
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this product?")) {
       try {
         await axios.delete(`/api/products/${id}`);
-        window.location.reload();
+        // window.location.reload();
+        // It:
+        // Reloads the entire page
+        // Destroys React state
+        // Makes your app slow
+        // Breaks SPA (Single Page Application) concept
+
+        setProducts((prevProducts) =>
+          prevProducts.filter((product) => product._id !== id),
+        );
       } catch (error) {
         console.error("Error deleting product:", error);
         alert("Failed to delete product");
@@ -60,12 +109,19 @@ const HomePage = ({ products = [] }) => {
     setCurrentProduct(null);
   };
 
-  const handleModalSave = () => {
+  const handleModalSave = async () => {
     setShowModal(false);
-    window.location.reload();
+    // Refresh products list
+    try {
+      const response = await axios.get("/api/products");
+      setProducts(response.data.data);
+    } catch (error) {
+      console.error("Error fetching products:", error);
+    }
   };
 
   if (products.length === 0) {
+    // as data fetching function is async function so loading will be shown untill fetch
     return (
       <div className="loading-container">
         <div className="spinner"></div>
@@ -76,7 +132,18 @@ const HomePage = ({ products = [] }) => {
 
   return (
     <div className="homepage-container">
+      {console.log("I am home page")}
       <div className="container">
+        {/* Add Product Button */}
+        <div className="page-header">
+          <div>
+            <h1>Welcome to BanglaMart</h1>
+          </div>
+          <button className="btn-add-product" onClick={handleCreate}>
+            + Add New Product
+          </button>
+        </div>
+
         {/* Categories Section */}
         <section className="categories-section">
           <div className="section-header">
@@ -86,11 +153,12 @@ const HomePage = ({ products = [] }) => {
           <div className="categories-grid">
             {categories.map((category) => (
               <CategoryCard
-                key={category}
-                category={category}
-                productCount={getCategoryProductCount(category)}
+                key={category._id}
+                category={category.name}
+                icon={category.icon}
+                productCount={getCategoryProductCount(category.name)}
                 onClick={() =>
-                  navigate(`/category/${encodeURIComponent(category)}`)
+                  navigate(`/category/${encodeURIComponent(category.name)}`)
                 }
               />
             ))}
@@ -102,7 +170,7 @@ const HomePage = ({ products = [] }) => {
           <section className="featured-section">
             <div className="section-header">
               <h2>Featured Products</h2>
-              <p>Check out our handpicked featured items</p>
+              <p>Check out our featured items</p>
             </div>
             <div className="products-grid">
               {featuredProducts.map((product) => (

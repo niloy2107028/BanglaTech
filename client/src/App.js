@@ -7,45 +7,65 @@ import {
   Navigate,
   useLocation,
 } from "react-router-dom";
+
 import "bootstrap/dist/css/bootstrap.min.css";
+
 import Navbar from "./components/Navbar";
 import HomePage from "./components/HomePage";
 import CategoryView from "./components/CategoryView";
+import CategoryManagement from "./components/CategoryManagement";
 import Footer from "./components/Footer";
 import "./App.css";
 
-function AppRoutes({ products }) {
-  const location = useLocation();
+function AppRoutes({ products, setProducts }) {
+  // const location = useLocation();
 
-  useEffect(() => {
-    const handlePopState = () => {
-      window.location.reload();
-    };
+  // useEffect(() => {
+  //   const handlePopState = () => {
+  //     window.location.reload();
+  //   };
 
-    window.addEventListener("popstate", handlePopState);
-    return () => window.removeEventListener("popstate", handlePopState);
-  }, []);
+  //   window.addEventListener("popstate", handlePopState);
+  //   return () => window.removeEventListener("popstate", handlePopState);
+  // }, []);
 
   return (
     <>
       <Routes>
-        <Route path="/" element={<HomePage products={products} />} />
+        {/* decide which component to show based on URL */}
+
+        <Route
+          path="/"
+          element={<HomePage products={products} setProducts={setProducts} />}
+        />
         <Route
           path="/category/:categoryName"
+          // :categoryName is a dynamic parameter.
           element={<CategoryView products={products} />}
         />
+        <Route path="/admin/categories" element={<CategoryManagement />} />
         <Route path="*" element={<Navigate to="/" replace />} />
+        {/* Wildcard Route */}
       </Routes>
     </>
   );
 }
 
 function App() {
+  // Defines the main App component.
   const [products, setProducts] = useState([]);
+  // Declares a state variable products (initially an empty array) and its setter.
   const [loading, setLoading] = useState(true);
+  // Declares a state variable loading (initially true) to track loading status.
 
   useEffect(() => {
     fetchProducts();
+    //  When the component loads for the first time
+    //  Call fetchProducts()
+    //  Get data from the API
+
+    //  We use useEffect to run code after the component renders, like fetching data from an API.
+    //  With [] as the dependency array, it runs only once when the component first loads.
   }, []);
 
   const fetchProducts = async () => {
@@ -68,11 +88,18 @@ function App() {
     );
   }
 
+  // return (
+  //   <div className="loading-container">
+  //     <div className="spinner"></div>
+  //     <p>Loading...</p>
+  //   </div>
+  // );
+
   return (
     <Router>
       <div className="App">
         <Navbar />
-        <AppRoutes products={products} />
+        <AppRoutes products={products} setProducts={setProducts} />
         <Footer />
       </div>
     </Router>

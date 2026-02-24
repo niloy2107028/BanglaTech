@@ -11,23 +11,21 @@ const ProductList = () => {
   const [showModal, setShowModal] = useState(false);
   const [modalMode, setModalMode] = useState("create"); // 'create', 'edit', 'view'
   const [currentProduct, setCurrentProduct] = useState(null);
-
-  const categories = [
-    "All",
-    "Laptop",
-    "Desktop",
-    "Monitor",
-    "Components",
-    "Accessories",
-    "Networking",
-    "Storage",
-    "Gaming",
-    "Mobile",
-  ];
+  const [categories, setCategories] = useState([]);
 
   useEffect(() => {
     fetchProducts();
+    fetchCategories();
   }, []);
+
+  const fetchCategories = async () => {
+    try {
+      const response = await axios.get("/api/categories");
+      setCategories(["All", ...response.data.data.map((cat) => cat.name)]);
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+    }
+  };
 
   const fetchProducts = async () => {
     try {
@@ -84,7 +82,11 @@ const ProductList = () => {
   const filteredProducts =
     selectedCategory === "All"
       ? products
-      : products.filter((p) => p.category === selectedCategory);
+      : products.filter((p) => {
+          const productCategory =
+            typeof p.category === "object" ? p.category.name : p.categoryName;
+          return productCategory === selectedCategory;
+        });
 
   return (
     <div className="product-list-container">

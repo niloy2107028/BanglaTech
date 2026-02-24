@@ -1,0 +1,2 @@
+cd backend; node server.js
+cd client; npm run dev

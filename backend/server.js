@@ -12,15 +12,13 @@ app.use(express.urlencoded({ extended: true }));
 
 // MongoDB Connection
 mongoose
-  .connect(process.env.MONGODB_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
+  .connect(process.env.MONGODB_URI)
   .then(() => console.log("✅ MongoDB Connected Successfully"))
   .catch((err) => console.error("❌ MongoDB Connection Error:", err));
 
 // Routes
 app.use("/api/products", require("./routes/productRoutes"));
+app.use("/api/categories", require("./routes/categoryRoutes"));
 
 // Root route
 app.get("/", (req, res) => {

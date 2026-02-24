@@ -1,6 +1,8 @@
 const mongoose = require("mongoose");
-require("dotenv").config();
+const path = require("path");
+require("dotenv").config({ path: path.join(__dirname, ".env") });
 const Product = require("./models/Product");
+const Category = require("./models/Category");
 
 // Sample product data
 const sampleProducts = [
@@ -530,22 +532,48 @@ const sampleProducts = [
 
 // Connect to MongoDB and seed data
 mongoose
-  .connect(process.env.MONGODB_URI || "mongodb://localhost:27017/banglamart", {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
+  .connect(process.env.MONGODB_URI || "mongodb://localhost:27017/banglamart")
   .then(async () => {
     console.log("✅ MongoDB Connected");
+
+    // Get all categories
+    const categories = await Category.find();
+    const categoryMap = {};
+    categories.forEach((cat) => {
+      categoryMap[cat.name] = cat._id;
+    });
+
+    console.log("📋 Found categories:", Object.keys(categoryMap));
 
     // Clear existing data
     await Product.deleteMany({});
     console.log("🗑️  Cleared existing products");
 
+    // Map products to use category IDs
+    const productsWithCategoryIds = sampleProducts.map((product) => {
+      const categoryId = categoryMap[product.category];
+      if (!categoryId) {
+        console.warn(
+          `⚠️  Warning: Category "${product.category}" not found for product "${product.name}"`,
+        );
+      }
+      return {
+        ...product,
+        category: categoryId,
+        categoryName: product.category,
+      };
+    });
+
+    // Filter out products without valid categories
+    const validProducts = productsWithCategoryIds.filter(
+      (p) => p.category !== undefined,
+    );
+
     // Insert sample data
-    await Product.insertMany(sampleProducts);
+    await Product.insertMany(validProducts);
     console.log("✅ Sample products added successfully");
 
-    console.log(`📦 Total ${sampleProducts.length} products seeded`);
+    console.log(`📦 Total ${validProducts.length} products seeded`);
     process.exit();
   })
   .catch((err) => {

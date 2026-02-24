@@ -7,7 +7,7 @@ const ProductModal = ({ show, mode, product, onClose, onSave }) => {
   const [formData, setFormData] = useState({
     name: "",
     brand: "",
-    category: "Laptop",
+    category: "",
     price: "",
     originalPrice: "",
     description: "",
@@ -20,25 +20,36 @@ const ProductModal = ({ show, mode, product, onClose, onSave }) => {
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [categories, setCategories] = useState([]);
 
-  const categories = [
-    "Laptop",
-    "Desktop",
-    "Monitor",
-    "Components",
-    "Accessories",
-    "Networking",
-    "Storage",
-    "Gaming",
-    "Mobile",
-  ];
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  const fetchCategories = async () => {
+    try {
+      const response = await axios.get("/api/categories");
+      setCategories(response.data.data);
+      if (response.data.data.length > 0 && !formData.category) {
+        setFormData((prev) => ({
+          ...prev,
+          category: response.data.data[0]._id,
+        }));
+      }
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+    }
+  };
 
   useEffect(() => {
     if (product && (mode === "edit" || mode === "view")) {
       setFormData({
         name: product.name || "",
         brand: product.brand || "",
-        category: product.category || "Laptop",
+        category:
+          typeof product.category === "object"
+            ? product.category._id
+            : product.category || "",
         price: product.price || "",
         originalPrice: product.originalPrice || "",
         description: product.description || "",
@@ -52,6 +63,7 @@ const ProductModal = ({ show, mode, product, onClose, onSave }) => {
   }, [product, mode]);
 
   const handleChange = (e) => {
+    // <input name="price" onChange={handleChange} />
     const { name, value, type, checked } = e.target;
     setFormData({
       ...formData,
@@ -191,9 +203,10 @@ const ProductModal = ({ show, mode, product, onClose, onSave }) => {
                     onChange={handleChange}
                     required
                   >
+                    <option value="">Select a category</option>
                     {categories.map((cat) => (
-                      <option key={cat} value={cat}>
-                        {cat}
+                      <option key={cat._id} value={cat._id}>
+                        {cat.icon} {cat.name}
                       </option>
                     ))}
                   </select>
@@ -313,8 +326,8 @@ const ProductModal = ({ show, mode, product, onClose, onSave }) => {
                   {loading
                     ? "Saving..."
                     : mode === "create"
-                    ? "Create Product"
-                    : "Update Product"}
+                      ? "Create Product"
+                      : "Update Product"}
                 </button>
               </div>
             </form>

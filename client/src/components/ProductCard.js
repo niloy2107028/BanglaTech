@@ -5,7 +5,7 @@ import "./ProductCard.css";
 const ProductCard = ({ product, onDelete, onEdit, onView }) => {
   const discount = product.originalPrice
     ? Math.round(
-        ((product.originalPrice - product.price) / product.originalPrice) * 100
+        ((product.originalPrice - product.price) / product.originalPrice) * 100,
       )
     : 0;
 
@@ -74,21 +74,21 @@ const ProductCard = ({ product, onDelete, onEdit, onView }) => {
             onClick={() => onView(product)}
             title="View Details"
           >
-            <FaEye /> View
+            View
           </button>
           <button
             className="action-btn edit-btn"
             onClick={() => onEdit(product)}
             title="Edit Product"
           >
-            <FaEdit /> Edit
+            Edit
           </button>
           <button
             className="action-btn delete-btn"
             onClick={() => onDelete(product._id)}
             title="Delete Product"
           >
-            <FaTrash /> Delete
+            Delete
           </button>
         </div>
       </div>

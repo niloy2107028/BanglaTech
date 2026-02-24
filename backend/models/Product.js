@@ -13,20 +13,13 @@ const productSchema = new mongoose.Schema(
       trim: true,
     },
     category: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Category",
       required: [true, "Category is required"],
-      enum: [
-        "Electronics",
-        "Fashion",
-        "Home & Living",
-        "Beauty & Health",
-        "Sports & Outdoors",
-        "Books & Stationery",
-        "Toys & Games",
-        "Automotive",
-        "Food & Groceries",
-        "Mobile & Accessories",
-      ],
+    },
+    categoryName: {
+      type: String,
+      required: true,
     },
     price: {
       type: Number,

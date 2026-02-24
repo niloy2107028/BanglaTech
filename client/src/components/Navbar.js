@@ -1,5 +1,6 @@
 import React from "react";
-import { FaShoppingCart, FaUser, FaSearch } from "react-icons/fa";
+import { Link } from "react-router-dom";
+import { FaShoppingCart, FaUser, FaSearch, FaCog } from "react-icons/fa";
 import "./Navbar.css";
 
 const Navbar = () => {
@@ -8,16 +9,16 @@ const Navbar = () => {
       <div className="container">
         <div className="navbar-content">
           {/* Logo */}
-          <div
-            onClick={() => window.location.href = '/'}
+          <Link
+            to="/"
             className="navbar-brand"
-            style={{ textDecoration: "none", cursor: "pointer" }}
+            style={{ textDecoration: "none" }}
           >
             <h2>
               <span className="bangla-text">Bangla</span>
               <span className="mart-text">Mart</span>
             </h2>
-          </div>
+          </Link>
 
           {/* Search Bar */}
           <div className="search-bar">
@@ -31,6 +32,9 @@ const Navbar = () => {
 
           {/* Right side items */}
           <div className="navbar-actions">
+            <Link to="/admin/categories" className="nav-btn">
+              <FaCog /> Manage Categories
+            </Link>
             <button className="nav-btn">
               <FaUser /> Account
             </button>

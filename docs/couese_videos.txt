@@ -1,0 +1,846 @@
+
+File	Size
+Day - 01 (07_06_23)/01. 02. 03. Curriculum/0. Topic List.jpg	107.99 KiB
+Day - 01 (07_06_23)/01. 02. 03. Curriculum/Delta.pdf	348.12 KiB
+Day - 01 (07_06_23)/04. Introduction/0. Topic List.jpg	115.16 KiB
+Day - 01 (07_06_23)/04. Introduction/01. Welcome to Delta!.mp4	64.81 MiB
+Day - 01 (07_06_23)/04. Introduction/02. What is the Internet.mp4	67.84 MiB
+Day - 01 (07_06_23)/04. Introduction/03. What is Web Development.mp4	70.42 MiB
+Day - 01 (07_06_23)/04. Introduction/04. What will we learn.mp4	9.83 MiB
+Day - 01 (07_06_23)/05. Prerequisites/0. Topic List.jpg	69.12 KiB
+Day - 01 (07_06_23)/05. Prerequisites/01. Prerequisites.mp4	31.39 MiB
+Day - 01 (07_06_23)/05. Prerequisites/02. Installation Guide.pdf	64.49 KiB
+Day - 01 (07_06_23)/06. HTML (Level 1) - Part A/0. Topic List.jpg	180.69 KiB
+Day - 01 (07_06_23)/06. HTML (Level 1) - Part A/01. Introduction to HTML.mp4	31.84 MiB
+Day - 01 (07_06_23)/06. HTML (Level 1) - Part A/02. HTML Elements & Tags.mp4	25.91 MiB
+Day - 01 (07_06_23)/06. HTML (Level 1) - Part A/03. Hello World.mp4	43.19 MiB
+Day - 01 (07_06_23)/06. HTML (Level 1) - Part A/04. Paragraph Element.mp4	26.53 MiB
+Day - 01 (07_06_23)/06. HTML (Level 1) - Part A/05. Heading Elements.mp4	32.75 MiB
+Day - 01 (07_06_23)/06. HTML (Level 1) - Part A/06. Practice Qs.mp4	48.32 MiB
+Day - 01 (07_06_23)/06. HTML (Level 1) - Part A/07. Boilerplate Code.mp4	66.21 MiB
+Day - 02 (09_06_23)/07. HTML (Level 1) - Part B/0. Topic List.jpg	36.75 KiB
+Day - 02 (09_06_23)/07. HTML (Level 1) - Part B/01. Lists in HTML.mp4	30.76 MiB
+Day - 02 (09_06_23)/07. HTML (Level 1) - Part B/02. Attributes in HTML.mp4	13.20 MiB
+Day - 02 (09_06_23)/07. HTML (Level 1) - Part B/03. Anchor Element.mp4	44.41 MiB
+Day - 02 (09_06_23)/07. HTML (Level 1) - Part B/04. Image Element.mp4	79.88 MiB
+Day - 02 (09_06_23)/07. HTML (Level 1) - Part B/05. Practice Qs.mp4	24.58 MiB
+Day - 02 (09_06_23)/07. HTML (Level 1) - Part B/06. More HTML Tags.mp4	22.69 MiB
+Day - 02 (09_06_23)/07. HTML (Level 1) - Part B/07. Comments in HTML.mp4	57.13 MiB
+Day - 02 (09_06_23)/07. HTML (Level 1) - Part B/08. Is HTML Case Sensitive.mp4	16.00 MiB
+Day - 02 (09_06_23)/07. HTML (Level 1) - Part B/09. Practice Qs.mp4	70.13 MiB
+Day - 02 (09_06_23)/07. HTML (Level 1) - Part B/10.Assignment Questions.pdf	139.58 KiB
+Day - 02 (09_06_23)/07. HTML (Level 1) - Part B/11.Assignment Solutions.pdf	138.70 KiB
+Day - 03 (11_06_23)/08. HTML (Level - 2)/0. Topic List.jpg	32.59 KiB
+Day - 03 (11_06_23)/08. HTML (Level - 2)/01. Inline vs Block.mp4	53.60 MiB
+Day - 03 (11_06_23)/08. HTML (Level - 2)/02. Div Element.mp4	25.44 MiB
+Day - 03 (11_06_23)/08. HTML (Level - 2)/03. Span Element.mp4	17.21 MiB
+Day - 03 (11_06_23)/08. HTML (Level - 2)/04. Hr Tag.mp4	16.95 MiB
+Day - 03 (11_06_23)/08. HTML (Level - 2)/05. Sup & Sub Tags.mp4	21.88 MiB
+Day - 03 (11_06_23)/08. HTML (Level - 2)/06. Practice Qs.mp4	9.04 MiB
+Day - 03 (11_06_23)/08. HTML (Level - 2)/07. Semantic Markup.mp4	47.72 MiB
+Day - 03 (11_06_23)/08. HTML (Level - 2)/08. Semantic Tags.mp4	69.40 MiB
+Day - 03 (11_06_23)/08. HTML (Level - 2)/09. Practice Qs.mp4	23.52 MiB
+Day - 03 (11_06_23)/08. HTML (Level - 2)/10. HTML Entities.mp4	65.53 MiB
+Day - 03 (11_06_23)/08. HTML (Level - 2)/11. Practice Qs.mp4	14.34 MiB
+Day - 03 (11_06_23)/08. HTML (Level - 2)/12. Emmets.mp4	59.87 MiB
+Day - 03 (11_06_23)/08. HTML (Level - 2)/13. Further Understanding HTML.mp4	27.16 MiB
+Day - 03 (11_06_23)/08. HTML (Level - 2)/14.HTML Level 2 (Qs).pdf	161.27 KiB
+Day - 03 (11_06_23)/08. HTML (Level - 2)/15.HTML Level 2 (Ans).pdf	161.35 KiB
+Day - 04 (13_06_23)/09. HTML (Level - 3)/0. Topic List.jpg	411.23 KiB
+Day - 04 (13_06_23)/09. HTML (Level - 3)/01. Tables in HTML.mp4	87.82 MiB
+Day - 04 (13_06_23)/09. HTML (Level - 3)/02. Semantics in Tables.mp4	19.42 MiB
+Day - 04 (13_06_23)/09. HTML (Level - 3)/03. Colspan & Rowspan Attributes.mp4	62.84 MiB
+Day - 04 (13_06_23)/09. HTML (Level - 3)/04. Practice Qs.mp4	47.65 MiB
+Day - 04 (13_06_23)/09. HTML (Level - 3)/05. Forms in HTML.mp4	32.14 MiB
+Day - 04 (13_06_23)/09. HTML (Level - 3)/06. Input - Form Element.mp4	52.49 MiB
+Day - 04 (13_06_23)/09. HTML (Level - 3)/07. Placeholders & Labels.mp4	61.32 MiB
+Day - 04 (13_06_23)/09. HTML (Level - 3)/08. Button Element.mp4	69.41 MiB
+Day - 04 (13_06_23)/09. HTML (Level - 3)/09. Name Attribute.mp4	70.65 MiB
+Day - 04 (13_06_23)/09. HTML (Level - 3)/10. Practice Qs.mp4	16.25 MiB
+Day - 04 (13_06_23)/09. HTML (Level - 3)/11. Checkbox - Input Element.mp4	23.94 MiB
+Day - 04 (13_06_23)/09. HTML (Level - 3)/12. Radio - Input Element.mp4	56.31 MiB
+Day - 04 (13_06_23)/09. HTML (Level - 3)/13. Select - Input Element.mp4	28.39 MiB
+Day - 04 (13_06_23)/09. HTML (Level - 3)/14. Range - Input Element.mp4	33.05 MiB
+Day - 04 (13_06_23)/09. HTML (Level - 3)/15. Text Area.mp4	20.16 MiB
+Day - 04 (13_06_23)/09. HTML (Level - 3)/16. Practice Qs.mp4	41.69 MiB
+Day - 04 (13_06_23)/09. HTML (Level - 3)/17. HTML Level 3 (Qs).pdf	225.17 KiB
+Day - 04 (13_06_23)/09. HTML (Level - 3)/18. HTML Level 3 (Ans).pdf	218.06 KiB
+Day - 05 (15_06_23)/10. CSS - Getting Started/0. Topic List.jpg	363.62 KiB
+Day - 05 (15_06_23)/10. CSS - Getting Started/01. What is CSS.mp4	51.33 MiB
+Day - 05 (15_06_23)/10. CSS - Getting Started/02. Basic CSS Format.mp4	26.30 MiB
+Day - 05 (15_06_23)/10. CSS - Getting Started/03. Including CSS.mp4	78.06 MiB
+Day - 05 (15_06_23)/10. CSS - Getting Started/04. Color Property.mp4	29.75 MiB
+Day - 05 (15_06_23)/10. CSS - Getting Started/05. Background Color Property.mp4	11.96 MiB
+Day - 05 (15_06_23)/10. CSS - Getting Started/06. Practice Qs.mp4	14.12 MiB
+Day - 05 (15_06_23)/10. CSS - Getting Started/07. Color Systems (Name & RGB).mp4	62.07 MiB
+Day - 05 (15_06_23)/10. CSS - Getting Started/08. Hex Codes.mp4	49.36 MiB
+Day - 05 (15_06_23)/10. CSS - Getting Started/09. Practice Qs.mp4	8.14 MiB
+Day - 05 (15_06_23)/10. CSS - Getting Started/10. Text Align Property.mp4	56.53 MiB
+Day - 05 (15_06_23)/10. CSS - Getting Started/11. Font Weight & Text Decoration.mp4	67.23 MiB
+Day - 05 (15_06_23)/10. CSS - Getting Started/12. Line Height & Letter Spacing.mp4	27.42 MiB
+Day - 05 (15_06_23)/10. CSS - Getting Started/13. Units in CSS (Pixel).mp4	34.92 MiB
+Day - 05 (15_06_23)/10. CSS - Getting Started/14. Font Family.mp4	47.90 MiB
+Day - 05 (15_06_23)/10. CSS - Getting Started/15. Practice Qs.mp4	36.30 MiB
+Day - 05 (15_06_23)/10. CSS - Getting Started/16. CSS Part1 (Qs).pdf	176.72 KiB
+Day - 05 (15_06_23)/10. CSS - Getting Started/17. CSS Part 1 (Ans).pdf	149.14 KiB
+Day - 05 (15_06_23)/10. CSS - Getting Started/Our Telegram Link.pdf	68.04 KiB
+Day - 06 (17_06_23)/11. CSS - Part 2/0. Topic List.jpg	430.57 KiB
+Day - 06 (17_06_23)/11. CSS - Part 2/01. Download Starter HTML.pdf	81.58 KiB
+Day - 06 (17_06_23)/11. CSS - Part 2/02. How to download-.mp4	2.12 MiB
+Day - 06 (17_06_23)/11. CSS - Part 2/03. Universal Selector.mp4	32.39 MiB
+Day - 06 (17_06_23)/11. CSS - Part 2/04. Element Selector.mp4	9.83 MiB
+Day - 06 (17_06_23)/11. CSS - Part 2/05. Id Selector.mp4	20.68 MiB
+Day - 06 (17_06_23)/11. CSS - Part 2/06. Class Selector.mp4	14.33 MiB
+Day - 06 (17_06_23)/11. CSS - Part 2/07. Practice Qs.mp4	10.08 MiB
+Day - 06 (17_06_23)/11. CSS - Part 2/08. Descendant Selector.mp4	26.52 MiB
+Day - 06 (17_06_23)/11. CSS - Part 2/09. Sibling Combinator.mp4	15.48 MiB
+Day - 06 (17_06_23)/11. CSS - Part 2/10. Child Combinator.mp4	13.00 MiB
+Day - 06 (17_06_23)/11. CSS - Part 2/11. Attribute Selector.mp4	17.38 MiB
+Day - 06 (17_06_23)/11. CSS - Part 2/12. Practice Qs_2.mp4	17.13 MiB
+Day - 06 (17_06_23)/11. CSS - Part 2/13. Pseudo Class.mp4	55.70 MiB
+Day - 06 (17_06_23)/11. CSS - Part 2/14. Pseudo Element.mp4	17.15 MiB
+Day - 06 (17_06_23)/11. CSS - Part 2/15. Cascading & Specificity.mp4	45.27 MiB
+Day - 06 (17_06_23)/11. CSS - Part 2/16. Practice Qs_3.mp4	16.90 MiB
+Day - 06 (17_06_23)/11. CSS - Part 2/17. !important in CSS.mp4	5.19 MiB
+Day - 06 (17_06_23)/11. CSS - Part 2/18. Inheritance.mp4	51.10 MiB
+Day - 06 (17_06_23)/11. CSS - Part 2/19. CSS Part2 (Qs).pdf	135.71 KiB
+Day - 06 (17_06_23)/11. CSS - Part 2/20. CSS Part 2 (Ans).pdf	71.57 KiB
+Day - 07 (20_06_23)/12. CSS - Part 3/0. Topic List.jpg	391.81 KiB
+Day - 07 (20_06_23)/12. CSS - Part 3/0. Topic List.png	144.14 KiB
+Day - 07 (20_06_23)/12. CSS - Part 3/01. Download Starter HTML.pdf	89.86 KiB
+Day - 07 (20_06_23)/12. CSS - Part 3/02. Box Model.mp4	18.18 MiB
+Day - 07 (20_06_23)/12. CSS - Part 3/03. Height & Width.mp4	25.15 MiB
+Day - 07 (20_06_23)/12. CSS - Part 3/04. Border.mp4	29.80 MiB
+Day - 07 (20_06_23)/12. CSS - Part 3/05. Border Radius.mp4	22.45 MiB
+Day - 07 (20_06_23)/12. CSS - Part 3/06. Padding Property.mp4	48.83 MiB
+Day - 07 (20_06_23)/12. CSS - Part 3/07. Margin Property.mp4	26.35 MiB
+Day - 07 (20_06_23)/12. CSS - Part 3/08. Practice Qs.mp4	21.12 MiB
+Day - 07 (20_06_23)/12. CSS - Part 3/09. Display Property.mp4	48.06 MiB
+Day - 07 (20_06_23)/12. CSS - Part 3/10 Conclusion (Inline & Block).pdf	35.01 KiB
+Day - 07 (20_06_23)/12. CSS - Part 3/11 Inline-Block.mp4	12.47 MiB
+Day - 07 (20_06_23)/12. CSS - Part 3/12 Relative Units (Percentage).mp4	21.12 MiB
+Day - 07 (20_06_23)/12. CSS - Part 3/13 Em & Rem in Units.mp4	38.32 MiB
+Day - 07 (20_06_23)/12. CSS - Part 3/14. CSS Part3 (Qs).pdf	38.23 KiB
+Day - 07 (20_06_23)/12. CSS - Part 3/15. CSS Part 3 (Ans).pdf	143.17 KiB
+Day - 08 (22_06_23)/13. CSS - Part 4/0. Topic List.jpg	472.32 KiB
+Day - 08 (22_06_23)/13. CSS - Part 4/01. Alpha & Opacity.mp4	26.27 MiB
+Day - 08 (22_06_23)/13. CSS - Part 4/02. Transitions in CSS.mp4	35.61 MiB
+Day - 08 (22_06_23)/13. CSS - Part 4/03. Transform - Rotate.mp4	17.53 MiB
+Day - 08 (22_06_23)/13. CSS - Part 4/04. Tranform - Scale.mp4	11.03 MiB
+Day - 08 (22_06_23)/13. CSS - Part 4/05. Transform - Translate.mp4	6.65 MiB
+Day - 08 (22_06_23)/13. CSS - Part 4/06. Transform - Skew.mp4	10.45 MiB
+Day - 08 (22_06_23)/13. CSS - Part 4/07. Box Shadow.mp4	10.78 MiB
+Day - 08 (22_06_23)/13. CSS - Part 4/08. Background Image.mp4	19.83 MiB
+Day - 08 (22_06_23)/13. CSS - Part 4/09. Card Hover Effect.mp4	31.59 MiB
+Day - 08 (22_06_23)/13. CSS - Part 4/10. Position Property.mp4	53.91 MiB
+Day - 08 (22_06_23)/13. CSS - Part 4/11. Simple Smiley Face.mp4	37.88 MiB
+Day - 08 (22_06_23)/13. CSS - Part 4/12. CSS Part4 (Qs).pdf	121.23 KiB
+Day - 08 (22_06_23)/13. CSS - Part 4/13. CSS Part 4 (Ans).pdf	118.55 KiB
+Day - 09 (24_06_23)/14. CSS - Part 5/0. Topic List.jpg	167.49 KiB
+Day - 09 (24_06_23)/14. CSS - Part 5/01. What is Flexbox.mp4	28.90 MiB
+Day - 09 (24_06_23)/14. CSS - Part 5/02. Display Flex.mp4	26.27 MiB
+Day - 09 (24_06_23)/14. CSS - Part 5/03. Flex Direction.mp4	15.24 MiB
+Day - 09 (24_06_23)/14. CSS - Part 5/04. Justify Content.mp4	26.70 MiB
+Day - 09 (24_06_23)/14. CSS - Part 5/05. Flex Wrap.mp4	15.64 MiB
+Day - 09 (24_06_23)/14. CSS - Part 5/06. Align Items.mp4	18.81 MiB
+Day - 09 (24_06_23)/14. CSS - Part 5/07. Align Content.mp4	11.86 MiB
+Day - 09 (24_06_23)/14. CSS - Part 5/08. Align Self.mp4	8.29 MiB
+Day - 09 (24_06_23)/14. CSS - Part 5/09. Flex Sizing.mp4	41.47 MiB
+Day - 09 (24_06_23)/14. CSS - Part 5/10. Flex Shorthand.mp4	11.39 MiB
+Day - 09 (24_06_23)/14. CSS - Part 5/12. CSS Part5(Qs).pdf	183.01 KiB
+Day - 09 (24_06_23)/14. CSS - Part 5/13. CSS Part 5 (Ans).pdf	125.40 KiB
+Day - 10 (28_06_23)/15. CSS - Part 6/0. Topic List.jpg	446.55 KiB
+Day - 10 (28_06_23)/15. CSS - Part 6/01. What is Grid-.mp4	22.00 MiB
+Day - 10 (28_06_23)/15. CSS - Part 6/02. Grid Model.mp4	11.58 MiB
+Day - 10 (28_06_23)/15. CSS - Part 6/03. Grid Template.mp4	33.49 MiB
+Day - 10 (28_06_23)/15. CSS - Part 6/04. Grid Template (repeat).mp4	19.95 MiB
+Day - 10 (28_06_23)/15. CSS - Part 6/05. Grid Gaps.mp4	13.19 MiB
+Day - 10 (28_06_23)/15. CSS - Part 6/06. Grid Columns.mp4	19.55 MiB
+Day - 10 (28_06_23)/15. CSS - Part 6/07. Grid Rows.mp4	10.27 MiB
+Day - 10 (28_06_23)/15. CSS - Part 6/08. Grid Properties.mp4	24.45 MiB
+Day - 10 (28_06_23)/15. CSS - Part 6/09. Animation in CSS.mp4	41.54 MiB
+Day - 10 (28_06_23)/15. CSS - Part 6/10. Animation Shorthand.mp4	10.49 MiB
+Day - 10 (28_06_23)/15. CSS - Part 6/11. _ in Animation.mp4	6.75 MiB
+Day - 10 (28_06_23)/15. CSS - Part 6/12. Media Queries.mp4	47.20 MiB
+Day - 10 (28_06_23)/15. CSS - Part 6/13. Media Queries (Orientation).mp4	4.99 MiB
+Day - 10 (28_06_23)/15. CSS - Part 6/14. Pet Adoption Page.mp4	42.11 MiB
+Day - 10 (28_06_23)/15. CSS - Part 6/15. Download Starter HTML.pdf	154.06 KiB
+Day - 10 (28_06_23)/15. CSS - Part 6/16. z-index.mp4	35.67 MiB
+Day - 10 (28_06_23)/15. CSS - Part 6/17. CSS Part 6 (Qs).pdf	308.04 KiB
+Day - 10 (28_06_23)/15. CSS - Part 6/18. CSS Part 6 (Ans).pdf	130.60 KiB
+Day - 11 (30_06_23)/16. Mini Project (CSS)/0. Topic List.jpg	141.40 KiB
+Day - 11 (30_06_23)/16. Mini Project (CSS)/01. Color Theory.mp4	49.64 MiB
+Day - 11 (30_06_23)/16. Mini Project (CSS)/02. Typography.mp4	11.36 MiB
+Day - 11 (30_06_23)/16. Mini Project (CSS)/03. Google Fonts.mp4	27.44 MiB
+Day - 11 (30_06_23)/16. Mini Project (CSS)/04. Icons.mp4	24.49 MiB
+Day - 11 (30_06_23)/16. Mini Project (CSS)/05. Download Starter HTML.pdf	169.56 KiB
+Day - 11 (30_06_23)/16. Mini Project (CSS)/06. Introduction.mp4	29.07 MiB
+Day - 11 (30_06_23)/16. Mini Project (CSS)/07. Setting Style.mp4	28.90 MiB
+Day - 11 (30_06_23)/16. Mini Project (CSS)/08. Sidebar Menu.mp4	70.17 MiB
+Day - 11 (30_06_23)/16. Mini Project (CSS)/09. Hover Changes.mp4	18.39 MiB
+Day - 11 (30_06_23)/16. Mini Project (CSS)/10. Configuring Checkbox.mp4	33.12 MiB
+Day - 12 (03_07_23)/17. Bootstrap/0.Topic List.jpg	455.34 KiB
+Day - 12 (03_07_23)/17. Bootstrap/01. What is Bootstrap-.mp4	44.60 MiB
+Day - 12 (03_07_23)/17. Bootstrap/02. Using Bootstrap.mp4	33.68 MiB
+Day - 12 (03_07_23)/17. Bootstrap/03. Container (Layout).mp4	34.93 MiB
+Day - 12 (03_07_23)/17. Bootstrap/04. Button (Component).mp4	33.88 MiB
+Day - 12 (03_07_23)/17. Bootstrap/05. Badge (Component).mp4	27.87 MiB
+Day - 12 (03_07_23)/17. Bootstrap/06. Alert (Component).mp4	31.53 MiB
+Day - 12 (03_07_23)/17. Bootstrap/07. Button Group (Component).mp4	14.24 MiB
+Day - 12 (03_07_23)/17. Bootstrap/08. Navbar (Component).mp4	79.25 MiB
+Day - 12 (03_07_23)/17. Bootstrap/09. Card (Component).mp4	21.76 MiB
+Day - 12 (03_07_23)/17. Bootstrap/10. Grid (Layout).mp4	53.41 MiB
+Day - 12 (03_07_23)/17. Bootstrap/11. Grid (Vertical Alignment).mp4	13.80 MiB
+Day - 12 (03_07_23)/17. Bootstrap/12. Form Controls in Bootstrap.mp4	28.17 MiB
+Day - 12 (03_07_23)/17. Bootstrap/13. Select in Form.mp4	10.58 MiB
+Day - 12 (03_07_23)/17. Bootstrap/14. Checkbox & Radio in Form.mp4	17.12 MiB
+Day - 12 (03_07_23)/17. Bootstrap/15. Form Layout.mp4	11.20 MiB
+Day - 12 (03_07_23)/17. Bootstrap/16. Bootstrap (Qs).pdf	305.45 KiB
+Day - 12 (03_07_23)/17. Bootstrap/17. Bootstrap (Ans).pdf	451.17 KiB
+Day - 13 (05_07_23)/18. Project (CSS)/0. Topic List.jpg	178.51 KiB
+Day - 13 (05_07_23)/18. Project (CSS)/01. Download Starter HTML.pdf	298.34 KiB
+Day - 13 (05_07_23)/18. Project (CSS)/02. Setting up.mp4	73.62 MiB
+Day - 13 (05_07_23)/18. Project (CSS)/03. Basics.mp4	118.06 MiB
+Day - 13 (05_07_23)/18. Project (CSS)/04. Layout.mp4	94.62 MiB
+Day - 13 (05_07_23)/18. Project (CSS)/05. Sidebar (Nav).mp4	94.72 MiB
+Day - 13 (05_07_23)/18. Project (CSS)/06. Sidebar (Library).mp4	89.86 MiB
+Day - 13 (05_07_23)/18. Project (CSS)/07. Library Boxes.mp4	128.73 MiB
+Day - 13 (05_07_23)/18. Project (CSS)/08. Sticky Nav.mp4	156.44 MiB
+Day - 13 (05_07_23)/18. Project (CSS)/09. Cards.mp4	137.56 MiB
+Day - 13 (05_07_23)/18. Project (CSS)/10. Footer Line.mp4	39.05 MiB
+Day - 13 (05_07_23)/18. Project (CSS)/11. Setting up Player.mp4	68.92 MiB
+Day - 13 (05_07_23)/18. Project (CSS)/12. Player Controls.mp4	53.85 MiB
+Day - 13 (05_07_23)/18. Project (CSS)/13. Playback Bar.mp4	115.07 MiB
+Day - 13 (05_07_23)/18. Project (CSS)/14. Tailwind CSS.mp4	3.82 MiB
+Day - 14 (09_07_23)/19. JavaScript (Part - 1)/0. Topic List.jpg	50.41 KiB
+Day - 14 (09_07_23)/19. JavaScript (Part - 1)/01. Introduction.mp4	28.13 MiB
+Day - 14 (09_07_23)/19. JavaScript (Part - 1)/02. Using the Console.mp4	42.86 MiB
+Day - 14 (09_07_23)/19. JavaScript (Part - 1)/03. What is a Variable_.mp4	40.62 MiB
+Day - 14 (09_07_23)/19. JavaScript (Part - 1)/04. Data Types in JS.mp4	33.42 MiB
+Day - 14 (09_07_23)/19. JavaScript (Part - 1)/05. Numbers in JS.mp4	38.72 MiB
+Day - 14 (09_07_23)/19. JavaScript (Part - 1)/06. Operations in JS.mp4	40.21 MiB
+Day - 14 (09_07_23)/19. JavaScript (Part - 1)/07. NaN in JS.mp4	13.30 MiB
+Day - 14 (09_07_23)/19. JavaScript (Part - 1)/08. Operator Precedence.mp4	31.49 MiB
+Day - 14 (09_07_23)/19. JavaScript (Part - 1)/08.1 let, const & var Keywords.mp4	47.32 MiB
+Day - 14 (09_07_23)/19. JavaScript (Part - 1)/09. Practice Qs.mp4	27.13 MiB
+Day - 14 (09_07_23)/19. JavaScript (Part - 1)/10. Assignment Operators.mp4	13.46 MiB
+Day - 14 (09_07_23)/19. JavaScript (Part - 1)/11. Unary Operators.mp4	40.20 MiB
+Day - 14 (09_07_23)/19. JavaScript (Part - 1)/12. Practice Qs.mp4	12.05 MiB
+Day - 14 (09_07_23)/19. JavaScript (Part - 1)/13. Identifier Rules.mp4	44.69 MiB
+Day - 14 (09_07_23)/19. JavaScript (Part - 1)/14. Boolean in JS.mp4	21.14 MiB
+Day - 14 (09_07_23)/19. JavaScript (Part - 1)/15. What is TypeScript_.mp4	11.69 MiB
+Day - 14 (09_07_23)/19. JavaScript (Part - 1)/16. Practice Qs.mp4	8.33 MiB
+Day - 14 (09_07_23)/19. JavaScript (Part - 1)/17. String in JS.mp4	39.22 MiB
+Day - 14 (09_07_23)/19. JavaScript (Part - 1)/18. String Indices.mp4	49.08 MiB
+Day - 14 (09_07_23)/19. JavaScript (Part - 1)/19. null & undefined in JS.mp4	25.75 MiB
+Day - 14 (09_07_23)/19. JavaScript (Part - 1)/20. Practice Qs.mp4	27.96 MiB
+Day - 15 (11_07_23)/20. JavaScript (Part 2)/0. Topic List.jpg	476.86 KiB
+Day - 15 (11_07_23)/20. JavaScript (Part 2)/01. console.log( ).mp4	27.03 MiB
+Day - 15 (11_07_23)/20. JavaScript (Part 2)/02. Linking JS File.mp4	41.95 MiB
+Day - 15 (11_07_23)/20. JavaScript (Part 2)/03. Template Literals.mp4	35.13 MiB
+Day - 15 (11_07_23)/20. JavaScript (Part 2)/04. Operators in JS.mp4	29.53 MiB
+Day - 15 (11_07_23)/20. JavaScript (Part 2)/05. Comparison Operators.mp4	50.83 MiB
+Day - 15 (11_07_23)/20. JavaScript (Part 2)/06. Comparison for Non-numbers.mp4	25.48 MiB
+Day - 15 (11_07_23)/20. JavaScript (Part 2)/07. Conditional Statements.mp4	15.67 MiB
+Day - 15 (11_07_23)/20. JavaScript (Part 2)/08. if Statement.mp4	43.22 MiB
+Day - 15 (11_07_23)/20. JavaScript (Part 2)/09. Practice Qs.mp4	27.09 MiB
+Day - 15 (11_07_23)/20. JavaScript (Part 2)/10. else if Statement.mp4	52.23 MiB
+Day - 15 (11_07_23)/20. JavaScript (Part 2)/11. else Statement.mp4	22.26 MiB
+Day - 15 (11_07_23)/20. JavaScript (Part 2)/12. Practice Qs.mp4	20.83 MiB
+Day - 15 (11_07_23)/20. JavaScript (Part 2)/13. Nested if-else.mp4	15.31 MiB
+Day - 15 (11_07_23)/20. JavaScript (Part 2)/14. Logical Operators.mp4	60.75 MiB
+Day - 15 (11_07_23)/20. JavaScript (Part 2)/15. Practice Qs.mp4	64.78 MiB
+Day - 15 (11_07_23)/20. JavaScript (Part 2)/16. truthy & falsy.mp4	40.01 MiB
+Day - 15 (11_07_23)/20. JavaScript (Part 2)/17. Switch Statement.mp4	45.33 MiB
+Day - 15 (11_07_23)/20. JavaScript (Part 2)/18. Practice Qs.mp4	24.11 MiB
+Day - 15 (11_07_23)/20. JavaScript (Part 2)/19. Alerts & Prompts.mp4	43.49 MiB
+Day - 15 (11_07_23)/20. JavaScript (Part 2)/20. JS Part2 (Qs).pdf	623.05 KiB
+Day - 15 (11_07_23)/20. JavaScript (Part 2)/21. JS Part 2 (Ans).pdf	857.48 KiB
+Day - 16 (13_07_23)/21. JavaScript (Part 3)/0. Topic List.jpg	798.13 KiB
+Day - 16 (13_07_23)/21. JavaScript (Part 3)/01. String Methods.mp4	12.66 MiB
+Day - 16 (13_07_23)/21. JavaScript (Part 3)/02. Trim Method.mp4	26.15 MiB
+Day - 16 (13_07_23)/21. JavaScript (Part 3)/03. Strings are Immutable in JS.mp4	7.21 MiB
+Day - 16 (13_07_23)/21. JavaScript (Part 3)/04. ToUpperCase and ToLowerCase.mp4	9.48 MiB
+Day - 16 (13_07_23)/21. JavaScript (Part 3)/05. Methods with Arguments - indexOf.mp4	23.71 MiB
+Day - 16 (13_07_23)/21. JavaScript (Part 3)/06. Method Chaining.mp4	15.03 MiB
+Day - 16 (13_07_23)/21. JavaScript (Part 3)/07. Slice Method.mp4	33.99 MiB
+Day - 16 (13_07_23)/21. JavaScript (Part 3)/08. Replace & Repeat Method.mp4	20.49 MiB
+Day - 16 (13_07_23)/21. JavaScript (Part 3)/09. Practice Qs.mp4	42.19 MiB
+Day - 16 (13_07_23)/21. JavaScript (Part 3)/10. Array (Data Structure).mp4	34.54 MiB
+Day - 16 (13_07_23)/21. JavaScript (Part 3)/11. Visualizing Arrays.mp4	20.59 MiB
+Day - 16 (13_07_23)/21. JavaScript (Part 3)/12. Creating Arrays.mp4	22.44 MiB
+Day - 16 (13_07_23)/21. JavaScript (Part 3)/13. Arrays are Mutable.mp4	22.39 MiB
+Day - 16 (13_07_23)/21. JavaScript (Part 3)/14. Array Methods.mp4	36.88 MiB
+Day - 16 (13_07_23)/21. JavaScript (Part 3)/15. Practice Qs.mp4	16.38 MiB
+Day - 16 (13_07_23)/21. JavaScript (Part 3)/16. indexOf & includes Method.mp4	19.91 MiB
+Day - 16 (13_07_23)/21. JavaScript (Part 3)/17. Concatenation & Reverse.mp4	24.09 MiB
+Day - 16 (13_07_23)/21. JavaScript (Part 3)/18. Slice in Arrays.mp4	30.27 MiB
+Day - 16 (13_07_23)/21. JavaScript (Part 3)/19. Splice in Arrays.mp4	51.16 MiB
+Day - 16 (13_07_23)/21. JavaScript (Part 3)/20. Sort in Arrays.mp4	17.92 MiB
+Day - 16 (13_07_23)/21. JavaScript (Part 3)/21. Practice Qs.mp4	21.52 MiB
+Day - 16 (13_07_23)/21. JavaScript (Part 3)/22. Arrays References.mp4	52.88 MiB
+Day - 16 (13_07_23)/21. JavaScript (Part 3)/23. Constant Arrays.mp4	25.41 MiB
+Day - 16 (13_07_23)/21. JavaScript (Part 3)/24. Nested Arrays.mp4	32.92 MiB
+Day - 16 (13_07_23)/21. JavaScript (Part 3)/25. Practice Qs.mp4	26.02 MiB
+Day - 16 (13_07_23)/21. JavaScript (Part 3)/26. JS Part3 (Qs).pdf	308.26 KiB
+Day - 16 (13_07_23)/21. JavaScript (Part 3)/27. JS Part 3 (Ans).pdf	660.82 KiB
+Day - 17 (15_07_23)/22. JavaScript (Part 4)/0. Topic List.jpg	509.25 KiB
+Day - 17 (15_07_23)/22. JavaScript (Part 4)/01. for Loops.mp4	41.30 MiB
+Day - 17 (15_07_23)/22. JavaScript (Part 4)/02. Dry Run.mp4	51.58 MiB
+Day - 17 (15_07_23)/22. JavaScript (Part 4)/03. Print Odd Numbers.mp4	27.64 MiB
+Day - 17 (15_07_23)/22. JavaScript (Part 4)/04. Print Even Numbers.mp4	20.54 MiB
+Day - 17 (15_07_23)/22. JavaScript (Part 4)/05. Infinite Loops.mp4	20.35 MiB
+Day - 17 (15_07_23)/22. JavaScript (Part 4)/06. Print Multiplication Table.mp4	27.76 MiB
+Day - 17 (15_07_23)/22. JavaScript (Part 4)/07. Nested for Loop.mp4	44.24 MiB
+Day - 17 (15_07_23)/22. JavaScript (Part 4)/08. while Loops.mp4	24.57 MiB
+Day - 17 (15_07_23)/22. JavaScript (Part 4)/09. Favorite Movie.mp4	56.52 MiB
+Day - 17 (15_07_23)/22. JavaScript (Part 4)/10. break Keyword.mp4	24.27 MiB
+Day - 17 (15_07_23)/22. JavaScript (Part 4)/11. Loops with Arrays.mp4	36.62 MiB
+Day - 17 (15_07_23)/22. JavaScript (Part 4)/12. Loops with Nested Arrays.mp4	49.40 MiB
+Day - 17 (15_07_23)/22. JavaScript (Part 4)/13. for-of Loops.mp4	22.68 MiB
+Day - 17 (15_07_23)/22. JavaScript (Part 4)/14. Nested for-of Loop.mp4	8.88 MiB
+Day - 17 (15_07_23)/22. JavaScript (Part 4)/15. Todo App (only JS).mp4	86.29 MiB
+Day - 17 (15_07_23)/22. JavaScript (Part 4)/16. JS Part 4 (Qs).pdf	346.69 KiB
+Day - 17 (15_07_23)/22. JavaScript (Part 4)/17. JS Part 4 (Ans).pdf	605.82 KiB
+Day - 18 (17_07_23)/23. JavaScript (Part 5)/0. Topic List.jpg	222.86 KiB
+Day - 18 (17_07_23)/23. JavaScript (Part 5)/01. Object Literals.mp4	24.23 MiB
+Day - 18 (17_07_23)/23. JavaScript (Part 5)/02. Creating Object Literals.mp4	38.90 MiB
+Day - 18 (17_07_23)/23. JavaScript (Part 5)/03. Creating a Post.mp4	15.40 MiB
+Day - 18 (17_07_23)/23. JavaScript (Part 5)/04. Get Values.mp4	22.91 MiB
+Day - 18 (17_07_23)/23. JavaScript (Part 5)/05. Conversion in Get Values.mp4	22.99 MiB
+Day - 18 (17_07_23)/23. JavaScript (Part 5)/06. Add _ Update Values.mp4	29.73 MiB
+Day - 18 (17_07_23)/23. JavaScript (Part 5)/07. Nested Objects.mp4	19.89 MiB
+Day - 18 (17_07_23)/23. JavaScript (Part 5)/08. Array of Objects.mp4	20.66 MiB
+Day - 18 (17_07_23)/23. JavaScript (Part 5)/09. Math Object.mp4	44.50 MiB
+Day - 18 (17_07_23)/23. JavaScript (Part 5)/10. Random Integers.mp4	34.83 MiB
+Day - 18 (17_07_23)/23. JavaScript (Part 5)/11. Practice Qs.mp4	14.77 MiB
+Day - 18 (17_07_23)/23. JavaScript (Part 5)/12. Guessing Game.mp4	80.48 MiB
+Day - 18 (17_07_23)/23. JavaScript (Part 5)/13. JS Part 5 (Qs).pdf	250.96 KiB
+Day - 18 (17_07_23)/23. JavaScript (Part 5)/14. JS Part 5 (Ans).pdf	236.84 KiB
+Day - 19 (21_07_23)/24. JavaScript (Part 6)/0. Topic List.jpg	198.83 KiB
+Day - 19 (21_07_23)/24. JavaScript (Part 6)/01. What are functions_.mp4	39.41 MiB
+Day - 19 (21_07_23)/24. JavaScript (Part 6)/02. Practice Qs1.mp4	4.93 MiB
+Day - 19 (21_07_23)/24. JavaScript (Part 6)/03. Practice Qs 2.mp4	15.15 MiB
+Day - 19 (21_07_23)/24. JavaScript (Part 6)/04. Functions with Arguments.mp4	33.14 MiB
+Day - 19 (21_07_23)/24. JavaScript (Part 6)/05. Practice Qs 3.mp4	14.71 MiB
+Day - 19 (21_07_23)/24. JavaScript (Part 6)/06. Practice Qs 4.mp4	11.26 MiB
+Day - 19 (21_07_23)/24. JavaScript (Part 6)/07. return Keyword.mp4	44.73 MiB
+Day - 19 (21_07_23)/24. JavaScript (Part 6)/08. Practice Qs 5.mp4	15.01 MiB
+Day - 19 (21_07_23)/24. JavaScript (Part 6)/09. Practice Qs 6.mp4	18.30 MiB
+Day - 19 (21_07_23)/24. JavaScript (Part 6)/10. What is Scope_.mp4	23.53 MiB
+Day - 19 (21_07_23)/24. JavaScript (Part 6)/11. Block Scope.mp4	17.15 MiB
+Day - 19 (21_07_23)/24. JavaScript (Part 6)/12. Lexical Scope.mp4	21.48 MiB
+Day - 19 (21_07_23)/24. JavaScript (Part 6)/13. Practice Qs 7.mp4	21.17 MiB
+Day - 19 (21_07_23)/24. JavaScript (Part 6)/14. Functions Expressions.mp4	16.45 MiB
+Day - 19 (21_07_23)/24. JavaScript (Part 6)/15. Higher Order Functions.mp4	24.91 MiB
+Day - 19 (21_07_23)/24. JavaScript (Part 6)/16. Higher Order Functions (Returns).mp4	30.83 MiB
+Day - 19 (21_07_23)/24. JavaScript (Part 6)/17. Methods.mp4	29.97 MiB
+Day - 19 (21_07_23)/24. JavaScript (Part 6)/18. JS Part 6 (Qs).pdf	113.22 KiB
+Day - 19 (21_07_23)/24. JavaScript (Part 6)/19. JS Part 6 (Ans).pdf	129.26 KiB
+Day - 20 (23_07_23)/25. JavaScript (Part - 7)/0. Topic List.jpg	98.27 KiB
+Day - 20 (23_07_23)/25. JavaScript (Part - 7)/01. _this_ in JavaScript.mp4	38.00 MiB
+Day - 20 (23_07_23)/25. JavaScript (Part - 7)/02. Try & Catch.mp4	28.05 MiB
+Day - 20 (23_07_23)/25. JavaScript (Part - 7)/03. Arrow Functions.mp4	42.52 MiB
+Day - 20 (23_07_23)/25. JavaScript (Part - 7)/04. Implicit Return in Arrow Functions.mp4	23.18 MiB
+Day - 20 (23_07_23)/25. JavaScript (Part - 7)/05. Set TimeOut Function.mp4	28.02 MiB
+Day - 20 (23_07_23)/25. JavaScript (Part - 7)/06. Set Interval Function.mp4	21.99 MiB
+Day - 20 (23_07_23)/25. JavaScript (Part - 7)/07. this with Arrow Functions.mp4	76.33 MiB
+Day - 20 (23_07_23)/25. JavaScript (Part - 7)/08. Practice Qs.mp4	27.55 MiB
+Day - 20 (23_07_23)/25. JavaScript (Part - 7)/09. JS Part 7 (Qs).pdf	479.14 KiB
+Day - 20 (23_07_23)/25. JavaScript (Part - 7)/10. JS Part 7 (Ans).pdf	668.18 KiB
+Day - 21 (25_07_23)/26. JavaScript (Part - 8)/0. Topic List.jpg	162.00 KiB
+Day - 21 (25_07_23)/26. JavaScript (Part - 8)/01. Array Methods.mp4	24.85 MiB
+Day - 21 (25_07_23)/26. JavaScript (Part - 8)/02. Map & Filter.mp4	42.15 MiB
+Day - 21 (25_07_23)/26. JavaScript (Part - 8)/03. Every & Sum.mp4	13.03 MiB
+Day - 21 (25_07_23)/26. JavaScript (Part - 8)/04. Reduce Method.mp4	53.82 MiB
+Day - 21 (25_07_23)/26. JavaScript (Part - 8)/05. Maximum in Array.mp4	25.74 MiB
+Day - 21 (25_07_23)/26. JavaScript (Part - 8)/06. Practice Qs.mp4	23.78 MiB
+Day - 21 (25_07_23)/26. JavaScript (Part - 8)/07. Default Parameters.mp4	22.43 MiB
+Day - 21 (25_07_23)/26. JavaScript (Part - 8)/08. Spread.mp4	27.98 MiB
+Day - 21 (25_07_23)/26. JavaScript (Part - 8)/09. Spread (Array Literals).mp4	18.92 MiB
+Day - 21 (25_07_23)/26. JavaScript (Part - 8)/10. Spread (Object Literals).mp4	25.52 MiB
+Day - 21 (25_07_23)/26. JavaScript (Part - 8)/11. Rest.mp4	58.88 MiB
+Day - 21 (25_07_23)/26. JavaScript (Part - 8)/12. Destructuring.mp4	20.83 MiB
+Day - 21 (25_07_23)/26. JavaScript (Part - 8)/13. Destructuring (Objects).mp4	34.33 MiB
+Day - 21 (25_07_23)/26. JavaScript (Part - 8)/14. JS Part 8 (Qs).pdf	316.02 KiB
+Day - 21 (25_07_23)/26. JavaScript (Part - 8)/15. JS Part 8 (Ans).pdf	576.07 KiB
+Day - 22 (27_07_23)/27. JavaScript (Part 9)/0. Topic List.jpg	228.08 KiB
+Day - 22 (27_07_23)/27. JavaScript (Part 9)/01. Introduction.mp4	8.11 MiB
+Day - 22 (27_07_23)/27. JavaScript (Part 9)/02. What is DOM.mp4	19.61 MiB
+Day - 22 (27_07_23)/27. JavaScript (Part 9)/03. Download Starter Code.mp4	44.69 MiB
+Day - 22 (27_07_23)/27. JavaScript (Part 9)/04. Link For Download.pdf	9.86 KiB
+Day - 22 (27_07_23)/27. JavaScript (Part 9)/05. Selecting Element by ID .mp4	33.21 MiB
+Day - 22 (27_07_23)/27. JavaScript (Part 9)/06. Selecting Elements by Class Name .mp4	25.25 MiB
+Day - 22 (27_07_23)/27. JavaScript (Part 9)/07. Selecting Elements by Tag Name.mp4	11.17 MiB
+Day - 22 (27_07_23)/27. JavaScript (Part 9)/08. Query Selectors.mp4	28.84 MiB
+Day - 22 (27_07_23)/27. JavaScript (Part 9)/09. Setting Content in Objects.mp4	53.32 MiB
+Day - 22 (27_07_23)/27. JavaScript (Part 9)/10. Manipulating Attributes.mp4	21.21 MiB
+Day - 22 (27_07_23)/27. JavaScript (Part 9)/11. Manipulating Style (with style attribute).mp4	39.82 MiB
+Day - 22 (27_07_23)/27. JavaScript (Part 9)/12. classList Property.mp4	54.40 MiB
+Day - 22 (27_07_23)/27. JavaScript (Part 9)/13. Navigation on Page.mp4	37.75 MiB
+Day - 22 (27_07_23)/27. JavaScript (Part 9)/14. Adding Elements on Page.mp4	63.45 MiB
+Day - 22 (27_07_23)/27. JavaScript (Part 9)/15. Removing Elements from Page.mp4	7.58 MiB
+Day - 22 (27_07_23)/27. JavaScript (Part 9)/16. Practice Qs.mp4	26.83 MiB
+Day - 22 (27_07_23)/27. JavaScript (Part 9)/17. Assignment Questions.pdf	62.76 KiB
+Day - 22 (27_07_23)/27. JavaScript (Part 9)/18. Assignment Solutions.pdf	189.00 KiB
+Day - 23 (29_07_23)/28. JavaScript (Part 10)/0. Topic List.jpg	396.39 KiB
+Day - 23 (29_07_23)/28. JavaScript (Part 10)/01. DOM Events.mp4	31.57 MiB
+Day - 23 (29_07_23)/28. JavaScript (Part 10)/02. Mouse_ Pointer Events.mp4	53.15 MiB
+Day - 23 (29_07_23)/28. JavaScript (Part 10)/03. Event Listeners.mp4	42.34 MiB
+Day - 23 (29_07_23)/28. JavaScript (Part 10)/04. Activity.mp4	56.41 MiB
+Day - 23 (29_07_23)/28. JavaScript (Part 10)/05. Event Listeners for Elements.mp4	15.86 MiB
+Day - 23 (29_07_23)/28. JavaScript (Part 10)/06. this in Event Listeners.mp4	45.51 MiB
+Day - 23 (29_07_23)/28. JavaScript (Part 10)/07. Keyboard Events.mp4	85.44 MiB
+Day - 23 (29_07_23)/28. JavaScript (Part 10)/08. Form Events.mp4	22.84 MiB
+Day - 23 (29_07_23)/28. JavaScript (Part 10)/09. Extracting Form Data.mp4	56.50 MiB
+Day - 23 (29_07_23)/28. JavaScript (Part 10)/10. More Events.mp4	46.84 MiB
+Day - 23 (29_07_23)/28. JavaScript (Part 10)/11. JS Part 10 (Qs).pdf	332.40 KiB
+Day - 24 (31_07_23)/29. JavaScript (Mini-Project)/0. Topic List.jpg	127.00 KiB
+Day - 24 (31_07_23)/29. JavaScript (Mini-Project)/01. Event Bubbling.mp4	19.54 MiB
+Day - 24 (31_07_23)/29. JavaScript (Mini-Project)/02. Building Todo with DOM.mp4	65.09 MiB
+Day - 24 (31_07_23)/29. JavaScript (Mini-Project)/03. Event Delegation.mp4	52.57 MiB
+Day - 24 (31_07_23)/29. JavaScript (Mini-Project)/04. How to play Simon.mp4	8.37 MiB
+Day - 24 (31_07_23)/29. JavaScript (Mini-Project)/05. Setting up Project.mp4	57.22 MiB
+Day - 24 (31_07_23)/29. JavaScript (Mini-Project)/06. Start Game.mp4	43.08 MiB
+Day - 24 (31_07_23)/29. JavaScript (Mini-Project)/07. Flash Buttons & Level Up.mp4	49.08 MiB
+Day - 24 (31_07_23)/29. JavaScript (Mini-Project)/08. Button Event Listeners.mp4	32.23 MiB
+Day - 24 (31_07_23)/29. JavaScript (Mini-Project)/09. Matching Sequence.mp4	80.51 MiB
+Day - 24 (31_07_23)/29. JavaScript (Mini-Project)/10. Reset Game.mp4	14.10 MiB
+Day - 24 (31_07_23)/29. JavaScript (Mini-Project)/11. Display Score.mp4	27.28 MiB
+Day - 25 (04_08_23)/30. JavaScript (Part 11)/0. Topic List.jpg	131.18 KiB
+Day - 25 (04_08_23)/30. JavaScript (Part 11)/01. JS Call Stack.mp4	62.46 MiB
+Day - 25 (04_08_23)/30. JavaScript (Part 11)/02. Visualizing the Call stack.mp4	34.63 MiB
+Day - 25 (04_08_23)/30. JavaScript (Part 11)/03. Breakpoints.mp4	41.01 MiB
+Day - 25 (04_08_23)/30. JavaScript (Part 11)/04. JS is Single Threaded.mp4	57.76 MiB
+Day - 25 (04_08_23)/30. JavaScript (Part 11)/05. Callback Hell.mp4	66.01 MiB
+Day - 25 (04_08_23)/30. JavaScript (Part 11)/06. Setting up for Promises.mp4	69.71 MiB
+Day - 25 (04_08_23)/30. JavaScript (Part 11)/07. Refactoring with Promises.mp4	48.60 MiB
+Day - 25 (04_08_23)/30. JavaScript (Part 11)/08. then( ) and catch( ) methods.mp4	29.90 MiB
+Day - 25 (04_08_23)/30. JavaScript (Part 11)/09. Promise chaining.mp4	47.75 MiB
+Day - 25 (04_08_23)/30. JavaScript (Part 11)/10. Results & Errors in Promises.mp4	23.09 MiB
+Day - 25 (04_08_23)/30. JavaScript (Part 11)/11. Refactoring old code.mp4	54.05 MiB
+Day - 26 (06_08_23)/31. JavaScript (Part 12)/0. Topic List.jpg	166.92 KiB
+Day - 26 (06_08_23)/31. JavaScript (Part 12)/01. async Functions.mp4	46.59 MiB
+Day - 26 (06_08_23)/31. JavaScript (Part 12)/02. await Keyword.mp4	52.03 MiB
+Day - 26 (06_08_23)/31. JavaScript (Part 12)/03. Handing Rejections.mp4	30.65 MiB
+Day - 26 (06_08_23)/31. JavaScript (Part 12)/04. What is an API_.mp4	37.46 MiB
+Day - 26 (06_08_23)/31. JavaScript (Part 12)/05. Accessing some APIs.mp4	48.15 MiB
+Day - 26 (06_08_23)/31. JavaScript (Part 12)/06. What is JSON_.mp4	29.88 MiB
+Day - 26 (06_08_23)/31. JavaScript (Part 12)/07. Accessing JSON data.mp4	24.56 MiB
+Day - 26 (06_08_23)/31. JavaScript (Part 12)/08. API Testing Tools.mp4	23.70 MiB
+Day - 26 (06_08_23)/31. JavaScript (Part 12)/09. What is Ajax_.mp4	16.84 MiB
+Day - 26 (06_08_23)/31. JavaScript (Part 12)/10. Https Verbs.mp4	8.71 MiB
+Day - 26 (06_08_23)/31. JavaScript (Part 12)/11. Status Codes.mp4	20.87 MiB
+Day - 26 (06_08_23)/31. JavaScript (Part 12)/12. Adding Information in URLs.mp4	81.64 MiB
+Day - 26 (06_08_23)/31. JavaScript (Part 12)/13. Https Headers.mp4	47.64 MiB
+Day - 26 (06_08_23)/31. JavaScript (Part 12)/14. Our First API request.mp4	63.35 MiB
+Day - 26 (06_08_23)/31. JavaScript (Part 12)/15. Using Fetch with async-await.mp4	20.58 MiB
+Day - 27 (08_08_23)/32. JavaScript (Part 13)/0. Topic List.jpg	30.22 KiB
+Day - 27 (08_08_23)/32. JavaScript (Part 13)/01. Using Axios.mp4	62.72 MiB
+Day - 27 (08_08_23)/32. JavaScript (Part 13)/02. DogPictures API.mp4	22.82 MiB
+Day - 27 (08_08_23)/32. JavaScript (Part 13)/03. Sending Headers with API requests.mp4	11.42 MiB
+Day - 27 (08_08_23)/32. JavaScript (Part 13)/04. Activity using Query Strings.mp4	57.86 MiB
+Day - 27 (08_08_23)/32. JavaScript (Part 13)/05. Free APIs List for Project.pdf	74.40 KiB
+Day - 28 (12_08_23)/33. Terminal/0. Topic List.jpg	108.97 KiB
+Day - 28 (12_08_23)/33. Terminal/01. What is the Terminal_.mp4	32.80 MiB
+Day - 28 (12_08_23)/33. Terminal/02. Different Terms related to Terminal.mp4	37.69 MiB
+Day - 28 (12_08_23)/33. Terminal/03. (Window Users Only) Installing Git Bash.mp4	19.08 MiB
+Day - 28 (12_08_23)/33. Terminal/04. Basic Commands.mp4	34.90 MiB
+Day - 28 (12_08_23)/33. Terminal/05. Navigation Commands.mp4	37.47 MiB
+Day - 28 (12_08_23)/33. Terminal/06. Paths in Navigation.mp4	31.33 MiB
+Day - 28 (12_08_23)/33. Terminal/07. Making Directories.mp4	35.87 MiB
+Day - 28 (12_08_23)/33. Terminal/08. What are Flags_.mp4	54.45 MiB
+Day - 28 (12_08_23)/33. Terminal/09. Touch Command.mp4	19.62 MiB
+Day - 28 (12_08_23)/33. Terminal/10. Deleting Files & Folders.mp4	41.20 MiB
+Day - 29 (16_08_23)/34. Git & Github/0. Topic List.jpg	211.17 KiB
+Day - 29 (16_08_23)/34. Git & Github/01. What is Git & Github_.mp4	47.56 MiB
+Day - 29 (16_08_23)/34. Git & Github/02. Creating a Github Account.mp4	21.03 MiB
+Day - 29 (16_08_23)/34. Git & Github/03. Using Github.mp4	79.64 MiB
+Day - 29 (16_08_23)/34. Git & Github/04. Using Git.mp4	20.36 MiB
+Day - 29 (16_08_23)/34. Git & Github/05. Configuring Git.mp4	20.36 MiB
+Day - 29 (16_08_23)/34. Git & Github/06. Git with VSCode.mp4	13.80 MiB
+Day - 29 (16_08_23)/34. Git & Github/07. Clone command.mp4	30.49 MiB
+Day - 29 (16_08_23)/34. Git & Github/08. Status command.mp4	25.86 MiB
+Day - 29 (16_08_23)/34. Git & Github/09. Add & Commit Commands.mp4	33.29 MiB
+Day - 29 (16_08_23)/34. Git & Github/10. Push command.mp4	26.19 MiB
+Day - 29 (16_08_23)/34. Git & Github/11. Init Command.mp4	10.97 MiB
+Day - 29 (16_08_23)/34. Git & Github/12. Pushing Local repo.mp4	64.34 MiB
+Day - 29 (16_08_23)/34. Git & Github/13. Workflow.mp4	6.25 MiB
+Day - 29 (16_08_23)/34. Git & Github/14. Git branches.mp4	29.02 MiB
+Day - 29 (16_08_23)/34. Git & Github/15. Branch Commands.mp4	15.76 MiB
+Day - 29 (16_08_23)/34. Git & Github/16. Merging Branches.mp4	55.06 MiB
+Day - 29 (16_08_23)/34. Git & Github/17. Pull command.mp4	10.19 MiB
+Day - 29 (16_08_23)/34. Git & Github/18. Merge Conflicts.mp4	29.77 MiB
+Day - 29 (16_08_23)/34. Git & Github/19. Fixing Mistakes.mp4	31.27 MiB
+Day - 29 (16_08_23)/34. Git & Github/20. What is Forking_.mp4	39.72 MiB
+Day - 30 (18_08_23)/35. Node.js/0. Topic List.jpg	135.26 KiB
+Day - 30 (18_08_23)/35. Node.js/01. What is node.js.mp4	20.02 MiB
+Day - 30 (18_08_23)/35. Node.js/02. Node Installation.mp4	14.78 MiB
+Day - 30 (18_08_23)/35. Node.js/03. Node Installation.pdf	44.36 KiB
+Day - 30 (18_08_23)/35. Node.js/04. Node REPL.mp4	25.02 MiB
+Day - 30 (18_08_23)/35. Node.js/05. Node Files.mp4	13.78 MiB
+Day - 30 (18_08_23)/35. Node.js/06. Process in Node.mp4	46.16 MiB
+Day - 30 (18_08_23)/35. Node.js/07. Export in Files.mp4	60.90 MiB
+Day - 30 (18_08_23)/35. Node.js/08. Export in Directories.mp4	36.50 MiB
+Day - 30 (18_08_23)/35. Node.js/09. What is npm_.mp4	25.21 MiB
+Day - 30 (18_08_23)/35. Node.js/10. Installing Packages.mp4	66.94 MiB
+Day - 30 (18_08_23)/35. Node.js/11. package.json.mp4	61.13 MiB
+Day - 30 (18_08_23)/35. Node.js/12. Local v_s Global Installation.mp4	21.46 MiB
+Day - 30 (18_08_23)/35. Node.js/13. import modules.mp4	51.83 MiB
+Day - 31 (21_08_23)/36. Express/0. Topic List.jpg	258.84 KiB
+Day - 31 (21_08_23)/36. Express/01. What is Express_.mp4	27.40 MiB
+Day - 31 (21_08_23)/36. Express/02. Getting started with Express.mp4	65.23 MiB
+Day - 31 (21_08_23)/36. Express/03. Handling requests.mp4	29.90 MiB
+Day - 31 (21_08_23)/36. Express/04. Sending a Response.mp4	49.56 MiB
+Day - 31 (21_08_23)/36. Express/05. Routing.mp4	69.84 MiB
+Day - 31 (21_08_23)/36. Express/06. Installing Nodemon.mp4	20.48 MiB
+Day - 31 (21_08_23)/36. Express/07. Path Parameters.mp4	55.16 MiB
+Day - 31 (21_08_23)/36. Express/08. Query Strings.mp4	45.67 MiB
+Day - 32 (23_08_23)/37. EJS/0. Topic List.jpg	289.62 KiB
+Day - 32 (23_08_23)/37. EJS/01. What is Templating_.mp4	37.91 MiB
+Day - 32 (23_08_23)/37. EJS/02. Using EJS.mp4	66.50 MiB
+Day - 32 (23_08_23)/37. EJS/03. Views Directory.mp4	11.38 MiB
+Day - 32 (23_08_23)/37. EJS/04. Interpolation Syntax.mp4	44.87 MiB
+Day - 32 (23_08_23)/37. EJS/05. Passing data to EJS.mp4	37.02 MiB
+Day - 32 (23_08_23)/37. EJS/06. Instagram EJS.mp4	32.68 MiB
+Day - 32 (23_08_23)/37. EJS/07. Conditional Statements.mp4	27.84 MiB
+Day - 32 (23_08_23)/37. EJS/08. Loops.mp4	30.03 MiB
+Day - 32 (23_08_23)/37. EJS/09. Instagram Page with EJS.mp4	118.72 MiB
+Day - 32 (23_08_23)/37. EJS/10. Includes.mp4	45.75 MiB
+Day - 33 (25_08_23)/38. Miscellaneous/0. Topic List.jpg	106.17 KiB
+Day - 33 (25_08_23)/38. Miscellaneous/01. GET & POST Request.mp4	82.13 MiB
+Day - 33 (25_08_23)/38. Miscellaneous/02. Handling POST requests.mp4	45.69 MiB
+Day - 33 (25_08_23)/38. Miscellaneous/03. Revisiting JS (OOPS).mp4	47.24 MiB
+Day - 33 (25_08_23)/38. Miscellaneous/04. Object Prototypes.mp4	85.23 MiB
+Day - 33 (25_08_23)/38. Miscellaneous/05. Factory Functions.mp4	32.84 MiB
+Day - 33 (25_08_23)/38. Miscellaneous/06. New Operator.mp4	67.22 MiB
+Day - 33 (25_08_23)/38. Miscellaneous/07. Classes in JS.mp4	23.21 MiB
+Day - 33 (25_08_23)/38. Miscellaneous/08. Inheritance.mp4	81.99 MiB
+Day - 33 (25_08_23)/38. Miscellaneous/09. JS OOPS 11 (Qs).pdf	176.16 KiB
+Day - 34 (27_08_23)/39. Backend 4 (REST) - @deltabatch_apna/0. Topic List.jpg	113.06 KiB
+Day - 34 (27_08_23)/39. Backend 4 (REST) - @deltabatch_apna/01. What is REST-.mp4	42.54 MiB
+Day - 34 (27_08_23)/39. Backend 4 (REST) - @deltabatch_apna/02. CRUD Operations.mp4	10.20 MiB
+Day - 34 (27_08_23)/39. Backend 4 (REST) - @deltabatch_apna/03. Creating RESTful APIs.mp4	29.42 MiB
+Day - 34 (27_08_23)/39. Backend 4 (REST) - @deltabatch_apna/04. Index Route.mp4	34.77 MiB
+Day - 34 (27_08_23)/39. Backend 4 (REST) - @deltabatch_apna/05. Create & New Route.mp4	37.63 MiB
+Day - 34 (27_08_23)/39. Backend 4 (REST) - @deltabatch_apna/06. Redirect.mp4	18.80 MiB
+Day - 34 (27_08_23)/39. Backend 4 (REST) - @deltabatch_apna/07. Show Route.mp4	44.86 MiB
+Day - 34 (27_08_23)/39. Backend 4 (REST) - @deltabatch_apna/08. Creating Ids (UUID).mp4	17.49 MiB
+Day - 34 (27_08_23)/39. Backend 4 (REST) - @deltabatch_apna/09. Update Route.mp4	28.02 MiB
+Day - 34 (27_08_23)/39. Backend 4 (REST) - @deltabatch_apna/10. Edit Route.mp4	58.88 MiB
+Day - 34 (27_08_23)/39. Backend 4 (REST) - @deltabatch_apna/11. Destroy Route.mp4	30.78 MiB
+Day - 35 (01_09_23)/40. Starting with SQL - @deltabatch_apna/00. Topic List.jpg	486.54 KiB
+Day - 35 (01_09_23)/40. Starting with SQL - @deltabatch_apna/01. What is a Database_.mp4	29.66 MiB
+Day - 35 (01_09_23)/40. Starting with SQL - @deltabatch_apna/02. SQL v_s NoSQL.mp4	37.35 MiB
+Day - 35 (01_09_23)/40. Starting with SQL - @deltabatch_apna/03. What is SQL_.mp4	30.75 MiB
+Day - 35 (01_09_23)/40. Starting with SQL - @deltabatch_apna/04. What is a Table_.mp4	20.93 MiB
+Day - 35 (01_09_23)/40. Starting with SQL - @deltabatch_apna/05. (For Windows) Installation.mp4	24.78 MiB
+Day - 35 (01_09_23)/40. Starting with SQL - @deltabatch_apna/06. (For Mac) Installation.mp4	31.85 MiB
+Day - 35 (01_09_23)/40. Starting with SQL - @deltabatch_apna/07. Our First Database.mp4	37.45 MiB
+Day - 35 (01_09_23)/40. Starting with SQL - @deltabatch_apna/08. Our First Table.mp4	25.39 MiB
+Day - 35 (01_09_23)/40. Starting with SQL - @deltabatch_apna/09. Database Queries.mp4	18.27 MiB
+Day - 35 (01_09_23)/40. Starting with SQL - @deltabatch_apna/10. CREATE Table.mp4	52.27 MiB
+Day - 35 (01_09_23)/40. Starting with SQL - @deltabatch_apna/11. What are Constraints_.mp4	33.89 MiB
+Day - 35 (01_09_23)/40. Starting with SQL - @deltabatch_apna/12. Key Constraints.mp4	63.52 MiB
+Day - 35 (01_09_23)/40. Starting with SQL - @deltabatch_apna/13. Primary & Foreign Keys.mp4	19.16 MiB
+Day - 35 (01_09_23)/40. Starting with SQL - @deltabatch_apna/14. INSERT into Table.mp4	33.54 MiB
+Day - 35 (01_09_23)/40. Starting with SQL - @deltabatch_apna/15. SELECT Command.mp4	16.27 MiB
+Day - 36 (03_09_23)/41. SQL (Part 2) - @deltabatch_apna/00. Topic List.jpg	451.37 KiB
+Day - 36 (03_09_23)/41. SQL (Part 2) - @deltabatch_apna/01. Where Clause.mp4	17.19 MiB
+Day - 36 (03_09_23)/41. SQL (Part 2) - @deltabatch_apna/02. Operators in Where.mp4	29.27 MiB
+Day - 36 (03_09_23)/41. SQL (Part 2) - @deltabatch_apna/03. Frequently Used Operators.mp4	43.51 MiB
+Day - 36 (03_09_23)/41. SQL (Part 2) - @deltabatch_apna/04. Limit Clause.mp4	10.34 MiB
+Day - 36 (03_09_23)/41. SQL (Part 2) - @deltabatch_apna/05. Order By Clause.mp4	13.94 MiB
+Day - 36 (03_09_23)/41. SQL (Part 2) - @deltabatch_apna/06. Aggregate Functions.mp4	24.30 MiB
+Day - 36 (03_09_23)/41. SQL (Part 2) - @deltabatch_apna/07. Group By Clause.mp4	32.60 MiB
+Day - 36 (03_09_23)/41. SQL (Part 2) - @deltabatch_apna/08. Having Clause.mp4	16.36 MiB
+Day - 36 (03_09_23)/41. SQL (Part 2) - @deltabatch_apna/09. General Order.mp4	8.56 MiB
+Day - 36 (03_09_23)/41. SQL (Part 2) - @deltabatch_apna/10. UPDATE Table.mp4	19.01 MiB
+Day - 36 (03_09_23)/41. SQL (Part 2) - @deltabatch_apna/11. DELETE Table.mp4	7.13 MiB
+Day - 36 (03_09_23)/41. SQL (Part 2) - @deltabatch_apna/12. ALTER Table.mp4	45.17 MiB
+Day - 36 (03_09_23)/41. SQL (Part 2) - @deltabatch_apna/13. TRUNCATE Table.mp4	21.74 MiB
+Day - 36 (03_09_23)/41. SQL (Part 2) - @deltabatch_apna/14. Practice Qs1.mp4	50.29 MiB
+Day - 36 (03_09_23)/41. SQL (Part 2) - @deltabatch_apna/15. Practice Qs2.mp4	42.58 MiB
+Day - 37 (05_09_23)/42. Backend 5 (Node with SQL) - @deltabatch_apna/00. Topic List.jpg	359.71 KiB
+Day - 37 (05_09_23)/42. Backend 5 (Node with SQL) - @deltabatch_apna/01. Using Faker.mp4	46.79 MiB
+Day - 37 (05_09_23)/42. Backend 5 (Node with SQL) - @deltabatch_apna/02. MySQL Package.mp4	93.73 MiB
+Day - 37 (05_09_23)/42. Backend 5 (Node with SQL) - @deltabatch_apna/03. Using SQL from CLI.mp4	19.71 MiB
+Day - 37 (05_09_23)/42. Backend 5 (Node with SQL) - @deltabatch_apna/04. CREATE Table user.mp4	38.47 MiB
+Day - 37 (05_09_23)/42. Backend 5 (Node with SQL) - @deltabatch_apna/05. INSERT INTO user.mp4	46.83 MiB
+Day - 37 (05_09_23)/42. Backend 5 (Node with SQL) - @deltabatch_apna/06. Insert in Bulk.mp4	36.98 MiB
+Day - 37 (05_09_23)/42. Backend 5 (Node with SQL) - @deltabatch_apna/07. Routing.mp4	23.55 MiB
+Day - 37 (05_09_23)/42. Backend 5 (Node with SQL) - @deltabatch_apna/08. Home Route.mp4	57.41 MiB
+Day - 37 (05_09_23)/42. Backend 5 (Node with SQL) - @deltabatch_apna/09. Add Template.mp4	31.99 MiB
+Day - 37 (05_09_23)/42. Backend 5 (Node with SQL) - @deltabatch_apna/10. Show Route.mp4	74.64 MiB
+Day - 37 (05_09_23)/42. Backend 5 (Node with SQL) - @deltabatch_apna/11. Edit Route.mp4	91.68 MiB
+Day - 37 (05_09_23)/42. Backend 5 (Node with SQL) - @deltabatch_apna/12. Update Route.mp4	98.76 MiB
+Day - 37 (05_09_23)/43 mango db installation/MongoDB Installation.pdf	41.51 KiB
+Day - 38 (11_09_23)/44. MongoDB (Part 1) - @deltabatch_apna/00. Topic List.jpg	339.66 KiB
+Day - 38 (11_09_23)/44. MongoDB (Part 1) - @deltabatch_apna/01. The Mongo Shell.mp4	57.48 MiB
+Day - 38 (11_09_23)/44. MongoDB (Part 1) - @deltabatch_apna/02. How we store data_ (BSON).mp4	18.58 MiB
+Day - 38 (11_09_23)/44. MongoDB (Part 1) - @deltabatch_apna/03. Document & Collection.mp4	15.73 MiB
+Day - 38 (11_09_23)/44. MongoDB (Part 1) - @deltabatch_apna/04. INSERT in DB (InsertOne).mp4	45.14 MiB
+Day - 38 (11_09_23)/44. MongoDB (Part 1) - @deltabatch_apna/05. INSERT in DB (InsertMany).mp4	9.21 MiB
+Day - 38 (11_09_23)/44. MongoDB (Part 1) - @deltabatch_apna/06. FIND in DB.mp4	31.78 MiB
+Day - 38 (11_09_23)/44. MongoDB (Part 1) - @deltabatch_apna/07. Query Operators.mp4	53.45 MiB
+Day - 38 (11_09_23)/44. MongoDB (Part 1) - @deltabatch_apna/08. UPDATE in DB.mp4	43.87 MiB
+Day - 38 (11_09_23)/44. MongoDB (Part 1) - @deltabatch_apna/09. Nesting.mp4	14.22 MiB
+Day - 38 (11_09_23)/44. MongoDB (Part 1) - @deltabatch_apna/10. DELETE in DB.mp4	25.81 MiB
+Day - 39 (13_09_23)/MongoDB (Part -2) - @deltabatch_apna/01. What is mongoose-.mp4	9.51 MiB
+Day - 39 (13_09_23)/MongoDB (Part -2) - @deltabatch_apna/02. Installation & Setup.mp4	42.08 MiB
+Day - 39 (13_09_23)/MongoDB (Part -2) - @deltabatch_apna/03. Schema.mp4	19.48 MiB
+Day - 39 (13_09_23)/MongoDB (Part -2) - @deltabatch_apna/04. Models.mp4	22.30 MiB
+Day - 39 (13_09_23)/MongoDB (Part -2) - @deltabatch_apna/05. Insert in Mongoose.mp4	30.24 MiB
+Day - 39 (13_09_23)/MongoDB (Part -2) - @deltabatch_apna/06. Insert Multiple.mp4	18.98 MiB
+Day - 39 (13_09_23)/MongoDB (Part -2) - @deltabatch_apna/07. Find in Mongoose.mp4	34.81 MiB
+Day - 39 (13_09_23)/MongoDB (Part -2) - @deltabatch_apna/08. Update in Mongoose.mp4	19.67 MiB
+Day - 39 (13_09_23)/MongoDB (Part -2) - @deltabatch_apna/09. FindAndUpdate.mp4	18.15 MiB
+Day - 39 (13_09_23)/MongoDB (Part -2) - @deltabatch_apna/10. Delete in Mongoose.mp4	18.01 MiB
+Day - 39 (13_09_23)/MongoDB (Part -2) - @deltabatch_apna/11. Schema Validations.mp4	63.11 MiB
+Day - 39 (13_09_23)/MongoDB (Part -2) - @deltabatch_apna/12. SchemaType Options.mp4	43.21 MiB
+Day - 39 (13_09_23)/MongoDB (Part -2) - @deltabatch_apna/13. Validation in Updation & Errors.mp4	31.47 MiB
+Day - 40 (17_09_23)/46. MongoDB with Express/0. Topic List.jpg	119.13 KiB
+Day - 40 (17_09_23)/46. MongoDB with Express/01. Basic Set Up.mp4	27.11 MiB
+Day - 40 (17_09_23)/46. MongoDB with Express/02. Creating our Model (Chat).mp4	49.96 MiB
+Day - 40 (17_09_23)/46. MongoDB with Express/03. Initialize Database.mp4	18.39 MiB
+Day - 40 (17_09_23)/46. MongoDB with Express/04. Index Route.mp4	50.03 MiB
+Day - 40 (17_09_23)/46. MongoDB with Express/05. New Route.mp4	23.56 MiB
+Day - 40 (17_09_23)/46. MongoDB with Express/06. Create Route.mp4	29.61 MiB
+Day - 40 (17_09_23)/46. MongoDB with Express/07. Using Date.mp4	22.79 MiB
+Day - 40 (17_09_23)/46. MongoDB with Express/08. Edit Route.mp4	28.52 MiB
+Day - 40 (17_09_23)/46. MongoDB with Express/09. Update Route.mp4	36.88 MiB
+Day - 40 (17_09_23)/46. MongoDB with Express/10. Destroy Route.mp4	25.63 MiB
+Day - 41 (24_19_23)/47. Project - Phase 1 (Part a)/0. Topic List.jpg	190.45 KiB
+Day - 41 (24_19_23)/47. Project - Phase 1 (Part a)/01. Basic Set up.mp4	49.97 MiB
+Day - 41 (24_19_23)/47. Project - Phase 1 (Part a)/02. Listing Model.mp4	69.23 MiB
+Day - 41 (24_19_23)/47. Project - Phase 1 (Part a)/03. Major Project.pdf	21.68 KiB
+Day - 41 (24_19_23)/47. Project - Phase 1 (Part a)/04 Initialize Database.mp4	28.71 MiB
+Day - 41 (24_19_23)/47. Project - Phase 1 (Part a)/05. Index Route.mp4	31.40 MiB
+Day - 41 (24_19_23)/47. Project - Phase 1 (Part a)/06. READ (Show Route).mp4	24.72 MiB
+Day - 41 (24_19_23)/47. Project - Phase 1 (Part a)/07. CREATE (New & Create Route).mp4	48.11 MiB
+Day - 41 (24_19_23)/47. Project - Phase 1 (Part a)/08. UPDATE (Edit & Update Route).mp4	45.14 MiB
+Day - 41 (24_19_23)/47. Project - Phase 1 (Part a)/09. DELETE (Delete Route).mp4	14.66 MiB
+Day - 42 (26_09_23)/48. Project - Phase 1 (Part b)/0. Topic List.jpg	148.14 KiB
+Day - 42 (26_09_23)/48. Project - Phase 1 (Part b)/01. Creating Boilerplate.mp4	46.08 MiB
+Day - 42 (26_09_23)/48. Project - Phase 1 (Part b)/02. Navbar.mp4	70.02 MiB
+Day - 42 (26_09_23)/48. Project - Phase 1 (Part b)/03. Footer.mp4	56.41 MiB
+Day - 42 (26_09_23)/48. Project - Phase 1 (Part b)/04. Styling Index.mp4	100.21 MiB
+Day - 42 (26_09_23)/48. Project - Phase 1 (Part b)/05. Styling New Listing.mp4	53.46 MiB
+Day - 42 (26_09_23)/48. Project - Phase 1 (Part b)/06. Styling Edit Listing.mp4	24.63 MiB
+Day - 42 (26_09_23)/48. Project - Phase 1 (Part b)/07. Styling Show Listing.mp4	54.71 MiB
+Day - 43 (28_09_23)/49. Backend 6 (Middlewares)/0. Topic List.jpg	102.54 KiB
+Day - 43 (28_09_23)/49. Backend 6 (Middlewares)/01. What are Middlewares-.mp4	32.26 MiB
+Day - 43 (28_09_23)/49. Backend 6 (Middlewares)/02. Our 1st Middleware.mp4	29.20 MiB
+Day - 43 (28_09_23)/49. Backend 6 (Middlewares)/03. Using next( ).mp4	41.56 MiB
+Day - 43 (28_09_23)/49. Backend 6 (Middlewares)/04. Creating Utility Middleware.mp4	38.54 MiB
+Day - 43 (28_09_23)/49. Backend 6 (Middlewares)/05. Exploring app.use( ).mp4	24.38 MiB
+Day - 43 (28_09_23)/49. Backend 6 (Middlewares)/06. API Token as Query String.mp4	18.44 MiB
+Day - 43 (28_09_23)/49. Backend 6 (Middlewares)/07. Passing multiple Middlewares.mp4	5.48 MiB
+Day - 43 (28_09_23)/49. Backend 6 (Middlewares)/08. Error Handling (Express Default).mp4	35.89 MiB
+Day - 44 (30_09_23)/50. Backend 7 (Errors)/0. Topic List.jpg	288.99 KiB
+Day - 44 (30_09_23)/50. Backend 7 (Errors)/01. Error Handling Middleware.mp4	54.03 MiB
+Day - 44 (30_09_23)/50. Backend 7 (Errors)/02. Custom Error Class.mp4	60.64 MiB
+Day - 44 (30_09_23)/50. Backend 7 (Errors)/03. Default Status & Message.mp4	43.54 MiB
+Day - 44 (30_09_23)/50. Backend 7 (Errors)/04. Activity.mp4	13.39 MiB
+Day - 44 (30_09_23)/50. Backend 7 (Errors)/05. Handling Async Errors.mp4	82.21 MiB
+Day - 44 (30_09_23)/50. Backend 7 (Errors)/06. Using try-catch.mp4	60.65 MiB
+Day - 44 (30_09_23)/50. Backend 7 (Errors)/07. Using wrapAsync.mp4	61.03 MiB
+Day - 44 (30_09_23)/50. Backend 7 (Errors)/08. Mongoose Errors.mp4	50.84 MiB
+Day - 45 (03_10_22)/51. Project - Phase 1 (Part c)/0. Topic List.jpg	95.89 KiB
+Day - 45 (03_10_22)/51. Project - Phase 1 (Part c)/01. Client-Side Validation (Form).mp4	42.22 MiB
+Day - 45 (03_10_22)/51. Project - Phase 1 (Part c)/02. Success & Failure Text.mp4	45.09 MiB
+Day - 45 (03_10_22)/51. Project - Phase 1 (Part c)/03. Custom Error Handling.mp4	20.74 MiB
+Day - 45 (03_10_22)/51. Project - Phase 1 (Part c)/04. Add wrapAsync.mp4	14.45 MiB
+Day - 45 (03_10_22)/51. Project - Phase 1 (Part c)/05. Add ExpressError.mp4	43.23 MiB
+Day - 45 (03_10_22)/51. Project - Phase 1 (Part c)/06. Error.ejs.mp4	25.89 MiB
+Day - 45 (03_10_22)/51. Project - Phase 1 (Part c)/07. Validation for Schema.mp4	70.56 MiB
+Day - 45 (03_10_22)/51. Project - Phase 1 (Part c)/08. Validation for Schema (Middleware).mp4	20.12 MiB
+Day - 46 (05_10_23)/52. Database Relationships/0. Topic List.jpg	350.75 KiB
+Day - 46 (05_10_23)/52. Database Relationships/01. SQL Relationships (One to One).mp4	29.72 MiB
+Day - 46 (05_10_23)/52. Database Relationships/02. SQL Relationships (One to Many & Many to Many).mp4	44.64 MiB
+Day - 46 (05_10_23)/52. Database Relationships/03. One to Few (in Detail).mp4	48.99 MiB
+Day - 46 (05_10_23)/52. Database Relationships/04. One to Few (Implementation).mp4	58.32 MiB
+Day - 46 (05_10_23)/52. Database Relationships/05. One to Many (in Detail).mp4	26.17 MiB
+Day - 46 (05_10_23)/52. Database Relationships/06. One to Many (Implementation).mp4	92.51 MiB
+Day - 46 (05_10_23)/52. Database Relationships/07. using Populate.mp4	26.55 MiB
+Day - 46 (05_10_23)/52. Database Relationships/08. One to Squillions (in Detail).mp4	90.25 MiB
+Day - 46 (05_10_23)/52. Database Relationships/09. Reading Docs.mp4	78.60 MiB
+Day - 47 (07_10_23)/53. Project - Phase 2 (Part a)/0. Topic List.jpg	362.56 KiB
+Day - 47 (07_10_23)/53. Project - Phase 2 (Part a)/01. Handling Deletion.mp4	68.43 MiB
+Day - 47 (07_10_23)/53. Project - Phase 2 (Part a)/02. Mongoose Middlewares.mp4	88.11 MiB
+Day - 47 (07_10_23)/53. Project - Phase 2 (Part a)/03. Creating Review Model.mp4	75.47 MiB
+Day - 47 (07_10_23)/53. Project - Phase 2 (Part a)/04. Create Reviews (Step 1).mp4	52.45 MiB
+Day - 47 (07_10_23)/53. Project - Phase 2 (Part a)/05. Create Reviews (Step 2).mp4	83.71 MiB
+Day - 47 (07_10_23)/53. Project - Phase 2 (Part a)/06. Validation for Reviews.mp4	80.32 MiB
+Day - 47 (07_10_23)/53. Project - Phase 2 (Part a)/07. Render Reviews.mp4	41.41 MiB
+Day - 47 (07_10_23)/53. Project - Phase 2 (Part a)/08. Styling Reviews.mp4	47.21 MiB
+Day - 47 (07_10_23)/53. Project - Phase 2 (Part a)/09. Deleting Reviews.mp4	71.53 MiB
+Day - 47 (07_10_23)/53. Project - Phase 2 (Part a)/10. Handling _ Delete Listing.mp4	45.73 MiB
+Day - 48 (11_10_23)/54. Project - Phase 2 (Part b)/0. Topic List.jpg	293.85 KiB
+Day - 48 (11_10_23)/54. Project - Phase 2 (Part b)/01. What is Express Router_.mp4	46.59 MiB
+Day - 48 (11_10_23)/54. Project - Phase 2 (Part b)/02. Using Express Router.mp4	72.93 MiB
+Day - 48 (11_10_23)/54. Project - Phase 2 (Part b)/03. Restructuring Listings.mp4	63.02 MiB
+Day - 48 (11_10_23)/54. Project - Phase 2 (Part b)/04. Restructuring Reviews.mp4	61.54 MiB
+Day - 48 (11_10_23)/54. Project - Phase 2 (Part b)/05. Web Cookies.mp4	50.36 MiB
+Day - 48 (11_10_23)/54. Project - Phase 2 (Part b)/06. Sending Cookies.mp4	23.27 MiB
+Day - 48 (11_10_23)/54. Project - Phase 2 (Part b)/07. Cookie Parser.mp4	35.55 MiB
+Day - 48 (11_10_23)/54. Project - Phase 2 (Part b)/08. Signed Cookies.mp4	65.60 MiB
+Day - 49 (13_10_23)/55. Project - Phase 2 (Part c)/0. Topic List.png	51.41 KiB
+Day - 49 (13_10_23)/55. Project - Phase 2 (Part c)/01. What is State.mp4	27.33 MiB
+Day - 49 (13_10_23)/55. Project - Phase 2 (Part c)/02. Express Sessions.mp4	89.95 MiB
+Day - 49 (13_10_23)/55. Project - Phase 2 (Part c)/03. Exploring Session Options.mp4	72.60 MiB
+Day - 49 (13_10_23)/55. Project - Phase 2 (Part c)/04. Storing _ Using Session Info.mp4	53.05 MiB
+Day - 49 (13_10_23)/55. Project - Phase 2 (Part c)/05. Using connect-flash.mp4	75.12 MiB
+Day - 49 (13_10_23)/55. Project - Phase 2 (Part c)/06. Using res.locals.mp4	38.33 MiB
+Day - 49 (13_10_23)/55. Project - Phase 2 (Part c)/07. Implement Sessions in Project.mp4	22.15 MiB
+Day - 49 (13_10_23)/55. Project - Phase 2 (Part c)/08. Cookie in SessionOptions.mp4	49.11 MiB
+Day - 49 (13_10_23)/55. Project - Phase 2 (Part c)/09. Implement Flash in Project.mp4	32.32 MiB
+Day - 49 (13_10_23)/55. Project - Phase 2 (Part c)/10. Flash Success Includes.mp4	80.98 MiB
+Day - 49 (13_10_23)/55. Project - Phase 2 (Part c)/11. Flash Failure Includes.mp4	44.22 MiB
+Day - 50 (16_10_23)/56. Project - Phase 2 (Part d)/0. Topic List.jpg	119.25 KiB
+Day - 50 (16_10_23)/56. Project - Phase 2 (Part d)/01. Authentication v_s Authorization.mp4	15.95 MiB
+Day - 50 (16_10_23)/56. Project - Phase 2 (Part d)/02. How are passwords stored-.mp4	27.23 MiB
+Day - 50 (16_10_23)/56. Project - Phase 2 (Part d)/03. What is Hashing-.mp4	35.56 MiB
+Day - 50 (16_10_23)/56. Project - Phase 2 (Part d)/04. What is Salting-.mp4	21.49 MiB
+Day - 50 (16_10_23)/56. Project - Phase 2 (Part d)/05. Passport - Getting started.mp4	25.56 MiB
+Day - 50 (16_10_23)/56. Project - Phase 2 (Part d)/06. User Model.mp4	25.05 MiB
+Day - 50 (16_10_23)/56. Project - Phase 2 (Part d)/07. Configuring Strategy.mp4	34.40 MiB
+Day - 50 (16_10_23)/56. Project - Phase 2 (Part d)/08. Demo User.mp4	28.11 MiB
+Day - 50 (16_10_23)/56. Project - Phase 2 (Part d)/09. SignUp User - GET.mp4	40.56 MiB
+Day - 50 (16_10_23)/56. Project - Phase 2 (Part d)/10. SignUp User - POST.mp4	35.59 MiB
+Day - 50 (16_10_23)/56. Project - Phase 2 (Part d)/11. Login User.mp4	36.50 MiB
+Day - 51 (18_10_23)/57. Major Project Phase - 2 (Part E )/0. Topic List.jpg	125.83 KiB
+Day - 51 (18_10_23)/57. Major Project Phase - 2 (Part E )/01. Connecting Login Route.mp4	46.19 MiB
+Day - 51 (18_10_23)/57. Major Project Phase - 2 (Part E )/02. LogOut User.mp4	16.72 MiB
+Day - 51 (18_10_23)/57. Major Project Phase - 2 (Part E )/03. Add Styling.mp4	29.55 MiB
+Day - 51 (18_10_23)/57. Major Project Phase - 2 (Part E )/04. Login after SignUp.mp4	25.68 MiB
+Day - 51 (18_10_23)/57. Major Project Phase - 2 (Part E )/05. post-Login Page.mp4	51.30 MiB
+Day - 51 (18_10_23)/57. Major Project Phase - 2 (Part E )/06. Listing Owner.mp4	55.24 MiB
+Day - 51 (18_10_23)/57. Major Project Phase - 2 (Part E )/07. Starting with Authorization.mp4	36.07 MiB
+Day - 51 (18_10_23)/57. Major Project Phase - 2 (Part E )/08. Authorization for _listings.mp4	61.65 MiB
+Day - 51 (18_10_23)/57. Major Project Phase - 2 (Part E )/09. Authorization for _reviews (part1).mp4	34.88 MiB
+Day - 51 (18_10_23)/57. Major Project Phase - 2 (Part E )/10. Authorization for _reviews (part2).mp4	48.32 MiB
+Day - 52 (20_10_23)/58. Major Project - Phase 3 (Part a)/0. Topic List.jpg	114.46 KiB
+Day - 52 (20_10_23)/58. Major Project - Phase 3 (Part a)/01. MVC - Model, View, Controller.mp4	28.81 MiB
+Day - 52 (20_10_23)/58. Major Project - Phase 3 (Part a)/02. MVC for Listings.mp4	19.68 MiB
+Day - 52 (20_10_23)/58. Major Project - Phase 3 (Part a)/03. MVC for Reviews _ Users.mp4	33.78 MiB
+Day - 52 (20_10_23)/58. Major Project - Phase 3 (Part a)/04. Router.route.mp4	37.07 MiB
+Day - 52 (20_10_23)/58. Major Project - Phase 3 (Part a)/05. Re-style Ratings.mp4	54.32 MiB
+Day - 52 (20_10_23)/58. Major Project - Phase 3 (Part a)/06. Image Upload.mp4	26.50 MiB
+Day - 52 (20_10_23)/58. Major Project - Phase 3 (Part a)/07. Manipulating Form.mp4	46.06 MiB
+Day - 52 (20_10_23)/58. Major Project - Phase 3 (Part a)/08. Cloud Setup.mp4	44.50 MiB
+Day - 52 (20_10_23)/58. Major Project - Phase 3 (Part a)/09. Store Files.mp4	44.51 MiB
+Day - 52 (20_10_23)/58. Major Project - Phase 3 (Part a)/10. Save Link in Mongo.mp4	36.68 MiB
+Day - 52 (20_10_23)/58. Major Project - Phase 3 (Part a)/11. Display Image.mp4	25.73 MiB
+Day - 53 (22_10_23)/59. Project - Phase 3 (Part b)/0. Topic List.jpg	283.75 KiB
+Day - 53 (22_10_23)/59. Project - Phase 3 (Part b)/01. Edit Listing Image.mp4	51.29 MiB
+Day - 53 (22_10_23)/59. Project - Phase 3 (Part b)/02. Image Preview for Edit Page.mp4	67.23 MiB
+Day - 53 (22_10_23)/59. Project - Phase 3 (Part b)/03. Getting Started with Maps.mp4	40.63 MiB
+Day - 53 (22_10_23)/59. Project - Phase 3 (Part b)/04. Our First Map.mp4	147.81 MiB
+Day - 53 (22_10_23)/59. Project - Phase 3 (Part b)/05. Geocoding.mp4	150.31 MiB
+Day - 53 (22_10_23)/59. Project - Phase 3 (Part b)/06. Storing Coordinates.mp4	63.03 MiB
+Day - 53 (22_10_23)/59. Project - Phase 3 (Part b)/07. Map Marker.mp4	66.53 MiB
+Day - 53 (22_10_23)/59. Project - Phase 3 (Part b)/08. Map Popup.mp4	66.23 MiB
+Day - 54 (25_10_23)/60. Project - Phase 3 (Part c)/00. Topic List.png	47.37 KiB
+Day - 54 (25_10_23)/60. Project - Phase 3 (Part c)/01. Fixing Home Page.mp4	26.32 MiB
+Day - 54 (25_10_23)/60. Project - Phase 3 (Part c)/02. Add UI for Filters.mp4	59.53 MiB
+Day - 54 (25_10_23)/60. Project - Phase 3 (Part c)/03. Add UI for Tax Switch.mp4	49.93 MiB
+Day - 54 (25_10_23)/60. Project - Phase 3 (Part c)/04. Making Tax Switch Functional.mp4	68.12 MiB
+Day - 54 (25_10_23)/60. Project - Phase 3 (Part c)/05. Add UI for Search.mp4	60.00 MiB
+Day - 55 (27_10_23)/61. Project - Phase 3 (Part d)/0. Topic List.png	59.39 KiB
+Day - 55 (27_10_23)/61. Project - Phase 3 (Part d)/01. Using Mongo Atlas.mp4	71.65 MiB
+Day - 55 (27_10_23)/61. Project - Phase 3 (Part d)/02. Mongo Session Store.mp4	57.18 MiB
+Day - 55 (27_10_23)/61. Project - Phase 3 (Part d)/03. Deployment with Render.mp4	16.60 MiB
+Day - 55 (27_10_23)/61. Project - Phase 3 (Part d)/04. Push code to Github.mp4	30.10 MiB
+Day - 55 (27_10_23)/61. Project - Phase 3 (Part d)/05. Connect Render with Github.mp4	18.19 MiB
+Day - 55 (27_10_23)/61. Project - Phase 3 (Part d)/06. Create New Service.mp4	38.86 MiB
+Day - 56 (30_10_23)/62. React (Part 1)/0. Topic List.jpg	394.26 KiB
+Day - 56 (30_10_23)/62. React (Part 1)/01. What is React_.mp4	88.73 MiB
+Day - 56 (30_10_23)/62. React (Part 1)/02. What is JSX_.mp4	22.90 MiB
+Day - 56 (30_10_23)/62. React (Part 1)/03. Set up Local Environment.mp4	44.51 MiB
+Day - 56 (30_10_23)/62. React (Part 1)/04. Understanding our App.mp4	60.11 MiB
+Day - 56 (30_10_23)/62. React (Part 1)/05. Re-write App.mp4	22.30 MiB
+Day - 56 (30_10_23)/62. React (Part 1)/06. Our 1st Component.mp4	58.28 MiB
+Day - 56 (30_10_23)/62. React (Part 1)/07. Import-Export.mp4	33.49 MiB
+Day - 56 (30_10_23)/62. React (Part 1)/08. Writing Markup in JSX.mp4	43.18 MiB
+Day - 56 (30_10_23)/62. React (Part 1)/09. React Fragment.mp4	12.99 MiB
+Day - 56 (30_10_23)/62. React (Part 1)/10. JSX with Curly Braces.mp4	17.29 MiB
+Day - 56 (30_10_23)/62. React (Part 1)/11. Structuring Components.mp4	39.66 MiB
+Day - 56 (30_10_23)/62. React (Part 1)/12. Style Components.mp4	40.14 MiB
+Day - 57 (01_11_23)/63. React (Part 2)/0. Topic List.jpg	286.31 KiB
+Day - 57 (01_11_23)/63. React (Part 2)/01. React Props.mp4	76.00 MiB
+Day - 57 (01_11_23)/63. React (Part 2)/02. Passing Arrays to Props.mp4	37.88 MiB
+Day - 57 (01_11_23)/63. React (Part 2)/03. Rendering Arrays.mp4	27.70 MiB
+Day - 57 (01_11_23)/63. React (Part 2)/04. Conditionals.mp4	47.11 MiB
+Day - 57 (01_11_23)/63. React (Part 2)/05. Dynamic Component Styling.mp4	33.74 MiB
+Day - 57 (01_11_23)/63. React (Part 2)/06. Activity.mp4	25.39 MiB
+Day - 57 (01_11_23)/63. React (Part 2)/07. Install React Developer Tools.mp4	30.09 MiB
+Day - 57 (01_11_23)/63. React (Part 2)/08. Activity _ Amazon Cards.mp4	171.68 MiB
+Day - 58 (03_11_23)/64. React (Part 3)/0. Topic List.png	41.20 KiB
+Day - 58 (03_11_23)/64. React (Part 3)/01. Handling Click Events.mp4	28.55 MiB
+Day - 58 (03_11_23)/64. React (Part 3)/02. Handling Non-Click Events.mp4	35.68 MiB
+Day - 58 (03_11_23)/64. React (Part 3)/03. Event Object.mp4	45.67 MiB
+Day - 58 (03_11_23)/64. React (Part 3)/04. State in React.mp4	58.59 MiB
+Day - 58 (03_11_23)/64. React (Part 3)/05. Hooks.mp4	9.60 MiB
+Day - 58 (03_11_23)/64. React (Part 3)/06. useState( ).mp4	67.59 MiB
+Day - 58 (03_11_23)/64. React (Part 3)/07. Activity _ Create LikeButton.mp4	84.73 MiB
+Day - 58 (03_11_23)/64. React (Part 3)/08. Closure in JS.mp4	35.86 MiB
+Day - 58 (03_11_23)/64. React (Part 3)/09. Re-render _ How does it work_.mp4	36.62 MiB
+Day - 58 (03_11_23)/64. React (Part 3)/10. Callback in Set State Function.mp4	35.72 MiB
+Day - 58 (03_11_23)/64. React (Part 3)/11. More about State.mp4	44.48 MiB
+Day - 59 (05_11_23)/65. React (Part 4)/0. Topic List.jpg	289.44 KiB
+Day - 59 (05_11_23)/65. React (Part 4)/01. Objects & State.mp4	100.40 MiB
+Day - 59 (05_11_23)/65. React (Part 4)/02. Arrays & State.mp4	26.89 MiB
+Day - 59 (05_11_23)/65. React (Part 4)/03. Activity _ Create a Todo.mp4	102.02 MiB
+Day - 59 (05_11_23)/65. React (Part 4)/04. Unique Key for List Items.mp4	41.75 MiB
+Day - 59 (05_11_23)/65. React (Part 4)/05. Deleting from Arrays.mp4	62.95 MiB
+Day - 59 (05_11_23)/65. React (Part 4)/06. Update All in Array.mp4	41.81 MiB
+Day - 59 (05_11_23)/65. React (Part 4)/07. Update One in Array.mp4	24.52 MiB
+Day - 59 (05_11_23)/65. React (Part 4)/08. Add a _Mark as Done_ Feature to Todo.mp4	14.64 MiB
+Day - 60 (09_11_23)/67. React (Part 5)/00 Topic List.png	56.94 KiB
+Day - 60 (09_11_23)/67. React (Part 5)/00 Topic List(2).png	17.00 KiB
+Day - 60 (09_11_23)/67. React (Part 5)/01. Todo Solution - Mark as Done Feature.mp4	33.67 MiB
+Day - 60 (09_11_23)/67. React (Part 5)/02. Lottery Game (Part a).mp4	39.09 MiB
+Day - 60 (09_11_23)/67. React (Part 5)/03. Lottery Game (Part b).mp4	29.32 MiB
+Day - 60 (09_11_23)/67. React (Part 5)/04. Changes to Lottery Game.mp4	48.61 MiB
+Day - 60 (09_11_23)/67. React (Part 5)/05. Component Types.mp4	18.47 MiB
+Day - 60 (09_11_23)/67. React (Part 5)/06. Ticket Component.mp4	36.27 MiB
+Day - 60 (09_11_23)/67. React (Part 5)/07. Lottery Component.mp4	20.00 MiB
+Day - 60 (09_11_23)/67. React (Part 5)/08. Functions as Props.mp4	39.64 MiB
+Day - 61 (13_11_23)/68. React (Part 6)/0. Topic List.jpg	216.30 KiB
+Day - 61 (13_11_23)/68. React (Part 6)/01. Forms in React.mp4	93.33 MiB
+Day - 61 (13_11_23)/68. React (Part 6)/02. Labels in React.mp4	13.31 MiB
+Day - 61 (13_11_23)/68. React (Part 6)/03. Handling Multiple Inputs.mp4	126.09 MiB
+Day - 61 (13_11_23)/68. React (Part 6)/04. Comments Form.mp4	82.72 MiB
+Day - 61 (13_11_23)/68. React (Part 6)/05. useEffect( ).mp4	49.47 MiB
+Day - 61 (13_11_23)/68. React (Part 6)/06. Dependencies in useEffect( ).mp4	25.06 MiB
+Day - 61 (13_11_23)/68. React (Part 6)/07. Use Cases.mp4	93.43 MiB
+Day - 62 (15_11_23)/69. React (Mini - Project)/0. Topic List.jpg	195.26 KiB
+Day - 62 (15_11_23)/69. React (Mini - Project)/01. Material UI.mp4	114.70 MiB
+Day - 62 (15_11_23)/69. React (Mini - Project)/02. Building Search Box.mp4	75.56 MiB
+Day - 62 (15_11_23)/69. React (Mini - Project)/03. Using Weather API.mp4	111.37 MiB
+Day - 62 (15_11_23)/69. React (Mini - Project)/04. Building Info Box.mp4	91.76 MiB
+Day - 62 (15_11_23)/69. React (Mini - Project)/05. Weather App Component.mp4	93.95 MiB
+Day - 62 (15_11_23)/69. React (Mini - Project)/06. Added Feature.mp4	50.82 MiB
+Day - 63 (17_11_23)/70. Tailwind/0. Topic List.jpg	219.09 KiB
+Day - 63 (17_11_23)/70. Tailwind/01. Introduction to Tailwind.mp4	70.70 MiB
+Day - 63 (17_11_23)/70. Tailwind/02. Tailwind CLI.mp4	64.58 MiB
+Day - 63 (17_11_23)/70. Tailwind/03. Typography & Styling.mp4	92.65 MiB
+Day - 63 (17_11_23)/70. Tailwind/04. Colors & Spacing.mp4	160.36 MiB
+Day - 63 (17_11_23)/70. Tailwind/05. Breakpoints in Tailwind.mp4	29.90 MiB
+Day - 63 (17_11_23)/70. Tailwind/06. Apply Directive.mp4	37.54 MiB
+Day - 63 (17_11_23)/70. Tailwind/07. Design a Card in Tailwind.mp4	131.21 MiB
+Delta JS.pdf	8.48 MiB
+Delta notes.pdf	11.03 MiB
+GitHub File Uploaded by Apna College/Dom (27_07_23).zip	394.31 KiB
+GitHub File Uploaded by Apna College/DOM/app.js	0.00 B
+GitHub File Uploaded by Apna College/DOM/Assets/Amazing_Fantasy.jpg	67.32 KiB
+GitHub File Uploaded by Apna College/DOM/Assets/Amazing-spiderman.jpg	38.70 KiB
+GitHub File Uploaded by Apna College/DOM/Assets/Man.png	52.52 KiB
+GitHub File Uploaded by Apna College/DOM/Assets/Spider-Man.png	234.06 KiB
+GitHub File Uploaded by Apna College/DOM/index.html	2.79 KiB
+GitHub File Uploaded by Apna College/DOM/style.css	348.00 B
+Project/JS Mini Project.zip	1.72 KiB
+Project/JS Mini Project/app.js	2.04 KiB
+Project/JS Mini Project/index.html	808.00 B
+Project/JS Mini Project/style.css

@@ -1,11 +1,14 @@
 const Product = require("../models/Product");
+const Category = require("../models/Category");
 
 // @desc    Get all products
 // @route   GET /api/products
 // @access  Public
 exports.getAllProducts = async (req, res) => {
   try {
-    const products = await Product.find().sort({ createdAt: -1 });
+    const products = await Product.find()
+      .populate("category", "name icon")
+      .sort({ createdAt: -1 });
     res.json({
       success: true,
       count: products.length,
@@ -25,7 +28,10 @@ exports.getAllProducts = async (req, res) => {
 // @access  Public
 exports.getProduct = async (req, res) => {
   try {
-    const product = await Product.findById(req.params.id);
+    const product = await Product.findById(req.params.id).populate(
+      "category",
+      "name icon",
+    );
 
     if (!product) {
       return res.status(404).json({
@@ -52,7 +58,16 @@ exports.getProduct = async (req, res) => {
 // @access  Public
 exports.createProduct = async (req, res) => {
   try {
+    // Get category name if category ID is provided
+    if (req.body.category) {
+      const category = await Category.findById(req.body.category);
+      if (category) {
+        req.body.categoryName = category.name;
+      }
+    }
+
     const product = await Product.create(req.body);
+    await product.populate("category", "name icon");
 
     res.status(201).json({
       success: true,

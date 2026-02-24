@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
 import ProductCard from "./ProductCard";
@@ -17,8 +17,21 @@ const CategoryView = ({ products }) => {
   const [modalMode, setModalMode] = useState("view");
   const [currentProduct, setCurrentProduct] = useState(null);
 
-  const categoryProducts = products.filter((p) => p.category === category);
-  const brands = [...new Set(categoryProducts.map((p) => p.brand))].sort();
+  // Memoize categoryProducts to avoid recalculating on every render
+  const categoryProducts = useMemo(
+    () =>
+      products.filter((p) => {
+        const productCategory =
+          typeof p.category === "object" ? p.category.name : p.categoryName;
+        return productCategory === category;
+      }),
+    [products, category],
+  );
+
+  const brands = useMemo(
+    () => [...new Set(categoryProducts.map((p) => p.brand))].sort(),
+    [categoryProducts],
+  );
 
   // Reset filters when category changes
   useEffect(() => {
@@ -42,7 +55,7 @@ const CategoryView = ({ products }) => {
     }
 
     setFilteredProducts(result);
-  }, [categoryProducts, priceSort, selectedBrand, categoryName]);
+  }, [categoryProducts, priceSort, selectedBrand]);
 
   const handleView = (product) => {
     setCurrentProduct(product);
@@ -85,6 +98,8 @@ const CategoryView = ({ products }) => {
 
   return (
     <div className="category-view-container">
+      {console.log("I am category page")}
+
       <div className="container">
         {/* Back Button */}
         <button
