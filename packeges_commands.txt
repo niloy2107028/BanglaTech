@@ -1,0 +1,288 @@
+===============================================
+BANGLATECH E-COMMERCE PROJECT SETUP GUIDE
+Complete Installation Commands (A to Z)
+===============================================
+
+STEP 1: CREATE PROJECT FOLDER
+===============================================
+mkdir BanglaTech
+cd BanglaTech
+
+
+STEP 2: INITIALIZE BACKEND (ROOT LEVEL)
+===============================================
+npm init -y
+
+# This creates package.json file
+
+
+STEP 3: INSTALL BACKEND DEPENDENCIES
+===============================================
+
+# Production Dependencies
+npm install express
+npm install mongoose
+npm install cors
+npm install dotenv
+npm install multer
+
+# Development Dependencies
+npm install --save-dev nodemon
+npm install --save-dev concurrently
+
+
+STEP 4: CREATE BACKEND FOLDER STRUCTURE
+===============================================
+mkdir backend
+mkdir backend/controllers
+mkdir backend/middleware
+mkdir backend/models
+mkdir backend/routes
+mkdir backend/uploads
+mkdir backend/uploads/categories
+mkdir docs
+
+
+STEP 5: CREATE ENVIRONMENT FILE
+===============================================
+# Create .env file in root directory
+# Add the following content:
+MONGODB_URI=mongodb://localhost:27017/banglatech
+PORT=5000
+
+
+STEP 6: CREATE CLIENT (REACT + VITE)
+===============================================
+npm create vite@latest client -- --template react
+
+# Navigate to client folder
+cd client
+
+
+STEP 7: INSTALL CLIENT DEPENDENCIES
+===============================================
+
+# Production Dependencies
+npm install react
+npm install react-dom
+npm install react-router-dom
+npm install axios
+npm install bootstrap
+npm install @fortawesome/fontawesome-svg-core
+npm install @fortawesome/free-solid-svg-icons
+npm install @fortawesome/free-brands-svg-icons
+npm install @fortawesome/react-fontawesome
+
+# Development Dependencies  
+npm install --save-dev @vitejs/plugin-react
+npm install --save-dev vite
+
+# Go back to root directory
+cd ..
+
+
+STEP 8: CREATE CLIENT FOLDER STRUCTURE
+===============================================
+cd client
+mkdir src/components
+
+# You should already have these from Vite:
+# - src/
+# - public/
+# - index.html
+
+
+STEP 9: UPDATE PACKAGE.JSON SCRIPTS (ROOT)
+===============================================
+# Edit package.json in root directory and add these scripts:
+{
+  "scripts": {
+    "start": "node backend/server.js",
+    "dev": "nodemon backend/server.js",
+    "client": "npm start --prefix client",
+    "dev:full": "concurrently \"npm run dev\" \"npm run client\"",
+    "seed": "node backend/seed.js",
+    "install-all": "npm install && cd client && npm install"
+  }
+}
+
+
+STEP 10: UPDATE VITE CONFIG (CLIENT)
+===============================================
+# Edit client/vite.config.js and add proxy:
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+
+export default defineConfig({
+  plugins: [react()],
+  server: {
+    port: 3000,
+    proxy: {
+      '/api': {
+        target: 'http://localhost:5000',
+        changeOrigin: true,
+      },
+    },
+  },
+})
+
+
+STEP 11: INSTALL MONGODB (IF NOT ALREADY INSTALLED)
+===============================================
+# For Windows:
+# Download from: https://www.mongodb.com/try/download/community
+# Install and start MongoDB service
+
+# For Mac (using Homebrew):
+brew tap mongodb/brew
+brew install mongodb-community
+brew services start mongodb-community
+
+# For Linux (Ubuntu/Debian):
+sudo apt-get install mongodb
+
+
+STEP 12: VERIFY INSTALLATIONS
+===============================================
+# Check Node.js version
+node --version
+
+# Check npm version
+npm --version
+
+# Check MongoDB status
+# For Windows: Check Services app
+# For Mac/Linux:
+brew services list
+# or
+sudo systemctl status mongodb
+
+
+STEP 13: ALTERNATIVE - INSTALL ALL AT ONCE (IF STARTING FRESH)
+===============================================
+# From root directory:
+npm run install-all
+
+
+STEP 14: SEED DATABASE WITH INITIAL DATA
+===============================================
+# From root directory:
+npm run seed
+
+
+STEP 15: RUN THE APPLICATION
+===============================================
+
+# Option 1: Run backend and frontend together
+npm run dev:full
+
+# Option 2: Run backend only (in one terminal)
+npm run dev
+
+# Option 3: Run frontend only (in another terminal)
+cd client
+npm run dev
+
+
+STEP 16: ACCESS THE APPLICATION
+===============================================
+# Frontend: http://localhost:3000
+# Backend API: http://localhost:5000
+# MongoDB: mongodb://localhost:27017/banglatech
+
+
+===============================================
+COMPLETE PACKAGE LIST (FOR REFERENCE)
+===============================================
+
+ROOT LEVEL (Backend):
+├── express (^4.18.2) - Web framework
+├── mongoose (^8.0.0) - MongoDB ODM
+├── cors (^2.8.5) - Cross-origin resource sharing
+├── dotenv (^16.3.1) - Environment variables
+├── multer (^2.1.0) - File upload middleware
+├── nodemon (^3.0.1) [dev] - Auto-restart server
+└── concurrently (^8.2.2) [dev] - Run multiple commands
+
+CLIENT LEVEL (Frontend):
+├── react (^18.2.0) - UI library
+├── react-dom (^18.2.0) - React DOM rendering
+├── react-router-dom (^7.12.0) - Routing
+├── axios (^1.6.0) - HTTP client
+├── bootstrap (^5.3.2) - CSS framework
+├── @fortawesome/fontawesome-svg-core (^7.2.0) - FontAwesome core
+├── @fortawesome/free-solid-svg-icons (^7.2.0) - Solid icons
+├── @fortawesome/free-brands-svg-icons (^7.2.0) - Brand icons
+├── @fortawesome/react-fontawesome (^3.2.0) - React FontAwesome
+├── @vitejs/plugin-react (^4.2.1) [dev] - Vite React plugin
+└── vite (^5.0.8) [dev] - Build tool
+
+
+===============================================
+TROUBLESHOOTING COMMON ISSUES
+===============================================
+
+Issue 1: Port already in use
+Solution: 
+- Change PORT in .env file
+- Or kill process: npx kill-port 5000
+
+Issue 2: MongoDB connection error
+Solution:
+- Ensure MongoDB is running
+- Check MONGODB_URI in .env file
+- Verify MongoDB service status
+
+Issue 3: Module not found errors
+Solution:
+- Delete node_modules folder
+- Delete package-lock.json
+- Run: npm install
+
+Issue 4: React app not loading
+Solution:
+- cd client
+- npm install
+- npm run dev
+
+Issue 5: CORS errors
+Solution:
+- Verify CORS is installed: npm list cors
+- Check backend server.js has cors middleware
+
+
+===============================================
+USEFUL DEVELOPMENT COMMANDS
+===============================================
+
+# Clear npm cache
+npm cache clean --force
+
+# Update all packages
+npm update
+
+# Check outdated packages
+npm outdated
+
+# Install specific version
+npm install package-name@version
+
+# Uninstall package
+npm uninstall package-name
+
+# List installed packages
+npm list --depth=0
+
+# Run seed script
+npm run seed
+
+# Build production client
+cd client && npm run build
+
+# Preview production build
+cd client && npm run preview
+
+
+===============================================
+PROJECT COMPLETED - READY TO BUILD!
+===============================================

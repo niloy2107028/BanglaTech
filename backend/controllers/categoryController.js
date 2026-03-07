@@ -54,7 +54,14 @@ exports.getCategory = async (req, res) => {
 // @access  Admin
 exports.createCategory = async (req, res) => {
   try {
-    const category = await Category.create(req.body);
+    const categoryData = { ...req.body };
+
+    // If file uploaded, use uploaded file path
+    if (req.file) {
+      categoryData.image = `/uploads/categories/${req.file.filename}`;
+    }
+
+    const category = await Category.create(categoryData);
 
     res.status(201).json({
       success: true,
@@ -81,10 +88,21 @@ exports.createCategory = async (req, res) => {
 // @access  Admin
 exports.updateCategory = async (req, res) => {
   try {
-    const category = await Category.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-      runValidators: true,
-    });
+    const updateData = { ...req.body };
+
+    // If file uploaded, use uploaded file path
+    if (req.file) {
+      updateData.image = `/uploads/categories/${req.file.filename}`;
+    }
+
+    const category = await Category.findByIdAndUpdate(
+      req.params.id,
+      updateData,
+      {
+        new: true,
+        runValidators: true,
+      },
+    );
 
     if (!category) {
       return res.status(404).json({

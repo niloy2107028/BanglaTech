@@ -7,8 +7,20 @@ const Category = require("../models/Category");
 exports.getAllProducts = async (req, res) => {
   try {
     const products = await Product.find()
-      .populate("category", "name icon")
+      .populate("category", "name")
+      /* Instead of:
+        category: ObjectId("abc123")
+        You get:
+        category: {
+          _id: "abc123",
+          name: "Electronics",
+          image: "..."
+        } 
+*/
+
       .sort({ createdAt: -1 });
+    // 1: old data age thakebe
+    // -1: vise versa
     res.json({
       success: true,
       count: products.length,
@@ -28,9 +40,10 @@ exports.getAllProducts = async (req, res) => {
 // @access  Public
 exports.getProduct = async (req, res) => {
   try {
+    console.log(req.params);
     const product = await Product.findById(req.params.id).populate(
       "category",
-      "name icon",
+      "name",
     );
 
     if (!product) {
@@ -67,7 +80,7 @@ exports.createProduct = async (req, res) => {
     }
 
     const product = await Product.create(req.body);
-    await product.populate("category", "name icon");
+    await product.populate("category", "name");
 
     res.status(201).json({
       success: true,
@@ -92,6 +105,11 @@ exports.updateProduct = async (req, res) => {
       new: true,
       runValidators: true,
     });
+
+    // req.params.id → which product
+    // req.body → new data
+    // new: true → return updated product
+    // runValidators: true → apply schema validation
 
     if (!product) {
       return res.status(404).json({

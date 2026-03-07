@@ -1,3 +1,5 @@
+// MongoDB does NOT create a database until you insert data into it.
+
 const mongoose = require("mongoose");
 
 const productSchema = new mongoose.Schema(
@@ -14,13 +16,23 @@ const productSchema = new mongoose.Schema(
     },
     category: {
       type: mongoose.Schema.Types.ObjectId,
+      // Means: It stores ID of another document.
       ref: "Category",
+      // Means:
+      // It connects to Category model.
+      // This is called reference / relationship
+      // You can use later: Product.find().populate("category")
       required: [true, "Category is required"],
     },
     categoryName: {
       type: String,
       required: true,
     },
+    // Why store both category & categoryName?
+    // category → for relationship
+    // categoryName → faster filtering / display
+    // Avoid populate sometimes
+
     price: {
       type: Number,
       required: [true, "Price is required"],
@@ -38,7 +50,16 @@ const productSchema = new mongoose.Schema(
       type: Map,
       of: String,
     },
+
+    // Example in database:
+    // {
+    //   "Screen Size": "43 inches",
+    //   "Resolution": "4K",
+    //   "Battery": "5000mAh"
+    // }
+
     image: {
+      // url
       type: String,
       required: [true, "Product image is required"],
     },
@@ -53,6 +74,7 @@ const productSchema = new mongoose.Schema(
       default: true,
     },
     featured: {
+      // highlighted products
       type: Boolean,
       default: false,
     },
@@ -71,11 +93,40 @@ const productSchema = new mongoose.Schema(
     timestamps: true,
   },
 );
+// models/Product.js - Defines product structure (name, brand, category ObjectId reference, price, etc.)
 
+// Mongoose Middleware.
+// What it means:
+// Before saving product → run this function.
 // Calculate inStock based on stock quantity
 productSchema.pre("save", function (next) {
-  this.inStock = this.stock > 0;
+  this.inStock = this.stock > 0; //if greater than 0 it will assign True
+  // auto calculated
   next();
+  //middle ware next function for continue next things
 });
 
 module.exports = mongoose.model("Product", productSchema);
+
+// Final Product Structure in Database
+// {
+//   "_id": "ObjectId",
+//   "name": "Sony Headphones",
+//   "brand": "Sony",
+//   "category": "ObjectId",
+//   "categoryName": "Electronics",
+//   "price": 28000,
+//   "originalPrice": 32000,
+//   "description": "...",
+//   "specifications": {
+//     "Battery": "30 hours"
+//   },
+//   "image": "https://...",
+//   "stock": 15,
+//   "inStock": true,
+//   "featured": true,
+//   "rating": 4.5,
+//   "reviews": 89,
+//   "createdAt": "...",
+//   "updatedAt": "..."
+// }

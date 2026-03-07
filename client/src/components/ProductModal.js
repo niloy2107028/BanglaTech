@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { FaTimes } from "react-icons/fa";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import "./ProductModal.css";
 
 const ProductModal = ({ show, mode, product, onClose, onSave }) => {
@@ -64,15 +65,27 @@ const ProductModal = ({ show, mode, product, onClose, onSave }) => {
 
   const handleChange = (e) => {
     // <input name="price" onChange={handleChange} />
+    // When user changes any input, this function updates that specific field in formData automatically.
     const { name, value, type, checked } = e.target;
+    // Take these from the input attributes
+
     setFormData({
       ...formData,
       [name]: type === "checkbox" ? checked : value,
+      // Use the input’s name as the key.
+      // If input is checkbox → use true/false
+      // Otherwise → use input value
     });
   };
 
   const handleSubmit = async (e) => {
+    // Runs when form is submitted
+    // <form onSubmit={handleSubmit}></form>
     e.preventDefault();
+    // Prevents page reload.
+    // Normally:
+    // Submitting form reloads page
+
     setLoading(true);
     setError("");
 
@@ -83,6 +96,7 @@ const ProductModal = ({ show, mode, product, onClose, onSave }) => {
         await axios.put(`/api/products/${product._id}`, formData);
       }
       onSave();
+      // it calls handleModalSave. Reason it do the re-rendering of updated product
     } catch (err) {
       setError(err.response?.data?.message || "An error occurred");
       setLoading(false);
@@ -90,74 +104,102 @@ const ProductModal = ({ show, mode, product, onClose, onSave }) => {
   };
 
   if (!show) return null;
+  // Login for the modal will or will not appear on screen
 
   const isViewMode = mode === "view";
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+    <div className="product-modal-overlay" onClick={onClose}>
+      <div
+        className="product-modal-content"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* e.stopPropagation keno?
+        In JavaScript:
+
+        When you click a child element →
+        The event goes upward to its parent →
+        Then parent’s parent →
+        Until it reaches the root.
+
+        This is called event bubbling.
+
+        So normally:
+
+        Click inside .modal-content
+        It triggers .modal-content
+        Then it ALSO triggers .modal-overlay
+        Modal closes
+        (e) => e.stopPropagation()
+        It means:
+        “Stop the event from going to parent elements.” */}
+
         {/* Modal Header */}
-        <div className="modal-header">
+        <div className="product-modal-header">
           <h2>
             {mode === "create" && "Add New Product"}
             {mode === "edit" && "Edit Product"}
             {mode === "view" && "Product Details"}
           </h2>
-          <button className="close-btn" onClick={onClose}>
-            <FaTimes />
+          <button className="product-modal-close-btn" onClick={onClose}>
+            <FontAwesomeIcon icon={faXmark} />
           </button>
         </div>
 
         {/* Modal Body */}
-        <div className="modal-body">
+        <div className="product-modal-body">
           {isViewMode ? (
             // View Mode
-            <div className="product-details-view">
-              <div className="detail-image">
-                <img src={formData.image} alt={formData.name} />
+            <div className="product-modal-view">
+              <div className="product-modal-view-image-wrapper">
+                <img
+                  src={formData.image}
+                  alt={formData.name}
+                  className="product-modal-view-image"
+                />
               </div>
-              <div className="detail-info">
-                <div className="detail-row">
+              <div className="product-modal-view-details">
+                <div className="product-modal-view-row">
                   <strong>Product Name:</strong>
                   <span>{formData.name}</span>
                 </div>
-                <div className="detail-row">
+                <div className="product-modal-view-row">
                   <strong>Brand:</strong>
                   <span>{formData.brand}</span>
                 </div>
-                <div className="detail-row">
+                <div className="product-modal-view-row">
                   <strong>Category:</strong>
                   <span>{formData.category}</span>
                 </div>
-                <div className="detail-row">
+                <div className="product-modal-view-row">
                   <strong>Price:</strong>
-                  <span className="price-highlight">
+                  <span className="product-modal-view-price">
                     ৳{formData.price.toLocaleString()}
                   </span>
                 </div>
                 {formData.originalPrice && (
-                  <div className="detail-row">
+                  <div className="product-modal-view-row">
                     <strong>Original Price:</strong>
-                    <span className="original-price">
+                    <span className="product-modal-view-original-price">
                       ৳{formData.originalPrice.toLocaleString()}
                     </span>
                   </div>
                 )}
-                <div className="detail-row">
+                <div className="product-modal-view-row">
                   <strong>Stock:</strong>
                   <span>{formData.stock} units</span>
                 </div>
-                <div className="detail-row">
+                <div className="product-modal-view-row">
                   <strong>Rating:</strong>
                   <span>
                     {formData.rating} / 5 ({formData.reviews} reviews)
                   </span>
                 </div>
-                <div className="detail-row">
+                <div className="product-modal-view-row">
                   <strong>Featured:</strong>
                   <span>{formData.featured ? "Yes" : "No"}</span>
                 </div>
-                <div className="detail-row full-width">
+                <div className="product-modal-view-description">
                   <strong>Description:</strong>
                   <p>{formData.description}</p>
                 </div>
@@ -166,10 +208,10 @@ const ProductModal = ({ show, mode, product, onClose, onSave }) => {
           ) : (
             // Create/Edit Mode
             <form onSubmit={handleSubmit}>
-              {error && <div className="error-message">{error}</div>}
+              {error && <div className="product-modal-error">{error}</div>}
 
-              <div className="form-row">
-                <div className="form-group">
+              <div className="product-modal-form-row">
+                <div className="product-modal-form-group">
                   <label>Product Name *</label>
                   <input
                     type="text"
@@ -178,10 +220,11 @@ const ProductModal = ({ show, mode, product, onClose, onSave }) => {
                     onChange={handleChange}
                     required
                     placeholder="Enter product name"
+                    className="product-modal-form-input"
                   />
                 </div>
 
-                <div className="form-group">
+                <div className="product-modal-form-group">
                   <label>Brand *</label>
                   <input
                     type="text"
@@ -190,18 +233,20 @@ const ProductModal = ({ show, mode, product, onClose, onSave }) => {
                     onChange={handleChange}
                     required
                     placeholder="Enter brand name"
+                    className="product-modal-form-input"
                   />
                 </div>
               </div>
 
-              <div className="form-row">
-                <div className="form-group">
+              <div className="product-modal-form-row">
+                <div className="product-modal-form-group">
                   <label>Category *</label>
                   <select
                     name="category"
                     value={formData.category}
                     onChange={handleChange}
                     required
+                    className="product-modal-form-input"
                   >
                     <option value="">Select a category</option>
                     {categories.map((cat) => (
@@ -212,7 +257,7 @@ const ProductModal = ({ show, mode, product, onClose, onSave }) => {
                   </select>
                 </div>
 
-                <div className="form-group">
+                <div className="product-modal-form-group">
                   <label>Price (৳) *</label>
                   <input
                     type="number"
@@ -222,12 +267,13 @@ const ProductModal = ({ show, mode, product, onClose, onSave }) => {
                     required
                     min="0"
                     placeholder="Enter price"
+                    className="product-modal-form-input"
                   />
                 </div>
               </div>
 
-              <div className="form-row">
-                <div className="form-group">
+              <div className="product-modal-form-row">
+                <div className="product-modal-form-group">
                   <label>Original Price (৳)</label>
                   <input
                     type="number"
@@ -236,10 +282,11 @@ const ProductModal = ({ show, mode, product, onClose, onSave }) => {
                     onChange={handleChange}
                     min="0"
                     placeholder="Enter original price (optional)"
+                    className="product-modal-form-input"
                   />
                 </div>
 
-                <div className="form-group">
+                <div className="product-modal-form-group">
                   <label>Stock Quantity *</label>
                   <input
                     type="number"
@@ -249,12 +296,13 @@ const ProductModal = ({ show, mode, product, onClose, onSave }) => {
                     required
                     min="0"
                     placeholder="Enter stock quantity"
+                    className="product-modal-form-input"
                   />
                 </div>
               </div>
 
-              <div className="form-row">
-                <div className="form-group">
+              <div className="product-modal-form-row">
+                <div className="product-modal-form-group">
                   <label>Rating (0-5)</label>
                   <input
                     type="number"
@@ -265,10 +313,11 @@ const ProductModal = ({ show, mode, product, onClose, onSave }) => {
                     max="5"
                     step="0.1"
                     placeholder="Enter rating"
+                    className="product-modal-form-input"
                   />
                 </div>
 
-                <div className="form-group">
+                <div className="product-modal-form-group">
                   <label>Number of Reviews</label>
                   <input
                     type="number"
@@ -277,11 +326,12 @@ const ProductModal = ({ show, mode, product, onClose, onSave }) => {
                     onChange={handleChange}
                     min="0"
                     placeholder="Enter review count"
+                    className="product-modal-form-input"
                   />
                 </div>
               </div>
 
-              <div className="form-group">
+              <div className="product-modal-form-group">
                 <label>Image URL *</label>
                 <input
                   type="url"
@@ -290,10 +340,11 @@ const ProductModal = ({ show, mode, product, onClose, onSave }) => {
                   onChange={handleChange}
                   required
                   placeholder="Enter image URL"
+                  className="product-modal-form-input"
                 />
               </div>
 
-              <div className="form-group">
+              <div className="product-modal-form-group">
                 <label>Description *</label>
                 <textarea
                   name="description"
@@ -302,10 +353,11 @@ const ProductModal = ({ show, mode, product, onClose, onSave }) => {
                   required
                   rows="4"
                   placeholder="Enter product description"
+                  className="product-modal-form-textarea"
                 />
               </div>
 
-              <div className="form-group checkbox-group">
+              <div className="product-modal-form-checkbox">
                 <label>
                   <input
                     type="checkbox"
@@ -318,11 +370,19 @@ const ProductModal = ({ show, mode, product, onClose, onSave }) => {
               </div>
 
               {/* Modal Footer */}
-              <div className="modal-footer">
-                <button type="button" className="btn-cancel" onClick={onClose}>
+              <div className="product-modal-footer">
+                <button
+                  type="button"
+                  className="product-modal-btn-cancel"
+                  onClick={onClose}
+                >
                   Cancel
                 </button>
-                <button type="submit" className="btn-save" disabled={loading}>
+                <button
+                  type="submit"
+                  className="product-modal-btn-submit"
+                  disabled={loading}
+                >
                   {loading
                     ? "Saving..."
                     : mode === "create"
@@ -335,8 +395,8 @@ const ProductModal = ({ show, mode, product, onClose, onSave }) => {
         </div>
 
         {isViewMode && (
-          <div className="modal-footer">
-            <button className="btn-cancel" onClick={onClose}>
+          <div className="product-modal-footer">
+            <button className="product-modal-btn-cancel" onClick={onClose}>
               Close
             </button>
           </div>

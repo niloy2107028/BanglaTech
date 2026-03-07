@@ -1,5 +1,6 @@
 import React from "react";
-import { FaStar, FaEdit, FaTrash, FaEye } from "react-icons/fa";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faStar } from "@fortawesome/free-solid-svg-icons";
 import "./ProductCard.css";
 
 const ProductCard = ({ product, onDelete, onEdit, onView }) => {
@@ -12,13 +13,15 @@ const ProductCard = ({ product, onDelete, onEdit, onView }) => {
   return (
     <div className="product-card">
       {/* Discount Badge */}
-      {discount > 0 && <div className="discount-badge">-{discount}%</div>}
+      {discount > 0 && (
+        <div className="product-discount-badge">-{discount}%</div>
+      )}
 
       {/* Product Image */}
-      <div className="product-image" onClick={() => onView(product)}>
-        <img src={product.image} alt={product.name} />
+      <div className="product-image-wrapper" onClick={() => onView(product)}>
+        <img src={product.image} alt={product.name} className="product-image" />
         {!product.inStock && (
-          <div className="out-of-stock-overlay">Out of Stock</div>
+          <div className="product-out-of-stock-overlay">Out of Stock</div>
         )}
       </div>
 
@@ -31,28 +34,29 @@ const ProductCard = ({ product, onDelete, onEdit, onView }) => {
 
         {/* Rating */}
         <div className="product-rating">
-          <div className="stars">
+          <div className="product-stars">
             {[...Array(5)].map((_, index) => (
-              <FaStar
+              <FontAwesomeIcon
                 key={index}
-                className={
+                icon={faStar}
+                className={`product-star ${
                   index < Math.floor(product.rating)
-                    ? "star-filled"
-                    : "star-empty"
-                }
+                    ? "product-star-filled"
+                    : "product-star-empty"
+                }`}
               />
             ))}
           </div>
-          <span className="rating-text">
+          <span className="product-rating-text">
             {product.rating} ({product.reviews} reviews)
           </span>
         </div>
 
         {/* Price */}
-        <div className="product-price">
-          <div className="current-price">৳{product.price.toLocaleString()}</div>
+        <div className="product-price-wrapper">
+          <div className="product-price">৳{product.price.toLocaleString()}</div>
           {product.originalPrice && (
-            <div className="original-price">
+            <div className="product-original-price">
               ৳{product.originalPrice.toLocaleString()}
             </div>
           )}
@@ -60,8 +64,8 @@ const ProductCard = ({ product, onDelete, onEdit, onView }) => {
 
         {/* Stock Status */}
         <div
-          className={`stock-status ${
-            product.inStock ? "in-stock" : "out-of-stock"
+          className={`product-stock-badge ${
+            product.inStock ? "product-stock-in" : "product-stock-out"
           }`}
         >
           {product.inStock ? `${product.stock} in stock` : "Out of stock"}
@@ -70,21 +74,21 @@ const ProductCard = ({ product, onDelete, onEdit, onView }) => {
         {/* Action Buttons */}
         <div className="product-actions">
           <button
-            className="action-btn view-btn"
+            className="product-action-btn product-action-btn-view"
             onClick={() => onView(product)}
             title="View Details"
           >
             View
           </button>
           <button
-            className="action-btn edit-btn"
+            className="product-action-btn product-action-btn-edit"
             onClick={() => onEdit(product)}
             title="Edit Product"
           >
             Edit
           </button>
           <button
-            className="action-btn delete-btn"
+            className="product-action-btn product-action-btn-delete"
             onClick={() => onDelete(product._id)}
             title="Delete Product"
           >

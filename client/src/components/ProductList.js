@@ -84,29 +84,33 @@ const ProductList = () => {
       ? products
       : products.filter((p) => {
           const productCategory =
-            typeof p.category === "object" ? p.category.name : p.categoryName;
+            typeof p.category === "object" && p.category !== null
+              ? p.category.name
+              : p.categoryName;
           return productCategory === selectedCategory;
         });
 
   return (
-    <div className="product-list-container">
-      <div className="container">
+    <div className="product-list">
+      <div className="product-list-container">
         {/* Header with Add Product Button */}
-        <div className="products-header">
+        <div className="product-list-header">
           <h1>All Products</h1>
-          <button className="btn-add-product" onClick={handleCreate}>
+          <button className="product-list-add-btn" onClick={handleCreate}>
             + Add New Product
           </button>
         </div>
 
         {/* Category Filter */}
-        <div className="category-filter">
-          <div className="category-scroll">
+        <div className="product-list-filter">
+          <div className="product-list-filter-buttons">
             {categories.map((category) => (
               <button
                 key={category}
-                className={`category-btn ${
-                  selectedCategory === category ? "active" : ""
+                className={`product-list-filter-btn ${
+                  selectedCategory === category
+                    ? "product-list-filter-btn-active"
+                    : ""
                 }`}
                 onClick={() => setSelectedCategory(category)}
               >
@@ -115,7 +119,7 @@ const ProductList = () => {
             ))}
             {selectedCategory !== "All" && (
               <button
-                className="clear-filter-btn"
+                className="product-list-clear-btn"
                 onClick={() => setSelectedCategory("All")}
                 title="Clear filter"
               >
@@ -127,16 +131,16 @@ const ProductList = () => {
 
         {/* Products Grid */}
         {loading ? (
-          <div className="loading">
-            <div className="spinner"></div>
-            <p>Loading products...</p>
+          <div className="product-list-loading">
+            <div className="product-list-loading-spinner"></div>
+            <p className="product-list-loading-text">Loading products...</p>
           </div>
         ) : (
           <>
-            <div className="products-count">
+            <div className="product-list-count">
               Showing {filteredProducts.length} products
             </div>
-            <div className="products-grid">
+            <div className="product-list-grid">
               {filteredProducts.map((product) => (
                 <ProductCard
                   key={product._id}

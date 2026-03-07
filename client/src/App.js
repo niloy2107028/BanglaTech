@@ -8,8 +8,6 @@ import {
   useLocation,
 } from "react-router-dom";
 
-import "bootstrap/dist/css/bootstrap.min.css";
-
 import Navbar from "./components/Navbar";
 import HomePage from "./components/HomePage";
 import CategoryView from "./components/CategoryView";
@@ -41,7 +39,9 @@ function AppRoutes({ products, setProducts }) {
         <Route
           path="/category/:categoryName"
           // :categoryName is a dynamic parameter.
-          element={<CategoryView products={products} />}
+          element={
+            <CategoryView products={products} setProducts={setProducts} />
+          }
         />
         <Route path="/admin/categories" element={<CategoryManagement />} />
         <Route path="*" element={<Navigate to="/" replace />} />
@@ -81,9 +81,9 @@ function App() {
 
   if (loading) {
     return (
-      <div className="loading-container">
-        <div className="spinner"></div>
-        <p>Loading...</p>
+      <div className="app-loading">
+        <div className="app-loading-spinner"></div>
+        <p className="app-loading-text">Loading...</p>
       </div>
     );
   }
@@ -97,7 +97,7 @@ function App() {
 
   return (
     <Router>
-      <div className="App">
+      <div className="app-container">
         <Navbar />
         <AppRoutes products={products} setProducts={setProducts} />
         <Footer />

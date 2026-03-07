@@ -1,15 +1,4 @@
-.App {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
-/* Smooth transitions */
-* {
-  transition: all 0.3s ease;
-}
-
-/* Custom scrollbar */
+/* Custom scrollbar - not possible with Tailwind */
 ::-webkit-scrollbar {
   width: 10px;
 }
@@ -19,33 +8,15 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--primary-color);
+  background: #fe424d;
   border-radius: 5px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--secondary-color);
+  background: #ff6b35;
 }
 
-/* Loading Spinner */
-.loading-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 50vh;
-  gap: 1rem;
-}
-
-.spinner {
-  width: 50px;
-  height: 50px;
-  border: 5px solid #f3f3f3;
-  border-top: 5px solid #28a745;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-
+/* Spin animation for loading spinner */
 @keyframes spin {
   0% {
     transform: rotate(0deg);
@@ -55,7 +26,55 @@
   }
 }
 
-.loading-container p {
-  font-size: 1.2rem;
-  color: #666;
+.animate-spin-slow {
+  animation: spin 1s linear infinite;
+}
+
+/* Modal slide-in animation */
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-modal-slide {
+  animation: modalSlideIn 0.3s ease;
+}
+
+/* App container */
+.app-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  overflow-x: hidden;
+}
+
+/* Loading state */
+.app-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  gap: 1rem;
+}
+
+.app-loading-spinner {
+  width: 3rem;
+  height: 3rem;
+  border: 4px solid #d1d5db;
+  border-top-color: #10b981;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.app-loading-text {
+  font-size: 1.25rem;
+  color: #4b5563;
 }

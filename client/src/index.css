@@ -4,19 +4,22 @@
   box-sizing: border-box;
 }
 
+/* Base responsive typography */
+html {
+  font-size: 16px;
+}
+
 body {
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background-color: #f8f9fa;
+  overflow-x: hidden;
 }
 
-:root {
-  --primary-color: #fe424d;
-  --secondary-color: #ff6b35;
-  --dark-color: #2d3748;
-  --light-gray: #f7fafc;
-  --border-color: #e2e8f0;
-  --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  --shadow-hover: 0 10px 20px rgba(0, 0, 0, 0.15);
+/* Prevent horizontal scroll on mobile */
+html,
+body {
+  max-width: 100%;
+  overflow-x: hidden;
 }

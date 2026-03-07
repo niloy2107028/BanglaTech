@@ -1,0 +1,33 @@
+Database Creation
+MongoDB doesn't require explicit database creation code - the database is automatically created when you first connect and write data to it. The connection string in .env specifies the database name:
+
+MONGODB_URI=mongodb://localhost:27017/banglatech
+                                      ↑
+                                  database name
+
+
+
+Database Files Flow
+1. Schema Definition (Models)
+models/Category.js - Defines category structure (name, description, image, isActive)
+models/Product.js - Defines product structure (name, brand, category ObjectId reference, price, etc.)
+These create the blueprint for your collections
+2. Database Connection (server.js)
+Connects to MongoDB using mongoose.connect(process.env.MONGODB_URI)
+Database is automatically created on first connection if it doesn't exist
+Collections are created when first document is inserted
+3. Data Population (seed.js)
+Clears all existing data
+Creates categories and products from scratch
+First run creates collections: categories and products
+Run once initially: node backend/seed.js
+4. Data Updates (migration.js)
+Updates existing data without clearing
+Fixes schema inconsistencies
+Run when schema changes: node backend/migration.js
+5. Runtime Operations (Controllers + Routes)
+controllers/categoryController.js - CRUD operations for categories
+controllers/productController.js - CRUD operations for products
+Handle API requests during application runtime
+Flow: Models → Connection → Seed/Migration → Runtime Operations
+

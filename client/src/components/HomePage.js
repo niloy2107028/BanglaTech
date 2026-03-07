@@ -8,7 +8,6 @@ import { useNavigate } from "react-router-dom";
 import CategoryCard from "./CategoryCard";
 import ProductCard from "./ProductCard";
 import ProductModal from "./ProductModal";
-
 import "./HomePage.css";
 
 const HomePage = ({ products = [], setProducts }) => {
@@ -39,6 +38,7 @@ const HomePage = ({ products = [], setProducts }) => {
   const fetchCategories = async () => {
     try {
       const response = await axios.get("/api/categories");
+      console.log(response);
       setCategories(response.data.data);
     } catch (error) {
       console.error("Error fetching categories:", error);
@@ -49,7 +49,9 @@ const HomePage = ({ products = [], setProducts }) => {
   const getCategoryProductCount = (categoryName) => {
     return products.filter((p) => {
       const productCategory =
-        typeof p.category === "object" ? p.category.name : p.categoryName;
+        typeof p.category === "object" && p.category !== null
+          ? p.category.name
+          : p.categoryName;
       return productCategory === categoryName;
     }).length;
   };
@@ -123,23 +125,23 @@ const HomePage = ({ products = [], setProducts }) => {
   if (products.length === 0) {
     // as data fetching function is async function so loading will be shown untill fetch
     return (
-      <div className="loading-container">
-        <div className="spinner"></div>
-        <p>Loading...</p>
+      <div className="homepage-loading">
+        <div className="loading-spinner"></div>
+        <p className="loading-text">Loading...</p>
       </div>
     );
   }
 
   return (
-    <div className="homepage-container">
+    <div className="homepage">
       {console.log("I am home page")}
-      <div className="container">
+      <div className="homepage-container">
         {/* Add Product Button */}
-        <div className="page-header">
+        <div className="hero-section">
           <div>
             <h1>Welcome to BanglaMart</h1>
           </div>
-          <button className="btn-add-product" onClick={handleCreate}>
+          <button className="hero-button" onClick={handleCreate}>
             + Add New Product
           </button>
         </div>
@@ -155,7 +157,7 @@ const HomePage = ({ products = [], setProducts }) => {
               <CategoryCard
                 key={category._id}
                 category={category.name}
-                icon={category.icon}
+                image={category.image}
                 productCount={getCategoryProductCount(category.name)}
                 onClick={() =>
                   navigate(`/category/${encodeURIComponent(category.name)}`)

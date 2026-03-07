@@ -1,8 +1,65 @@
 const mongoose = require("mongoose");
 const path = require("path");
 require("dotenv").config({ path: path.join(__dirname, ".env") });
+
 const Product = require("./models/Product");
 const Category = require("./models/Category");
+
+// Categories data
+// array of obeject
+const categories = [
+  {
+    name: "Electronics",
+    description:
+      "Electronic devices and gadgets including phones, laptops, and accessories",
+    image: "https://images.unsplash.com/photo-1498049794561-7780e7231661?w=400",
+  },
+  {
+    name: "Fashion",
+    description: "Clothing, shoes, and fashion accessories for men and women",
+    image: "https://images.unsplash.com/photo-1445205170230-053b83016050?w=400",
+  },
+  {
+    name: "Home & Living",
+    description: "Furniture, home decor, and household essentials",
+    image: "https://images.unsplash.com/photo-1484101403633-562f891dc89a?w=400",
+  },
+  {
+    name: "Beauty & Health",
+    description: "Beauty products, skincare, and health items",
+    image: "https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=400",
+  },
+  {
+    name: "Sports & Outdoors",
+    description: "Sports equipment, fitness gear, and outdoor accessories",
+    image: "https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=400",
+  },
+  {
+    name: "Books & Stationery",
+    description: "Books, office supplies, and stationery items",
+    image: "https://images.unsplash.com/photo-1495446815901-a7297e633e8d?w=400",
+  },
+  {
+    name: "Toys & Games",
+    description: "Toys, games, and entertainment for all ages",
+    image: "https://images.unsplash.com/photo-1558060370-d644479cb6f7?w=400",
+  },
+  {
+    name: "Automotive",
+    description: "Car parts, automotive accessories, and tools",
+    image: "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=400",
+  },
+  {
+    name: "Food & Groceries",
+    description: "Food items, groceries, and daily essentials",
+    image: "https://images.unsplash.com/photo-1543168256-418811576931?w=400",
+  },
+  {
+    name: "Mobile & Accessories",
+    description: "Mobile phones, cases, chargers, and accessories",
+    image: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400",
+  },
+];
 
 // Sample product data
 const sampleProducts = [
@@ -530,37 +587,61 @@ const sampleProducts = [
   },
 ];
 
-// Connect to MongoDB and seed data
-mongoose
-  .connect(process.env.MONGODB_URI || "mongodb://localhost:27017/banglamart")
-  .then(async () => {
-    console.log("✅ MongoDB Connected");
+// Seed function
+const seedDatabase = async () => {
+  let id_updated = 0;
+  try {
+    // Connect to MongoDB
+    const mongoUri = process.env.MONGODB_URI;
+    await mongoose.connect(mongoUri);
+    console.log(" MongoDB Connected");
 
-    // Get all categories
-    const categories = await Category.find();
-    const categoryMap = {};
-    categories.forEach((cat) => {
-      categoryMap[cat.name] = cat._id;
-    });
+    /*
+    What await does
 
-    console.log("📋 Found categories:", Object.keys(categoryMap));
+    await pauses the function execution until the Promise resolves.
+
+    Execution order:
+
+    1️⃣ mongoose.connect(mongoUri) starts connecting
+    2️⃣ await waits until the connection is completed
+    3️⃣ After success → console.log("MongoDB Connected") runs 
+*/
 
     // Clear existing data
     await Product.deleteMany({});
-    console.log("🗑️  Cleared existing products");
+    await Category.deleteMany({});
+    console.log("  Cleared existing data");
 
-    // Map products to use category IDs
+    // Seed categories
+    const insertedCategories = await Category.insertMany(categories);
+    // it accept array of objects
+    console.log(` ${insertedCategories.length} categories seeded`);
+
+    // Create category map for products
+    // key is name and value is id
+    const categoryMap = {};
+    insertedCategories.forEach((cat) => {
+      categoryMap[cat.name] = cat._id;
+    });
+
+    // Map products to use category ObjectIds
     const productsWithCategoryIds = sampleProducts.map((product) => {
       const categoryId = categoryMap[product.category];
+      // we are using name for getting the id from map
       if (!categoryId) {
         console.warn(
-          `⚠️  Warning: Category "${product.category}" not found for product "${product.name}"`,
+          `  Warning: Category "${product.category}" not found for product "${product.name}"`,
         );
+      } else {
+        id_updated++;
       }
       return {
         ...product,
         category: categoryId,
         categoryName: product.category,
+        // the object is updated with it's id
+        //id diye hard code kora possible na cz category insert na hole id pabo na
       };
     });
 
@@ -569,14 +650,24 @@ mongoose
       (p) => p.category !== undefined,
     );
 
-    // Insert sample data
+    // Seed products
+    // as category string to object  problem is solved
     await Product.insertMany(validProducts);
-    console.log("✅ Sample products added successfully");
+    console.log(` ${validProducts.length} products seeded`);
 
-    console.log(`📦 Total ${validProducts.length} products seeded`);
-    process.exit();
-  })
-  .catch((err) => {
-    console.error("❌ Error:", err);
+    console.log("\n Database seeded successfully!");
+    console.log(`   Categories: ${insertedCategories.length}`);
+    console.log(`   Products: ${validProducts.length}`);
+    console.log(`   id updated : ${id_updated}`);
+
+    await mongoose.connection.close();
+    console.log(" Database connection closed");
+    process.exit(0);
+  } catch (error) {
+    console.error(" Seeding failed:", error);
     process.exit(1);
-  });
+  }
+};
+
+// Run seed
+seedDatabase();
