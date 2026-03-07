@@ -15,3 +15,11 @@ multer is an npm package for handling file uploads in a Node.js + Express applic
 
 In simple words:
 It lets users upload files (like images, PDFs, videos) from a form and saves them on your server.
+
+
+git push origin niloy-dev
+
+git checkout main
+git pull origin main
+git merge niloy-dev
+git push origin main
