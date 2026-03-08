@@ -25,10 +25,6 @@ const CategoryManagement = () => {
     description: "",
     image: "",
   });
-  // Stores input values from form.
-  const [imageFile, setImageFile] = useState(null);
-  const [imagePreview, setImagePreview] = useState("");
-  const [uploadError, setUploadError] = useState("");
 
   useEffect(() => {
     fetchCategories();
@@ -69,9 +65,6 @@ const CategoryManagement = () => {
     setCurrentCategory(null);
     setModalMode("create");
     setFormData({ name: "", description: "", image: "" });
-    setImageFile(null);
-    setImagePreview("");
-    setUploadError("");
     setShowModal(true);
   };
 
@@ -83,10 +76,6 @@ const CategoryManagement = () => {
       description: category.description || "",
       image: category.image || "",
     });
-    // data update
-    setImageFile(null);
-    setImagePreview(category.image || "");
-    setUploadError("");
     setShowModal(true);
   };
 
@@ -147,44 +136,17 @@ const CategoryManagement = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // form submit er por jeno redirect na hoy
     try {
-      const submitData = new FormData();
-      submitData.append("name", formData.name);
-      submitData.append("description", formData.description);
-
-      if (imageFile) {
-        submitData.append("image", imageFile);
-      } else if (formData.image) {
-        // Keep existing image URL if no new file uploaded
-        submitData.append("imageUrl", formData.image);
-      }
-
       if (modalMode === "create") {
-        await axios.post("/api/categories", submitData, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
+        await axios.post("/api/categories", formData);
       } else {
-        await axios.put(`/api/categories/${currentCategory._id}`, submitData, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
+        await axios.put(`/api/categories/${currentCategory._id}`, formData);
       }
       setShowModal(false);
       fetchCategories();
     } catch (error) {
       console.error("Error saving category:", error);
       alert(error.response?.data?.message || "Failed to save category");
-
-      // error
-      // This is the error object from axios.
-      // When API fails, axios gives something like:
-      // {
-      //   response: {
-      //     data: {
-      //       message: "Category name already exists"
-      //     }
-      //   }
-      // }
     }
   };
 
@@ -321,34 +283,35 @@ const CategoryManagement = () => {
 
                 <div className="category-management-form-group">
                   <label className="category-management-form-label">
-                    Category Image
+                    Category Image URL
                   </label>
                   <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageChange}
-                    className="category-management-form-file"
+                    type="text"
+                    name="image"
+                    value={formData.image}
+                    onChange={handleChange}
+                    placeholder="Enter image URL (e.g., https://example.com/image.jpg)"
+                    className="category-management-form-input"
                   />
-                  {uploadError && (
-                    <p className="category-management-upload-error">
-                      {uploadError}
-                    </p>
-                  )}
                   <p className="category-management-upload-hint">
-                    Upload an image (max 2MB). Supported formats: JPG, PNG, GIF,
-                    WebP
+                    Paste the URL of an image. You can use image hosting
+                    services like Imgur, Cloudinary, or direct URLs.
                   </p>
 
-                  {imagePreview && (
+                  {formData.image && (
                     <div className="category-management-preview-wrapper">
                       <p className="category-management-preview-label">
                         Preview:
                       </p>
                       <div className="category-management-preview-image-wrapper">
                         <img
-                          src={imagePreview}
+                          src={formData.image}
                           alt="Preview"
                           className="category-management-preview-image"
+                          onError={(e) => {
+                            e.target.src =
+                              "https://via.placeholder.com/200?text=Invalid+URL";
+                          }}
                         />
                       </div>
                     </div>

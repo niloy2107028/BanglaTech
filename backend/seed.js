@@ -604,9 +604,9 @@ const seedDatabase = async () => {
 
     Execution order:
 
-    1️⃣ mongoose.connect(mongoUri) starts connecting
-    2️⃣ await waits until the connection is completed
-    3️⃣ After success → console.log("MongoDB Connected") runs 
+    1️ mongoose.connect(mongoUri) starts connecting
+    2️ await waits until the connection is completed
+    3️ After success → console.log("MongoDB Connected") runs 
 */
 
     // Clear existing data

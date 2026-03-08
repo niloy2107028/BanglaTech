@@ -1,6 +1,5 @@
 const express = require("express");
 const router = express.Router();
-const upload = require("../middleware/upload");
 const {
   getAllCategories,
   getCategory,
@@ -10,15 +9,12 @@ const {
 } = require("../controllers/categoryController");
 
 // Category routes
-router
-  .route("/")
-  .get(getAllCategories)
-  .post(upload.single("image"), createCategory);
+router.route("/").get(getAllCategories).post(createCategory);
 
 router
   .route("/:id")
   .get(getCategory)
-  .put(upload.single("image"), updateCategory)
+  .put(updateCategory)
   .delete(deleteCategory);
 
 module.exports = router;
