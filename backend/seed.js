@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const path = require("path");
-require("dotenv").config({ path: path.join(__dirname, ".env") });
+require("dotenv").config({ path: path.join(__dirname, "../.env") });
 
 const Product = require("./models/Product");
 const Category = require("./models/Category");
@@ -593,6 +593,7 @@ const seedDatabase = async () => {
   try {
     // Connect to MongoDB
     const mongoUri = process.env.MONGODB_URI;
+    console.log(mongoUri);
     await mongoose.connect(mongoUri);
     console.log(" MongoDB Connected");
 
