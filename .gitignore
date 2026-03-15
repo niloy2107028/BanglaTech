@@ -1,8 +1,14 @@
-node_modules/
+# Environment files
 .env
-.DS_Store
-client/build
+client/.env
+
+# Editor settings
+.vscode/
+
+# Runtime upload files
+backend/uploads/
+
+
+node_modules
+
 client/node_modules
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
