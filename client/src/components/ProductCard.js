@@ -80,20 +80,24 @@ const ProductCard = ({ product, onDelete, onEdit, onView }) => {
           >
             View
           </button>
-          <button
-            className="product-action-btn product-action-btn-edit"
-            onClick={() => onEdit(product)}
-            title="Edit Product"
-          >
-            Edit
-          </button>
-          <button
-            className="product-action-btn product-action-btn-delete"
-            onClick={() => onDelete(product._id)}
-            title="Delete Product"
-          >
-            Delete
-          </button>
+          {onEdit && (
+            <button
+              className="product-action-btn product-action-btn-edit"
+              onClick={() => onEdit(product)}
+              title="Edit Product"
+            >
+              Edit
+            </button>
+          )}
+          {onDelete && (
+            <button
+              className="product-action-btn product-action-btn-delete"
+              onClick={() => onDelete(product._id)}
+              title="Delete Product"
+            >
+              Delete
+            </button>
+          )}
         </div>
       </div>
     </div>

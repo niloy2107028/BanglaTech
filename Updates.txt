@@ -1,0 +1,28 @@
+Recommended React structure
+Instead of App fetching everything, let pages fetch data.
+Example:
+
+App
+ ├── Home (fetch featured products)
+ ├── ProductsPage (fetch paginated products)
+ ├── CategoryPage (fetch category products)
+ └── SearchPage (fetch search results)
+
+
+
+you work is to tell me what to do 
+i will do the rest
+do not code by yourself
+you just give me codes i will create and paste them
+i will run the commands
+
+
+Remove-Item -Recurse -Force node_modules
+Remove-Item -Recurse -Force client\node_modules
+
+if nodemoudles wanted them
+cd backend
+npm install
+
+cd client
+npm install

@@ -226,10 +226,8 @@ const CategoryManagement = () => {
         )}
 
         {showModal && (
-          <div
-            className="category-management-modal-overlay"
-            onClick={() => setShowModal(false)}
-          >
+          <div className="category-management-modal-overlay">
+            {/* onClick={() => setShowModal(false)} */}
             <div
               className="category-management-modal-content"
               onClick={(e) => e.stopPropagation()}

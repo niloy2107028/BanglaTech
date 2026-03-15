@@ -2,7 +2,7 @@
   min-height: 100vh;
   padding: 1rem 0;
   background-color: #f9fafb;
-  background-color: green;
+  /* background-color: green; */
 }
 
 /* More padding on larger screens */
@@ -13,7 +13,7 @@
 }
 
 .category-management-container {
-  max-width: 1700px;
+  max-width: 1350px;
   margin: 0 auto;
   padding: 0 1rem;
 }
@@ -26,7 +26,9 @@
   align-items: center;
   margin-bottom: 2rem;
   padding: 1.5rem;
-  background: linear-gradient(to bottom right, #a855f7, #7c3aed);
+  /* background: linear-gradient(to bottom right, #a855f7, #7c3aed); */
+  background: linear-gradient(to right, rgb(41, 176, 41), rgb(244, 58, 58));
+
   border-radius: 12px;
   color: white;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -102,7 +104,7 @@
 }
 
 .category-management-add-btn:hover {
-  transform: translateY(-2px);
+  /* transform: translateY(-2px); */
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
   background-color: #f9fafb;
 }
@@ -173,7 +175,7 @@
 }
 
 .category-management-card:hover {
-  /* transform: translateY(-4px); */
+  transform: translateY(-4px);
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
@@ -261,7 +263,7 @@
   z-index: 1000;
   /* overscroll-behavior: contain; */
   /* overlay te kaj korbena cz overlay scroallble na 
-  so useeffect diye scroll lock kora hoise  */
+  so useeffect diye scroll lock kora jay  */
 }
 
 body.modal-open {
@@ -360,6 +362,7 @@ auto	Show scrollbar only if needed */
   border: 2px solid #d1d5db;
   border-radius: 6px;
   font-size: 1rem;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   transition: all 0.3s ease;
 }
 
@@ -460,6 +463,6 @@ auto	Show scrollbar only if needed */
 
 .category-management-submit-btn:hover {
   background-color: #7c3aed;
-  transform: translateY(-2px);
+  /* transform: translateY(-2px); */
   box-shadow: 0 4px 6px rgba(147, 51, 234, 0.3);
 }

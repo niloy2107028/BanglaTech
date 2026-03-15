@@ -132,7 +132,7 @@
 
 .footer-social-icon:hover {
   background-color: #fe424d;
-  transform: translateY(-4px);
+  /* transform: translateY(-4px); */
 }
 
 .footer-bottom {

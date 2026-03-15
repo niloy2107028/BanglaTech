@@ -24,6 +24,12 @@ const productSchema = new mongoose.Schema(
       // You can use later: Product.find().populate("category")
       required: [true, "Category is required"],
     },
+    seller: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: [true, "seller is required"],
+      // Product owner / creator
+    },
     categoryName: {
       type: String,
       required: true,

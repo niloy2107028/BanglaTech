@@ -2,11 +2,13 @@
   min-height: 100vh;
   flex: 1;
   background-color: #f9fafb;
+  /* background-color: yellow; */
 }
 
 .homepage-container {
-  max-width: 1280px;
+  max-width: 1350px;
   margin: 0 auto;
+  /* background-color: red; */
   padding: 1rem;
 }
 
@@ -55,7 +57,8 @@
   align-items: center;
   margin-bottom: 2rem;
   padding: 1.5rem;
-  background: linear-gradient(to right, #6366f1, #9333ea);
+  /* background: linear-gradient(to right, #6366f1, #9333ea); */
+  background: linear-gradient(to right, rgb(41, 176, 41), rgb(244, 58, 58));
   border-radius: 12px;
   color: white;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
@@ -118,7 +121,7 @@
 }
 
 .hero-button:hover {
-  transform: translateY(-2px);
+  /* transform: translateY(-2px); */
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   background-color: #f9fafb;
 }

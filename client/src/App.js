@@ -1,41 +1,36 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import {
   BrowserRouter as Router,
   Routes,
   Route,
   Navigate,
-  useLocation,
 } from "react-router-dom";
+
+import X from "./X";
 
 import Navbar from "./components/Navbar";
 import HomePage from "./components/HomePage";
 import CategoryView from "./components/CategoryView";
 import CategoryManagement from "./components/CategoryManagement";
+import SearchPage from "./components/SearchPage";
 import Footer from "./components/Footer";
+
+import { AuthProvider } from "./context/AuthContext";
+import ProtectedRoute from "./components/ProtectedRoute";
+import LoginPage from "./components/LoginPage";
+import RegisterPage from "./components/RegisterPage";
+import ProfilePage from "./components/Profile";
+
 import "./App.css";
 
 function AppRoutes({ products, setProducts }) {
-  // const location = useLocation();
-
-  // useEffect(() => {
-  //   const handlePopState = () => {
-  //     window.location.reload();
-  //   };
-
-  //   window.addEventListener("popstate", handlePopState);
-  //   return () => window.removeEventListener("popstate", handlePopState);
-  // }, []);
-
   return (
     <>
       <Routes>
         {/* decide which component to show based on URL */}
 
-        <Route
-          path="/"
-          element={<HomePage products={products} setProducts={setProducts} />}
-        />
+        <Route path="/" element={<HomePage />} />
         <Route
           path="/category/:categoryName"
           // :categoryName is a dynamic parameter.
@@ -43,7 +38,26 @@ function AppRoutes({ products, setProducts }) {
             <CategoryView products={products} setProducts={setProducts} />
           }
         />
-        <Route path="/admin/categories" element={<CategoryManagement />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <ProfilePage />
+            </ProtectedRoute>
+          }
+        />
+        {/* Admin only route */}
+        <Route
+          path="/admin/categories"
+          element={
+            <ProtectedRoute requiredRole="admin">
+              <CategoryManagement />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="/search" element={<SearchPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
         {/* Wildcard Route */}
       </Routes>
@@ -97,11 +111,15 @@ function App() {
 
   return (
     <Router>
-      <div className="app-container">
-        <Navbar />
-        <AppRoutes products={products} setProducts={setProducts} />
-        <Footer />
-      </div>
+      {/* <X /> */}
+      <AuthProvider>
+        {/* <X /> */}
+        <div className="app-container">
+          <Navbar />
+          <AppRoutes products={products} setProducts={setProducts} />
+          <Footer />
+        </div>
+      </AuthProvider>
     </Router>
   );
 }

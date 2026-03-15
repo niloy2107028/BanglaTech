@@ -10,12 +10,13 @@ const CategoryCard = ({ category, productCount, onClick, image }) => {
           alt={category}
           className="category-card-image"
           onError={(e) => {
-            e.target.src = "https://via.placeholder.com/80?text=No+Image";
+            e.target.onerror = null; // stop infinite loop
+            e.target.src = "/images/no-image.png";
           }}
         />
       </div>
       <h3 className="category-card-title">{category}</h3>
-      <p className="category-card-count">{productCount} Products</p>
+      {/* <p className="category-card-count">{productCount} Products</p> */}
     </div>
   );
 };

@@ -26,6 +26,8 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  overscroll-behavior: contain;
+  /* This prevents scroll from leaking to parent. */
 }
 
 /* Larger border radius on medium screens */
@@ -221,6 +223,7 @@
   border: 2px solid #e5e7eb;
   border-radius: 6px;
   font-size: 1rem;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   transition: all 0.3s ease;
 }
 
@@ -317,7 +320,7 @@
 
 .product-modal-btn-submit:hover {
   background-color: #dc2626;
-  transform: translateY(-2px);
+  /* transform: translateY(-2px); */
   box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
 }
 
