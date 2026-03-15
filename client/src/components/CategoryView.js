@@ -5,17 +5,22 @@ import { useParams, useNavigate } from "react-router-dom";
 // useNavigate() → Used to navigate to another page (you commented it).
 
 import ProductCard from "./ProductCard";
+import ProductList from "./ProductList";
 import ProductModal from "./ProductModal";
 import "./CategoryView.css";
 
-const CategoryView = ({ products = [], setProducts }) => {
+const CategoryView = () => {
   // /category/Laptop
   // categoryName = "Laptop"
   const { categoryName } = useParams();
+  const [products, setProducts] = useState([]);
 
   // const navigate = useNavigate();
 
   const category = decodeURIComponent(categoryName);
+  // console.log("modhu : " + category);
+  // console.log("todhu : " + categoryName);
+
   // Converts URL-encoded text into normal text.
   // Example:
   // "Gaming%20Laptop" → "Gaming Laptop"
@@ -43,6 +48,28 @@ const CategoryView = ({ products = [], setProducts }) => {
   // That can slow your app if:
   // You have many products
   // You do heavy filtering/sorting
+
+  const fetchCategoryProducts = async () => {
+    try {
+      const response = await axios.get(
+        `/api/products?category=${encodeURIComponent(category)}`,
+      );
+
+      setProducts(response.data.data);
+      console.log("checking");
+      console.log(response.data.data.length);
+    } catch (error) {
+      console.error("Error fetching products:", error);
+    }
+  };
+
+  // Reset filters when category changes
+  useEffect(() => {
+    // setPriceSort("");
+    // setSelectedBrand("");
+    resetFilters();
+    fetchCategoryProducts();
+  }, [categoryName]);
 
   const categoryProducts = useMemo(
     () =>
@@ -74,13 +101,6 @@ const CategoryView = ({ products = [], setProducts }) => {
     [categoryProducts],
     // Recalculate only when category products change.
   );
-
-  // Reset filters when category changes
-  useEffect(() => {
-    // setPriceSort("");
-    // setSelectedBrand("");
-    resetFilters();
-  }, [categoryName]);
 
   useEffect(() => {
     let result = [...categoryProducts];
@@ -158,88 +178,11 @@ const CategoryView = ({ products = [], setProducts }) => {
     <div className="category-view">
       {console.log("I am category page")}
 
-      <div className="category-view-container">
-        {/* Header */}
-        <div className="category-view-header">
-          <h1>{category}</h1>
-          <p>{filteredProducts.length} products found</p>
-        </div>
-
-        {/* Filters */}
-        <div className="category-view-filters">
-          <div className="category-view-filter-group">
-            <label className="category-view-filter-label">Sort by Price:</label>
-            <select
-              value={priceSort}
-              onChange={(e) => setPriceSort(e.target.value)}
-              className="category-view-filter-select"
-            >
-              <option value="">Default</option>
-              <option value="low-to-high">Price: Low to High</option>
-              <option value="high-to-low">Price: High to Low</option>
-            </select>
-          </div>
-
-          <div className="category-view-filter-group">
-            <label className="category-view-filter-label">Brand:</label>
-            <select
-              value={selectedBrand}
-              onChange={(e) => setSelectedBrand(e.target.value)}
-              className="category-view-filter-select"
-            >
-              <option value="">All Brands</option>
-              {/* it's value is null  */}
-              {brands.map((brand) => (
-                <option key={brand} value={brand}>
-                  {brand}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {(priceSort || selectedBrand) && (
-            <button className="category-view-reset-btn" onClick={resetFilters}>
-              Reset Filters
-            </button>
-          )}
-        </div>
-
-        {/* Products Grid */}
-        {filteredProducts.length > 0 ? (
-          <div className="category-view-products-grid">
-            {filteredProducts.map((product) => (
-              <ProductCard
-                key={product._id}
-                product={product}
-                onView={handleView}
-                onEdit={handleEdit}
-                onDelete={handleDelete}
-              />
-            ))}
-          </div>
-        ) : (
-          <div className="category-view-no-products">
-            <p>No products found with the selected filters.</p>
-            <button
-              onClick={resetFilters}
-              className="category-view-clear-filters-btn"
-            >
-              Clear Filters
-            </button>
-          </div>
-        )}
-      </div>
-
-      {/* Product Modal */}
-      {showModal && (
-        <ProductModal
-          show={showModal}
-          mode={modalMode}
-          product={currentProduct}
-          onClose={handleModalClose}
-          onSave={handleModalSave}
-        />
-      )}
+      <ProductList
+        products={products}
+        setProducts={setProducts}
+        title={category}
+      />
     </div>
   );
 };

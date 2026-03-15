@@ -12,6 +12,8 @@ const cors = require("cors");
 const path = require("path");
 // Used to work with file & folder paths safely.
 
+const cookieParser = require("cookie-parser");
+
 require("dotenv").config();
 // Loads environment variables from .env file.
 
@@ -19,12 +21,24 @@ const app = express();
 // Creates Express application instance.
 
 // Middleware
-app.use(cors());
+// app.use(cors());
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+    // Your React dev server URL
+    credentials: true,
+    // Allow cookies to be sent cross-origin
+  }),
+);
 // Allows frontend to call backend API.
 app.use(express.json());
 // Allows server to read JSON data from request body
 app.use(express.urlencoded({ extended: true }));
 // It is middleware that allows your server to read data sent from an HTML form**
+
+app.use(cookieParser());
+// Reads cookies from requests
+// Required for HTTP-only token cookie to work
 
 // Serve static files from uploads directory
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
@@ -54,6 +68,8 @@ app.use("/api/products", require("./routes/productRoutes"));
 // ./routes/productRoutes.js
 
 app.use("/api/categories", require("./routes/categoryRoutes"));
+
+app.use("/api/auth", require("./routes/authRoutes"));
 
 // Root route
 app.get("/", (req, res) => {

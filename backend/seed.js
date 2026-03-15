@@ -4,6 +4,7 @@ require("dotenv").config({ path: path.join(__dirname, "../.env") });
 
 const Product = require("./models/Product");
 const Category = require("./models/Category");
+const User = require("./models/User");
 
 // Categories data
 // array of obeject
@@ -58,6 +59,21 @@ const categories = [
     name: "Mobile & Accessories",
     description: "Mobile phones, cases, chargers, and accessories",
     image: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400",
+  },
+];
+
+const users = [
+  {
+    name: "Tushar",
+    email: "tushar.seller@banglamart.com",
+    password: "seller123",
+    role: "seller",
+  },
+  {
+    name: "Niloy",
+    email: "niloy.seller@banglamart.com",
+    password: "seller123",
+    role: "seller",
   },
 ];
 
@@ -609,10 +625,22 @@ const seedDatabase = async () => {
     3️ After success → console.log("MongoDB Connected") runs 
 */
 
-    // Clear existing data
-    await Product.deleteMany({});
-    await Category.deleteMany({});
-    console.log("  Cleared existing data");
+    // Clear everything first: drop the whole database.
+    // This removes all collections and indexes before reseeding.
+    await mongoose.connection.db.dropDatabase();
+    console.log("  Dropped existing database");
+
+    // Seed users (create triggers password hashing middleware)
+    const createdUsers = await User.create(users);
+    const niloySeller = createdUsers.find(
+      (u) => u.name.toLowerCase() === "niloy",
+    );
+
+    if (!niloySeller) {
+      throw new Error("Niloy seller user was not created");
+    }
+
+    console.log(` ${createdUsers.length} users seeded`);
 
     // Seed categories
     const insertedCategories = await Category.insertMany(categories);
@@ -640,6 +668,7 @@ const seedDatabase = async () => {
       return {
         ...product,
         category: categoryId,
+        seller: niloySeller._id,
         categoryName: product.category,
         // the object is updated with it's id
         //id diye hard code kora possible na cz category insert na hole id pabo na
@@ -659,6 +688,7 @@ const seedDatabase = async () => {
     console.log("\n Database seeded successfully!");
     console.log(`   Categories: ${insertedCategories.length}`);
     console.log(`   Products: ${validProducts.length}`);
+    console.log(`   Users: ${createdUsers.length}`);
     console.log(`   id updated : ${id_updated}`);
 
     await mongoose.connection.close();

@@ -9,6 +9,7 @@ const ProductModal = ({ show, mode, product, onClose, onSave }) => {
     name: "",
     brand: "",
     category: "",
+    categoryName: "",
     price: "",
     originalPrice: "",
     description: "",
@@ -31,26 +32,22 @@ const ProductModal = ({ show, mode, product, onClose, onSave }) => {
     try {
       const response = await axios.get("/api/categories");
       setCategories(response.data.data);
-      if (response.data.data.length > 0 && !formData.category) {
-        setFormData((prev) => ({
-          ...prev,
-          category: response.data.data[0]._id,
-        }));
-      }
     } catch (error) {
       console.error("Error fetching categories:", error);
     }
   };
 
   useEffect(() => {
+    console.log("kire : " + product.category.name);
     if (product && (mode === "edit" || mode === "view")) {
       setFormData({
         name: product.name || "",
         brand: product.brand || "",
         category:
-          typeof product.category === "object"
+          typeof product.category === "object" && product.category !== null
             ? product.category._id
-            : product.category || "",
+            : product.category,
+        categoryName: product.category.name,
         price: product.price || "",
         originalPrice: product.originalPrice || "",
         description: product.description || "",
@@ -91,9 +88,11 @@ const ProductModal = ({ show, mode, product, onClose, onSave }) => {
 
     try {
       if (mode === "create") {
-        await axios.post("/api/products", formData);
+        await axios.post("/api/products", formData, { withCredentials: true });
       } else if (mode === "edit") {
-        await axios.put(`/api/products/${product._id}`, formData);
+        await axios.put(`/api/products/${product._id}`, formData, {
+          withCredentials: true,
+        });
       }
       onSave();
       // it calls handleModalSave. Reason it do the re-rendering of updated product
@@ -109,7 +108,8 @@ const ProductModal = ({ show, mode, product, onClose, onSave }) => {
   const isViewMode = mode === "view";
 
   return (
-    <div className="product-modal-overlay" onClick={onClose}>
+    <div className="product-modal-overlay">
+      {/* onClick={onClose} */}
       <div
         className="product-modal-content"
         onClick={(e) => e.stopPropagation()}
@@ -169,7 +169,7 @@ const ProductModal = ({ show, mode, product, onClose, onSave }) => {
                 </div>
                 <div className="product-modal-view-row">
                   <strong>Category:</strong>
-                  <span>{formData.category}</span>
+                  <span>{formData.categoryName}</span>
                 </div>
                 <div className="product-modal-view-row">
                   <strong>Price:</strong>

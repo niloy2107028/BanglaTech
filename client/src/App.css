@@ -53,6 +53,7 @@
   flex-direction: column;
   width: 100%;
   overflow-x: hidden;
+  /* to prevent horizontal scrolling  */
 }
 
 /* Loading state */

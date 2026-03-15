@@ -1,20 +1,23 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import axios from "axios";
 // Used to send HTTP requests to backend
 
 import { useNavigate } from "react-router-dom";
 // Used to change page programmatically (navigate to another route).
+import { useAuth } from "../context/AuthContext";
 
 import CategoryCard from "./CategoryCard";
 import ProductCard from "./ProductCard";
 import ProductModal from "./ProductModal";
+import ProductList from "./ProductList";
 import "./HomePage.css";
 
-const HomePage = ({ products = [], setProducts }) => {
+const HomePage = () => {
   // This is a functional component.
   // It receives products as props.
 
   const [showModal, setShowModal] = useState(false);
+  const [products, setProducts] = useState([]);
   // Controls whether modal is open or closed.
   const [modalMode, setModalMode] = useState("view");
   // Stores modal mode:
@@ -28,17 +31,29 @@ const HomePage = ({ products = [], setProducts }) => {
   // Stores categories list.
 
   const navigate = useNavigate();
+  const { user, isAuthenticated } = useAuth();
   // Used to go to another page like:
   // navigate("/category/Electronics")
 
   useEffect(() => {
     fetchCategories();
+    fetchFeaturedProducts();
   }, []);
+
+  const fetchFeaturedProducts = async () => {
+    try {
+      const response = await axios.get("/api/products?featured=true");
+
+      setProducts(response.data.data);
+    } catch (error) {
+      console.error("Error fetching products:", error);
+    }
+  };
 
   const fetchCategories = async () => {
     try {
       const response = await axios.get("/api/categories");
-      console.log(response);
+      // console.log(response);
       setCategories(response.data.data);
     } catch (error) {
       console.error("Error fetching categories:", error);
@@ -46,18 +61,29 @@ const HomePage = ({ products = [], setProducts }) => {
   };
 
   // Count Products Per Category
-  const getCategoryProductCount = (categoryName) => {
-    return products.filter((p) => {
-      const productCategory =
-        typeof p.category === "object" && p.category !== null
-          ? p.category.name
-          : p.categoryName;
-      return productCategory === categoryName;
-    }).length;
-  };
+  // const getCategoryProductCount = (categoryName) => {
+  //   return products.filter((p) => {
+  //     const productCategory = p.category.name;
 
-  // Featured Products
-  const featuredProducts = products.filter((p) => p.featured);
+  //     return productCategory === categoryName;
+  //   }).length;
+  // };
+  // instead we will create a map
+  // it will cause o(n) time instead of o(mn)
+
+  // const categoryCount = useMemo(() => {
+  //   const counts = {};
+
+  //   products.forEach((product) => {
+  //     const name = product.category.name;
+  //     counts[name] = (counts[name] || 0) + 1;
+  //   });
+
+  //   return counts;
+  // }, [products]);
+
+  // Now React will recompute categoryCount only when products change.
+  // no need reason in this component we are not getting all the products
 
   // When user clicks view:
   // Store selected product
@@ -137,14 +163,16 @@ const HomePage = ({ products = [], setProducts }) => {
       {console.log("I am home page")}
       <div className="homepage-container">
         {/* Add Product Button */}
-        <div className="hero-section">
-          <div>
-            <h1>Welcome to BanglaMart</h1>
+        {isAuthenticated && user?.role === "seller" && (
+          <div className="hero-section">
+            <div>
+              <h1>Welcome to BanglaMart</h1>
+            </div>
+            <button className="hero-button" onClick={handleCreate}>
+              + Add New Product
+            </button>
           </div>
-          <button className="hero-button" onClick={handleCreate}>
-            + Add New Product
-          </button>
-        </div>
+        )}
 
         {/* Categories Section */}
         <section className="categories-section">
@@ -158,9 +186,16 @@ const HomePage = ({ products = [], setProducts }) => {
                 key={category._id}
                 category={category.name}
                 image={category.image}
-                productCount={getCategoryProductCount(category.name)}
-                onClick={() =>
-                  navigate(`/category/${encodeURIComponent(category.name)}`)
+                // productCount={categoryCount[category.name]}
+                onClick={
+                  () =>
+                    navigate(`/category/${encodeURIComponent(category.name)}`)
+
+                  // This makes the category name safe for URLs.
+                  // Example:
+                  // Category Name	  Encoded URL
+                  // Home Appliances	Home%20Appliances
+                  // Men & Women	    Men%20%26%20Women
                 }
               />
             ))}
@@ -168,23 +203,13 @@ const HomePage = ({ products = [], setProducts }) => {
         </section>
 
         {/* Featured Products Section */}
-        {featuredProducts.length > 0 && (
+        {products.length > 0 && (
           <section className="featured-section">
             <div className="section-header">
               <h2>Featured Products</h2>
               <p>Check out our featured items</p>
             </div>
-            <div className="products-grid">
-              {featuredProducts.map((product) => (
-                <ProductCard
-                  key={product._id}
-                  product={product}
-                  onView={handleView}
-                  onEdit={handleEdit}
-                  onDelete={handleDelete}
-                />
-              ))}
-            </div>
+            <ProductList products={products} setProducts={setProducts} />
           </section>
         )}
       </div>

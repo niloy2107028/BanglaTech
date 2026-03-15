@@ -11,7 +11,7 @@
 }
 
 .product-card:hover {
-  transform: translateY(-2px);
+  /* transform: translateY(-2px); */
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
 }
 
@@ -66,7 +66,7 @@
 }
 
 .product-image:hover {
-  transform: scale(1.05);
+  transform: scale(1.09);
 }
 
 .product-out-of-stock-overlay {
@@ -254,7 +254,7 @@
 .product-action-btn-view:hover {
   background-color: #2563eb;
   color: white;
-  transform: translateY(-2px);
+  /* transform: translateY(-2px); */
 }
 
 .product-action-btn-edit {
@@ -265,7 +265,7 @@
 .product-action-btn-edit:hover {
   background-color: #ea580c;
   color: white;
-  transform: translateY(-2px);
+  /* transform: translateY(-2px); */
 }
 
 .product-action-btn-delete {
@@ -276,5 +276,5 @@
 .product-action-btn-delete:hover {
   background-color: #dc2626;
   color: white;
-  transform: translateY(-2px);
+  /* transform: translateY(-2px); */
 }

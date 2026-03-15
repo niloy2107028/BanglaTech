@@ -8,7 +8,7 @@
 }
 
 .navbar-container {
-  max-width: 1280px;
+  max-width: 1350px;
   margin: 0 auto;
   padding: 0 1rem;
 }
@@ -75,6 +75,7 @@
   left: 1rem;
   top: 50%;
   transform: translateY(-50%);
+  /* makes it center  */
   color: #9ca3af;
   font-size: 1.125rem;
 }
@@ -100,10 +101,116 @@
   align-items: center;
 }
 
+.navbar-actions-desktop {
+  display: none;
+}
+
+.navbar-mobile-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  background: white;
+  color: #2d3748;
+  cursor: pointer;
+}
+
+.navbar-mobile-toggle:hover {
+  border-color: #fe424d;
+  color: #fe424d;
+}
+
+.navbar-mobile-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  z-index: 90;
+}
+
+.navbar-mobile-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: min(86vw, 360px);
+  height: 100vh;
+  background: #ffffff;
+  z-index: 100;
+  box-shadow: -8px 0 24px rgba(0, 0, 0, 0.18);
+  transform: translateX(100%);
+  transition: transform 0.25s ease;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.navbar-mobile-drawer.open {
+  transform: translateX(0);
+}
+
+.navbar-mobile-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.navbar-mobile-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #111827;
+}
+
+.navbar-mobile-close {
+  border: none;
+  background: transparent;
+  font-size: 1.25rem;
+  color: #374151;
+  cursor: pointer;
+}
+
+.navbar-mobile-search {
+  position: relative;
+}
+
+.navbar-mobile-search .navbar-search-input {
+  width: 100%;
+}
+
+.navbar-mobile-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.navbar-mobile-actions .navbar-button {
+  width: 100%;
+  justify-content: flex-start;
+}
+
+.navbar-mobile-actions .navbar-button span {
+  display: inline;
+}
+
 /* More spacing on larger screens */
 @media (min-width: 768px) {
   .navbar-actions {
     gap: 1rem;
+  }
+
+  .navbar-actions-desktop {
+    display: flex;
+  }
+
+  .navbar-mobile-toggle {
+    display: none;
+  }
+
+  .navbar-mobile-drawer,
+  .navbar-mobile-overlay {
+    display: none;
   }
 }
 
@@ -121,6 +228,7 @@
   transition: all 0.3s ease;
   position: relative;
   font-size: 0.875rem;
+  text-decoration: none;
 }
 
 /* Hide button text on small screens */
@@ -143,7 +251,7 @@
 .navbar-button:hover {
   border-color: #fe424d;
   color: #fe424d;
-  transform: translateY(-2px);
+  /* transform: translateY(-2px); */
 }
 
 .navbar-cart-badge {
