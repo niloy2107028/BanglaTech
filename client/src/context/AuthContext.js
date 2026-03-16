@@ -68,8 +68,8 @@ export const AuthProvider = ({ children }) => {
       { name, email, password },
       { withCredentials: true },
     );
-    setUser(res.data.user);
-    return res.data.user;
+    // No longer setting user here as they need to verify email
+    return res.data;
   };
 
   const logout = async () => {

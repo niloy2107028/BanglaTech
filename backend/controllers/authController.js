@@ -1,9 +1,12 @@
 const { response } = require("express");
 const User = require("../models/User");
+const PendingUser = require("../models/PendingUser");
 const jwt = require("jsonwebtoken");
+const crypto = require("crypto");
+const sendEmail = require("../utils/sendEmail");
 
 // Helper: create JWT and send as HTTP-only cookie
-const sendTokenResponse = (user, statusCode, res) => {
+const sendTokenResponse = (user, statusCode, res, redirect = false) => {
   // token generate kore response er cookie te pathay
   const token = jwt.sign(
     { id: user._id, role: user.role },
@@ -22,25 +25,21 @@ const sendTokenResponse = (user, statusCode, res) => {
     // Only send over HTTPS in production
   };
 
-  //   Option	Purpose
-  // expires	cookie expires after 7 days
-  // httpOnly	JavaScript cannot access it
-  // sameSite	protects from CSRF
-  // secure	only sent over HTTPS
-  // httpOnly is important because it prevents XSS attacks.
+  res.cookie("token", token, cookieOptions);
 
-  res
-    .status(statusCode)
-    .cookie("token", token, cookieOptions)
-    .json({
-      success: true,
-      user: {
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-      },
-    });
+  if (redirect) {
+    return res.redirect("http://localhost:3000/");
+  }
+
+  res.status(statusCode).json({
+    success: true,
+    user: {
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+    },
+  });
 };
 
 // @desc    Register user
@@ -56,11 +55,237 @@ exports.register = async (req, res) => {
         .json({ success: false, message: "Email already registered" });
     }
 
-    const user = await User.create({ name, email, password, role });
-    // this is important
-    sendTokenResponse(user, 201, res);
+    // Delete any existing pending registration for this email
+    await PendingUser.deleteOne({ email });
+
+    // Create 6-digit OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const otpExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
+
+    // Create pending user record
+    await PendingUser.create({
+      name,
+      email,
+      password,
+      role,
+      otp,
+      otpExpires,
+    });
+
+    const message = `Your email verification code is: ${otp}. This code is valid for 10 minutes.`;
+
+    try {
+      await sendEmail({
+        email,
+        subject: "Email Verification Code",
+        message,
+        html: `<h1>Email Verification</h1><p>Your verification code is: <strong>${otp}</strong></p><p>This code is valid for 10 minutes.</p>`,
+      });
+
+      res.status(201).json({
+        success: true,
+        message: "Enter the code to verify your account.",
+      });
+    } catch (err) {
+      await PendingUser.deleteOne({ email });
+
+      return res.status(500).json({
+        success: false,
+        message: "Email could not be sent. Please try again later.",
+      });
+    }
   } catch (error) {
     res.status(400).json({ success: false, message: error.message });
+  }
+};
+
+// @desc    Verify email OTP
+// @route   POST /api/auth/verify-email
+exports.verifyEmail = async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+
+    const pendingUser = await PendingUser.findOne({
+      email: email.toLowerCase(),
+      otp: otp.trim(),
+      otpExpires: { $gt: Date.now() },
+    });
+
+    if (!pendingUser) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid or expired verification code",
+      });
+    }
+
+    // Move pending user to main user collection
+    const user = await User.create({
+      name: pendingUser.name,
+      email: pendingUser.email,
+      password: pendingUser.password, // This will be hashed by User model's pre('save')
+      role: pendingUser.role,
+      isVerified: true,
+    });
+
+    // Delete pending user record
+    await PendingUser.deleteOne({ email: pendingUser.email });
+
+    sendTokenResponse(user, 201, res);
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// @desc    Resend OTP (for both registration and forgot password)
+// @route   POST /api/auth/resend-otp
+exports.resendOTP = async (req, res) => {
+  try {
+    const { email, type } = req.body; // type: 'register' or 'forgot-password'
+
+    if (type === "register") {
+      const pendingUser = await PendingUser.findOne({ email: email.toLowerCase() });
+      if (!pendingUser) {
+        return res.status(404).json({ success: false, message: "No pending registration found" });
+      }
+
+      const otp = Math.floor(100000 + Math.random() * 900000).toString();
+      pendingUser.otp = otp;
+      pendingUser.otpExpires = Date.now() + 10 * 60 * 1000;
+      await pendingUser.save();
+
+      await sendEmail({
+        email,
+        subject: "Email Verification Code (Resent)",
+        message: `Your email verification code is: ${otp}`,
+        html: `<h1>Email Verification</h1><p>Your verification code is: <strong>${otp}</strong></p>`,
+      });
+    } else {
+      const user = await User.findOne({ email: email.toLowerCase() });
+      if (!user) {
+        return res.status(404).json({ success: false, message: "User not found" });
+      }
+
+      const otp = user.getResetPasswordOTP();
+      await user.save({ validateBeforeSave: false });
+
+      await sendEmail({
+        email,
+        subject: "Password Reset Code (Resent)",
+        message: `Your password reset code is: ${otp}`,
+        html: `<h1>Password Reset</h1><p>Your password reset code is: <strong>${otp}</strong></p>`,
+      });
+    }
+
+    res.status(200).json({ success: true, message: "OTP resent successfully" });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// @desc    Google OAuth Callback
+// @route   GET /api/auth/google/callback
+exports.googleCallback = (req, res) => {
+  sendTokenResponse(req.user, 200, res, true);
+};
+
+// @desc    Forgot password
+// @route   POST /api/auth/forgot-password
+exports.forgotPassword = async (req, res) => {
+  try {
+    const user = await User.findOne({ email: req.body.email });
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "There is no user with that email",
+      });
+    }
+
+    // Get reset OTP
+    const otp = user.getResetPasswordOTP();
+
+    await user.save({ validateBeforeSave: false });
+
+    const message = `Your password reset code is: ${otp}. This code is valid for 10 minutes.`;
+
+    try {
+      await sendEmail({
+        email: user.email,
+        subject: "Password Reset Code",
+        message,
+        html: `<h1>Password Reset</h1><p>Your password reset code is: <strong>${otp}</strong></p><p>This code is valid for 10 minutes.</p>`,
+      });
+
+      res.status(200).json({ success: true, message: "Enter the code to reset your password." });
+    } catch (err) {
+      user.resetPasswordOTP = undefined;
+      user.resetPasswordOTPExpire = undefined;
+
+      await user.save({ validateBeforeSave: false });
+
+      return res.status(500).json({
+        success: false,
+        message: "Email could not be sent",
+      });
+    }
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// @desc    Verify Reset Password OTP
+// @route   POST /api/auth/verify-reset-otp
+exports.verifyResetOTP = async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+
+    const user = await User.findOne({
+      email: email.toLowerCase(),
+      resetPasswordOTP: otp,
+      resetPasswordOTPExpire: { $gt: Date.now() },
+    });
+
+    if (!user) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid or expired verification code",
+      });
+    }
+
+    res.status(200).json({ success: true, message: "Code verified" });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// @desc    Reset password
+// @route   PUT /api/auth/reset-password
+exports.resetPassword = async (req, res) => {
+  try {
+    const { email, otp, password } = req.body;
+
+    const user = await User.findOne({
+      email: email.toLowerCase(),
+      resetPasswordOTP: otp,
+      resetPasswordOTPExpire: { $gt: Date.now() },
+    });
+
+    if (!user) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid or expired verification code",
+      });
+    }
+
+    // Set new password
+    user.password = password;
+    user.resetPasswordOTP = undefined;
+    user.resetPasswordOTPExpire = undefined;
+    await user.save();
+
+    sendTokenResponse(user, 200, res);
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
   }
 };
 
@@ -89,6 +314,13 @@ exports.login = async (req, res) => {
       return res
         .status(401)
         .json({ success: false, message: "Invalid credentials" });
+    }
+
+    if (!user.isVerified) {
+      return res.status(401).json({
+        success: false,
+        message: "Please verify your email to login",
+      });
     }
 
     sendTokenResponse(user, 200, res);
