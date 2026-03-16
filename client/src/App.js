@@ -21,6 +21,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import LoginPage from "./components/LoginPage";
 import RegisterPage from "./components/RegisterPage";
 import ProfilePage from "./components/Profile";
+import ForgotPassword from "./components/ForgotPassword";
 
 import "./App.css";
 
@@ -40,6 +41,7 @@ function AppRoutes({ products, setProducts }) {
         />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route
           path="/profile"
           element={

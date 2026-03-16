@@ -13,9 +13,14 @@ const path = require("path");
 // Used to work with file & folder paths safely.
 
 const cookieParser = require("cookie-parser");
+const session = require("express-session");
+const passport = require("passport");
 
 require("dotenv").config();
 // Loads environment variables from .env file.
+
+// Passport config
+require("./config/passport")(passport);
 
 const app = express();
 // Creates Express application instance.
@@ -39,6 +44,23 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 // Reads cookies from requests
 // Required for HTTP-only token cookie to work
+
+// Sessions
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || "somethingsecret",
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 24 * 60 * 60 * 1000, // 24 hours
+    },
+  }),
+);
+
+// Passport middleware
+app.use(passport.initialize());
+app.use(passport.session());
 
 // Serve static files from uploads directory
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
