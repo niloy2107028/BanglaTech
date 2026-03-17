@@ -1,9 +1,11 @@
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faStar } from "@fortawesome/free-solid-svg-icons";
+import { faStar, faCartPlus } from "@fortawesome/free-solid-svg-icons";
+import { useCart } from "../context/CartContext";
 import "./ProductCard.css";
 
 const ProductCard = ({ product, onDelete, onEdit, onView }) => {
+  const { addToCart } = useCart();
   const discount = product.originalPrice
     ? Math.round(
         ((product.originalPrice - product.price) / product.originalPrice) * 100,
@@ -79,6 +81,14 @@ const ProductCard = ({ product, onDelete, onEdit, onView }) => {
             title="View Details"
           >
             View
+          </button>
+          <button
+            className="product-action-btn product-action-btn-cart"
+            onClick={() => addToCart(product._id)}
+            disabled={!product.inStock}
+            title="Add to Cart"
+          >
+            <FontAwesomeIcon icon={faCartPlus} />
           </button>
           {onEdit && (
             <button

@@ -257,6 +257,21 @@
   /* transform: translateY(-2px); */
 }
 
+.product-action-btn-cart {
+  background-color: #28a745;
+  color: white;
+  flex: 0 0 40px;
+}
+
+.product-action-btn-cart:hover {
+  background-color: #218838;
+}
+
+.product-action-btn-cart:disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
+}
+
 .product-action-btn-edit {
   background-color: #fff7ed;
   color: #ea580c;

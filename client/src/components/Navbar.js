@@ -8,15 +8,9 @@ import {
 // Link — For Normal Navigation in UI
 // Use useNavigate when navigation happens after some logic.
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faCartShopping,
-  faUser,
-  faMagnifyingGlass,
-  faGear,
-  faBars,
-  faXmark,
-} from "@fortawesome/free-solid-svg-icons";
+import { faCartShopping, faUser, faMagnifyingGlass, faGear, faBars, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { useAuth } from "../context/AuthContext";
+import { useCart } from "../context/CartContext";
 import "./Navbar.css";
 
 const Navbar = () => {
@@ -25,6 +19,7 @@ const Navbar = () => {
   const location = useLocation();
   const [searchParams] = useSearchParams();
   const { user, loading, isAuthenticated } = useAuth();
+  const { cartItemsCount } = useCart();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // console.log("kire 1: " + searchParams);
@@ -103,10 +98,12 @@ const Navbar = () => {
         </Link>
       )}
 
-      <button className="navbar-button">
+      <Link to="/cart" className="navbar-button">
         <FontAwesomeIcon icon={faCartShopping} />
-        <span className="navbar-cart-badge">0</span>
-      </button>
+        {cartItemsCount > 0 && (
+          <span className="navbar-cart-badge">{cartItemsCount}</span>
+        )}
+      </Link>
     </>
   );
 

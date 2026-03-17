@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
 import ProductList from "./ProductList";
@@ -66,7 +66,35 @@ const ProfilePage = () => {
         <button onClick={handleLogout} className="profile-logout-btn">
           Logout
         </button>
-      </div>
+        <Link to="/orders" className="profile-orders-btn" style={{
+            display: 'block',
+            textAlign: 'center',
+            marginTop: '15px',
+            padding: '12px',
+            backgroundColor: '#f3f4f6',
+            color: '#111827',
+            textDecoration: 'none',
+            borderRadius: '10px',
+            fontWeight: '600'
+          }}>
+            View Order History
+          </Link>
+          {(user?.role === 'seller' || user?.role === 'admin') && (
+            <Link to="/seller/orders" className="profile-seller-orders-btn" style={{
+              display: 'block',
+              textAlign: 'center',
+              marginTop: '10px',
+              padding: '12px',
+              backgroundColor: '#fe424d',
+              color: 'white',
+              textDecoration: 'none',
+              borderRadius: '10px',
+              fontWeight: '600'
+            }}>
+              Manage Seller Orders
+            </Link>
+          )}
+        </div>
 
       <div className="profile-products-wrap">
         {productsLoading ? (
