@@ -182,6 +182,52 @@ exports.resendOTP = async (req, res) => {
   }
 };
 
+// @desc    Get all users
+// @route   GET /api/auth/users
+// @access  Private (Admin only)
+exports.getUsers = async (req, res) => {
+  try {
+    const users = await User.find().sort("-createdAt");
+    res.json({ success: true, data: users });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// @desc    Delete user
+// @route   DELETE /api/auth/users/:id
+// @access  Private (Admin only)
+exports.deleteUser = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+    await user.deleteOne();
+    res.json({ success: true, message: "User removed" });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// @desc    Update user role
+// @route   PUT /api/auth/users/:id/role
+// @access  Private (Admin only)
+exports.updateUserRole = async (req, res) => {
+  try {
+    const { role } = req.body;
+    const user = await User.findById(req.params.id);
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+    user.role = role;
+    await user.save();
+    res.json({ success: true, message: "Role updated", data: user });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 // @desc    Google OAuth Callback
 // @route   GET /api/auth/google/callback
 exports.googleCallback = (req, res) => {

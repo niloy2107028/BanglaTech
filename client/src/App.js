@@ -16,7 +16,7 @@ import CategoryManagement from "./components/CategoryManagement";
 import SearchPage from "./components/SearchPage";
 import Footer from "./components/Footer";
 
-import { AuthProvider } from "./context/AuthContext";
+import { AuthProvider, useAuth } from "./context/AuthContext";
 import { CartProvider } from "./context/CartContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import LoginPage from "./components/LoginPage";
@@ -27,19 +27,45 @@ import Cart from "./components/Cart";
 import Checkout from "./components/Checkout";
 import OrderHistory from "./components/OrderHistory";
 import SellerOrders from "./components/SellerOrders";
+import BecomeSeller from "./components/BecomeSeller";
+import AdminDashboard from "./components/AdminDashboard";
 
 import "./App.css";
 
 function AppRoutes({ products, setProducts }) {
+  const { user, loading } = useAuth();
+  if (loading) return null;
+
   return (
     <>
       <Routes>
-        {/* decide which component to show based on URL */}
-
-        <Route path="/" element={<HomePage />} />
+        {/* Admin Dashboard is at /admin/dashboard */}
+        <Route
+          path="/admin/dashboard"
+          element={
+            <ProtectedRoute requiredRole="admin">
+              <AdminDashboard />
+            </ProtectedRoute>
+          }
+        />
+        
+        {/* If Admin, Redirect / to /admin/dashboard. Otherwise, show HomePage. */}
+        <Route 
+          path="/" 
+          element={
+            user?.role === "admin" ? (
+              <Navigate to="/admin/dashboard" replace />
+            ) : (
+              <HomePage />
+            )
+          } 
+        />
+        
+        {/* Explicit route for the store/public view for everyone, including Admin */}
+        <Route path="/store" element={<HomePage />} />
+        
         <Route
           path="/category/:categoryName"
-          // :categoryName is a dynamic parameter.
           element={
             <CategoryView products={products} setProducts={setProducts} />
           }
@@ -51,7 +77,7 @@ function AppRoutes({ products, setProducts }) {
         <Route
           path="/checkout"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute requiredRole="buyer">
               <Checkout />
             </ProtectedRoute>
           }
@@ -59,7 +85,7 @@ function AppRoutes({ products, setProducts }) {
         <Route
           path="/orders"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute requiredRole="buyer">
               <OrderHistory />
             </ProtectedRoute>
           }
@@ -67,8 +93,16 @@ function AppRoutes({ products, setProducts }) {
         <Route
           path="/seller/orders"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute requiredRole="seller">
               <SellerOrders />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/become-seller"
+          element={
+            <ProtectedRoute requiredRole="buyer">
+              <BecomeSeller />
             </ProtectedRoute>
           }
         />
@@ -80,7 +114,6 @@ function AppRoutes({ products, setProducts }) {
             </ProtectedRoute>
           }
         />
-        {/* Admin only route */}
         <Route
           path="/admin/categories"
           element={

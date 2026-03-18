@@ -6,18 +6,24 @@ const {
   getOrderById,
   getSellerOrders,
   updateOrderItemStatus,
+  cancelOrderItem,
 } = require("../controllers/orderController");
 const { protect, authorize } = require("../middleware/auth");
 
 router.use(protect);
 
-router.post("/", createOrder);
-router.get("/myorders", getMyOrders);
-router.get("/seller", authorize("seller", "admin"), getSellerOrders);
+router.post("/", authorize("buyer"), createOrder);
+router.get("/myorders", authorize("buyer"), getMyOrders);
+router.get("/seller", authorize("seller"), getSellerOrders);
 router.put(
   "/:orderId/item/:productId/status",
-  authorize("seller", "admin"),
+  authorize("seller"),
   updateOrderItemStatus,
+);
+router.put(
+  "/:orderId/item/:productId/cancel",
+  authorize("buyer"),
+  cancelOrderItem,
 );
 router.get("/:id", getOrderById);
 

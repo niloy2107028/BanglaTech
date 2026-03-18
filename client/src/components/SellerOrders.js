@@ -25,11 +25,22 @@ const SellerOrders = () => {
     }
   };
 
-  const handleStatusUpdate = async (orderId, productId, newStatus) => {
+  const handleStatusUpdate = async (orderId, productId, newStatus, currentStatus) => {
+    // If status is Cancelled, ask for reason
+    let cancellationReason = "";
+    if (newStatus === "Cancelled") {
+      cancellationReason = prompt("Please enter a reason for cancelling this order:");
+      if (cancellationReason === null) return; // User clicked cancel on prompt
+      if (!cancellationReason.trim()) {
+        alert("Cancellation reason is required.");
+        return;
+      }
+    }
+
     try {
       const res = await axios.put(
         `/api/orders/${orderId}/item/${productId}/status`,
-        { status: newStatus },
+        { status: newStatus, cancellationReason },
         { withCredentials: true }
       );
       if (res.data.success) {
@@ -38,6 +49,26 @@ const SellerOrders = () => {
     } catch (error) {
       alert(error.response?.data?.message || "Error updating status");
     }
+  };
+
+  const getAvailableStatuses = (currentStatus) => {
+    const allStatuses = ["Pending", "Processing", "Shipped", "Delivered", "Cancelled"];
+    const statusOrder = ["Pending", "Processing", "Shipped", "Delivered"];
+    
+    if (currentStatus === "Cancelled") return ["Cancelled"];
+    if (currentStatus === "Delivered") return ["Delivered"];
+
+    const currentIndex = statusOrder.indexOf(currentStatus);
+    
+    // Only allow next steps and Cancelled
+    const available = statusOrder.slice(currentIndex);
+    
+    // Can only cancel if Pending or Processing
+    if (currentIndex <= 1) {
+      available.push("Cancelled");
+    }
+    
+    return available;
   };
 
   if (loading) return <div className="seller-orders-loading">Loading vendor orders...</div>;
@@ -75,16 +106,20 @@ const SellerOrders = () => {
                       <div className="item-status-actions">
                         <select
                           value={item.status}
-                          onChange={(e) => handleStatusUpdate(order._id, item.product, e.target.value)}
+                          onChange={(e) => handleStatusUpdate(order._id, item.product, e.target.value, item.status)}
                           className={`status-select status-${item.status.toLowerCase()}`}
+                          disabled={item.status === "Delivered" || item.status === "Cancelled"}
                         >
-                          <option value="Pending">Pending</option>
-                          <option value="Processing">Processing</option>
-                          <option value="Shipped">Shipped</option>
-                          <option value="Delivered">Delivered</option>
-                          <option value="Cancelled">Cancelled</option>
+                          {getAvailableStatuses(item.status).map(status => (
+                            <option key={status} value={status}>{status}</option>
+                          ))}
                         </select>
                       </div>
+                      {item.status === "Cancelled" && item.cancellationReason && (
+                        <div className="cancellation-info">
+                          Reason: {item.cancellationReason}
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>

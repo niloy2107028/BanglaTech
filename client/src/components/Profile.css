@@ -47,16 +47,27 @@
   font-weight: 600;
 }
 
-.profile-role {
+.profile-value.profile-role-badge {
   display: inline-block;
-  background: #e2e8f0;
+  padding: 4px 12px;
   border-radius: 999px;
-  padding: 3px 10px;
-  text-transform: capitalize;
+  font-size: 0.85rem;
+  font-weight: 700;
+  margin-top: 8px;
+}
+
+.profile-role-badge.BUYER { background: #f3f4f6; color: #4b5563; }
+.profile-role-badge.SELLER { background: #ecfdf5; color: #059669; }
+.profile-role-badge.ADMIN { background: #f5f3ff; color: #7c3aed; }
+
+.profile-logout-section {
+  margin-top: 32px;
+  padding-top: 16px;
+  border-top: 1px dashed #e2e8f0;
 }
 
 .profile-logout-btn {
-  margin-top: 12px;
+  width: 100%;
   border: none;
   border-radius: 10px;
   background: #ef4444;
@@ -65,6 +76,7 @@
   font-size: 1rem;
   padding: 12px 20px;
   cursor: pointer;
+  transition: background 0.2s;
 }
 
 .profile-logout-btn:hover {

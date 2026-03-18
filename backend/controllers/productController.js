@@ -10,12 +10,8 @@ exports.getAllProducts = async (req, res) => {
     const limit = 15;
     let query = {};
 
-    //search
     if (search) {
       const words = search.trim().split(/\s+/);
-
-      // in future we will implement index search, which is more fast
-
       query.$and = words.map((word) => ({
         $or: [
           { name: { $regex: word, $options: "i" } },
@@ -23,52 +19,23 @@ exports.getAllProducts = async (req, res) => {
           { categoryName: { $regex: word, $options: "i" } },
         ],
       }));
-
-      // What this means
-      // If user searches:
-      // nike shoes
-      // It becomes:
-      // (word1: nike) AND (word2: shoes)
-      // nike must match:
-      // name OR brand OR categoryName
-      // AND
-      // shoes must match:
-      // name OR brand OR categoryName
     }
 
-    //Category filter
     if (category) {
       const categoryDoc = await Category.findOne({ name: category });
-
       if (categoryDoc) {
         query.category = categoryDoc._id;
       }
     }
 
-    //featured product
     if (featured === "true") {
       query.featured = true;
     }
 
     const products = await Product.find(query)
       .populate("category", "name")
-      .populate("seller", "name email role")
-      /* Instead of:
-        category: ObjectId("abc123")
-        You get:
-        category: {
-          _id: "abc123",
-          name: "Electronics",
-          image: "..."
-        } 
-*/
+      .populate("seller", "name email")
       .sort({ createdAt: -1 });
-    // 1: old data age thakebe
-    // -1: vise versa
-
-    //skip and limit in future
-    // .skip((page - 1) * limit)
-    // .limit(limit);
 
     const total = await Product.countDocuments(query);
 
@@ -119,10 +86,9 @@ exports.getMyProducts = async (req, res) => {
 exports.getProduct = async (req, res) => {
   try {
     console.log(req.params);
-    const product = await Product.findById(req.params.id).populate(
-      "category",
-      "name",
-    );
+    const product = await Product.findById(req.params.id)
+      .populate("category", "name")
+      .populate("seller", "name email");
 
     if (!product) {
       return res.status(404).json({

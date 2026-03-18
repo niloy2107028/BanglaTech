@@ -17,16 +17,25 @@ exports.createOrder = async (req, res) => {
 
     // Check stock and get seller for all items
     for (const item of orderItems) {
-      const product = await Product.findById(item.product);
+      const product = await Product.findById(item.product).populate("seller", "name");
       if (!product || product.stock < item.qty) {
         return res.status(400).json({
           success: false,
           message: `Product ${product?.name || "Unknown"} is out of stock`,
         });
       }
+
+      if (!product.seller) {
+        return res.status(400).json({
+          success: false,
+          message: `Product ${product.name} does not have a registered seller.`,
+        });
+      }
+
       itemsWithSellers.push({
         ...item,
-        seller: product.seller,
+        seller: product.seller._id,
+        sellerName: product.seller.name || "Unknown Seller",
       });
     }
 
@@ -60,6 +69,7 @@ exports.createOrder = async (req, res) => {
       data: createdOrder,
     });
   } catch (error) {
+    console.error("ORDER CREATE ERROR:", error);
     res.status(500).json({
       success: false,
       message: "Error creating order",
@@ -81,7 +91,7 @@ exports.getSellerOrders = async (req, res) => {
     const filteredOrders = orders.map((order) => {
       const orderObj = order.toObject();
       orderObj.orderItems = orderObj.orderItems.filter(
-        (item) => item.seller.toString() === req.user._id.toString(),
+        (item) => item.seller && item.seller.toString() === req.user._id.toString(),
       );
       return orderObj;
     });
@@ -104,32 +114,65 @@ exports.getSellerOrders = async (req, res) => {
 // @access  Private (Seller only)
 exports.updateOrderItemStatus = async (req, res) => {
   try {
-    const { status } = req.body;
+    const { status, cancellationReason } = req.body;
     const order = await Order.findById(req.params.orderId);
 
     if (!order) {
       return res.status(404).json({ success: false, message: "Order not found" });
     }
 
-    const item = order.orderItems.find(
+    const itemIndex = order.orderItems.findIndex(
       (item) => item.product.toString() === req.params.productId,
     );
 
-    if (!item) {
+    if (itemIndex === -1) {
       return res.status(404).json({ success: false, message: "Product not found in order" });
     }
 
-    if (item.seller.toString() !== req.user._id.toString()) {
+    const item = order.orderItems[itemIndex];
+
+    if (!item.seller || item.seller.toString() !== req.user._id.toString()) {
       return res.status(403).json({ success: false, message: "Unauthorized" });
     }
 
-    item.status = status;
+    // Status Workflow Enforcement
+    const statusOrder = ["Pending", "Processing", "Shipped", "Delivered"];
+    const currentStatusIndex = statusOrder.indexOf(item.status);
+    const newStatusIndex = statusOrder.indexOf(status);
 
-    // If all items are delivered, set global status to Delivered
-    const allDelivered = order.orderItems.every((i) => i.status === "Delivered");
-    if (allDelivered) {
-      order.status = "Delivered";
-      order.deliveredAt = Date.now();
+    // If current status is Cancelled, it's final
+    if (item.status === "Cancelled") {
+      return res.status(400).json({ success: false, message: "Cancelled orders cannot be modified" });
+    }
+
+    // If new status is Cancelled, only allowed if current status is Pending or Processing
+    if (status === "Cancelled") {
+      if (currentStatusIndex > 1) { // Shipped or Delivered
+        return res.status(400).json({ success: false, message: "Cannot cancel order after it has been shipped" });
+      }
+      item.status = "Cancelled";
+      item.cancellationReason = cancellationReason || "Seller cancelled the order";
+      
+      // Return stock back to product
+      await Product.findByIdAndUpdate(item.product, {
+        $inc: { stock: item.qty },
+      });
+    } else {
+      // Normal workflow
+      if (newStatusIndex <= currentStatusIndex) {
+        return res.status(400).json({ success: false, message: "Cannot move to a previous or same status" });
+      }
+      item.status = status;
+    }
+
+    // If all items are delivered or cancelled, set global status accordingly
+    const allDeliveredOrCancelled = order.orderItems.every((i) => i.status === "Delivered" || i.status === "Cancelled");
+    if (allDeliveredOrCancelled) {
+      const allCancelled = order.orderItems.every((i) => i.status === "Cancelled");
+      order.status = allCancelled ? "Cancelled" : "Delivered";
+      if (!allCancelled) order.deliveredAt = Date.now();
+    } else if (order.orderItems.some((i) => i.status !== "Pending")) {
+      order.status = "Processing";
     }
 
     await order.save();
@@ -143,6 +186,71 @@ exports.updateOrderItemStatus = async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Error updating status",
+      error: error.message,
+    });
+  }
+};
+
+// @desc    Cancel order item by buyer
+// @route   PUT /api/orders/:orderId/item/:productId/cancel
+// @access  Private (Buyer only)
+exports.cancelOrderItem = async (req, res) => {
+  try {
+    const { reason } = req.body;
+    const order = await Order.findById(req.params.orderId);
+
+    if (!order) {
+      return res.status(404).json({ success: false, message: "Order not found" });
+    }
+
+    // Only order owner can cancel
+    if (order.user.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ success: false, message: "Unauthorized" });
+    }
+
+    const itemIndex = order.orderItems.findIndex(
+      (item) => item.product.toString() === req.params.productId,
+    );
+
+    if (itemIndex === -1) {
+      return res.status(404).json({ success: false, message: "Product not found in order" });
+    }
+
+    const item = order.orderItems[itemIndex];
+
+    // Only Pending status can be cancelled by buyer
+    if (item.status !== "Pending") {
+      return res.status(400).json({ 
+        success: false, 
+        message: "Order can only be cancelled while in Pending stage" 
+      });
+    }
+
+    item.status = "Cancelled";
+    item.cancellationReason = reason || "Cancelled by buyer";
+
+    // Return stock back to product
+    await Product.findByIdAndUpdate(item.product, {
+      $inc: { stock: item.qty },
+    });
+
+    // Update global status if necessary
+    const allCancelled = order.orderItems.every((i) => i.status === "Cancelled");
+    if (allCancelled) {
+      order.status = "Cancelled";
+    }
+
+    await order.save();
+
+    res.json({
+      success: true,
+      message: "Order item cancelled successfully",
+      data: order,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Error cancelling order",
       error: error.message,
     });
   }

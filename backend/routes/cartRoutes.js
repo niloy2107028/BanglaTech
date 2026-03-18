@@ -7,9 +7,10 @@ const {
   removeFromCart,
   clearCart,
 } = require("../controllers/cartController");
-const { protect } = require("../middleware/auth");
+const { protect, authorize } = require("../middleware/auth");
 
 router.use(protect);
+router.use(authorize("buyer")); // Only buyers can use cart
 
 router.get("/", getCart);
 router.post("/", addToCart);

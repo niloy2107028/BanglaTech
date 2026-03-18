@@ -10,7 +10,8 @@ export const CartProvider = ({ children }) => {
   const { user } = useAuth();
 
   const fetchCart = useCallback(async () => {
-    if (!user) {
+    // Only fetch cart for buyers. Guests, Admins, and Sellers don't have carts.
+    if (!user || user.role !== "buyer") {
       setCart({ items: [] });
       setLoading(false);
       return;
@@ -35,6 +36,11 @@ export const CartProvider = ({ children }) => {
   const addToCart = async (productId, quantity = 1) => {
     if (!user) {
       alert("Please login to add items to cart");
+      return;
+    }
+
+    if (user.role !== "buyer") {
+      alert("Only buyers can add items to the cart.");
       return;
     }
 

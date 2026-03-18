@@ -9,24 +9,44 @@ const OrderHistory = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchOrders = async () => {
-      try {
-        const res = await axios.get("/api/orders/myorders", {
-          withCredentials: true,
-        });
-        if (res.data.success) {
-          setOrders(res.data.data);
-        }
-      } catch (error) {
-        console.error("Error fetching orders:", error);
-      } finally {
-        setLoading(false);
+  const fetchOrders = async () => {
+    setLoading(true);
+    try {
+      const res = await axios.get("/api/orders/myorders", {
+        withCredentials: true,
+      });
+      if (res.data.success) {
+        setOrders(res.data.data);
       }
-    };
+    } catch (error) {
+      console.error("Error fetching orders:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchOrders();
   }, []);
+
+  const handleCancelOrder = async (orderId, productId) => {
+    const reason = prompt("Please tell us why you want to cancel this order:");
+    if (reason === null) return;
+
+    try {
+      const res = await axios.put(
+        `/api/orders/${orderId}/item/${productId}/cancel`,
+        { reason },
+        { withCredentials: true }
+      );
+      if (res.data.success) {
+        alert("Order item cancelled successfully.");
+        fetchOrders();
+      }
+    } catch (error) {
+      alert(error.response?.data?.message || "Error cancelling order");
+    }
+  };
 
   const getStatusIcon = (status) => {
     switch (status) {
@@ -84,12 +104,24 @@ const OrderHistory = () => {
                     <div key={idx} className="order-item">
                       <img src={item.image} alt={item.name} className="item-img" />
                       <div className="item-details">
-                        <span className="item-name">{item.name}</span>
+                        <div className="item-main-info">
+                          <span className="item-name">{item.name}</span>
+                          {item.status === "Pending" && (
+                            <button 
+                              className="cancel-item-btn"
+                              onClick={() => handleCancelOrder(order._id, item.product)}
+                            >
+                              Cancel Order
+                            </button>
+                          )}
+                        </div>
                         <div className="item-meta">
                           <span className="item-qty-price">{item.qty} x ৳{item.price.toLocaleString()}</span>
-                          <span className="item-status-badge" style={{ color: getStatusColor(item.status) }}>
-                            {item.status}
-                          </span>
+                          {item.status === "Cancelled" && item.cancellationReason && (
+                            <div className="item-cancellation-msg">
+                              <strong>Cancellation Note:</strong> {item.cancellationReason}
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>

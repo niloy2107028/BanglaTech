@@ -92,11 +92,50 @@
   display: flex;
   flex-direction: column;
   gap: 2px;
+  flex-grow: 1;
+}
+
+.item-main-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .item-name {
   font-weight: 600;
   color: #111827;
+}
+
+.cancel-item-btn {
+  background-color: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 4px 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.cancel-item-btn:hover {
+  background-color: #dc2626;
+}
+
+.item-cancellation-msg {
+  font-size: 0.85rem;
+  color: #ef4444;
+  margin-top: 4px;
+  background-color: #fef2f2;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border-left: 3px solid #ef4444;
+}
+
+.item-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 .item-qty-price {

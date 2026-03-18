@@ -23,11 +23,15 @@ const orderSchema = new mongoose.Schema(
           ref: "User",
           required: true,
         },
+        sellerName: String,
         status: {
           type: String,
           required: true,
           enum: ["Pending", "Processing", "Shipped", "Delivered", "Cancelled"],
           default: "Pending",
+        },
+        cancellationReason: {
+          type: String,
         },
       },
     ],

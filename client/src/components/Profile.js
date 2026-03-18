@@ -45,68 +45,51 @@ const ProfilePage = () => {
 
   return (
     <section className="profile-page">
-      <div className="profile-card">
-        <h2 className="profile-title">My Profile</h2>
+      <div className="profile-container">
+        <div className="profile-card">
+          <h2 className="profile-title">User Profile</h2>
 
-        <div className="profile-row">
-          <p className="profile-label">Name</p>
-          <p className="profile-value">{user.name}</p>
+          <div className="profile-info-section">
+            <div className="profile-row">
+              <p className="profile-label">Full Name</p>
+              <p className="profile-value">{user.name}</p>
+            </div>
+
+            <div className="profile-row">
+              <p className="profile-label">Email Address</p>
+              <p className="profile-value">{user.email}</p>
+            </div>
+
+            <div className="profile-row">
+              <p className="profile-label">Account Role</p>
+              <p className={`profile-value profile-role-badge ${user.role.toUpperCase()}`}>{user.role.toUpperCase()}</p>
+            </div>
+          </div>
+
+          <div className="profile-actions-section">
+            <div className="profile-logout-section">
+              <button onClick={handleLogout} className="profile-logout-btn">
+                Sign Out Securely
+              </button>
+            </div>
+          </div>
         </div>
 
-        <div className="profile-row">
-          <p className="profile-label">Email</p>
-          <p className="profile-value">{user.email}</p>
-        </div>
-
-        <div className="profile-row">
-          <p className="profile-label">Role</p>
-          <p className="profile-value profile-role">{user.role}</p>
-        </div>
-
-        <button onClick={handleLogout} className="profile-logout-btn">
-          Logout
-        </button>
-        <Link to="/orders" className="profile-orders-btn" style={{
-            display: 'block',
-            textAlign: 'center',
-            marginTop: '15px',
-            padding: '12px',
-            backgroundColor: '#f3f4f6',
-            color: '#111827',
-            textDecoration: 'none',
-            borderRadius: '10px',
-            fontWeight: '600'
-          }}>
-            View Order History
-          </Link>
-          {(user?.role === 'seller' || user?.role === 'admin') && (
-            <Link to="/seller/orders" className="profile-seller-orders-btn" style={{
-              display: 'block',
-              textAlign: 'center',
-              marginTop: '10px',
-              padding: '12px',
-              backgroundColor: '#fe424d',
-              color: 'white',
-              textDecoration: 'none',
-              borderRadius: '10px',
-              fontWeight: '600'
-            }}>
-              Manage Seller Orders
-            </Link>
-          )}
-        </div>
-
-      <div className="profile-products-wrap">
-        {productsLoading ? (
-          <p className="profile-loading">Loading your products...</p>
-        ) : (
-          <ProductList
-            title="My Products"
-            products={ownedProducts}
-            setProducts={setOwnedProducts}
-            showOwnerActions={true}
-            refreshEndpoint="/api/products/mine"
-          />
+        {/* Seller Specific Content: Product Management (Only for sellers) */}
+        {user.role === "seller" && (
+          <div className="profile-products-wrap">
+            {productsLoading ? (
+              <p className="profile-loading">Loading your shop products...</p>
+            ) : (
+              <ProductList
+                title="Manage My Products"
+                products={ownedProducts}
+                setProducts={setOwnedProducts}
+                showOwnerActions={true}
+                refreshEndpoint="/api/products/mine"
+              />
+            )}
+          </div>
         )}
       </div>
     </section>
