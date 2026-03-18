@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import axios from "axios";
 // Imports axios → used to send HTTP requests to backend (API).
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -156,90 +157,85 @@ const CategoryManagement = () => {
   };
 
   return (
-    <div className="category-management">
-      <div className="category-management-container">
-        <div className="category-management-header">
-          <div className="category-management-header-text">
-            <h1>Category Management</h1>
-            <p>Manage product categories for your store</p>
+    <div className="admin-page category-mgmt-page">
+      <div className="admin-container">
+        <header className="admin-header category-header">
+          <div className="header-content">
+            <h1 className="admin-title">Category Management</h1>
+            <p className="admin-subtitle">Organize and manage product categories for the platform.</p>
           </div>
           <button
-            className="category-management-add-btn"
+            className="btn-add-category"
             onClick={handleCreate}
           >
-            <FontAwesomeIcon icon={faPlus} /> Add Category
+            <FontAwesomeIcon icon={faPlus} /> Add New Category
           </button>
-        </div>
-
-        {/* <div className="category-management-loading">
-          <div className="category-management-loading-spinner"></div>
-          <p>Loading categories...</p>
-        </div> */}
+        </header>
 
         {loading ? (
-          <div className="category-management-loading">
-            <div className="category-management-loading-spinner"></div>
+          <div className="admin-loading">
+            <div className="loading-spinner"></div>
             <p>Loading categories...</p>
           </div>
         ) : (
-          <div className="category-management-grid">
-            {categories.map((category) => (
-              <div key={category._id} className="category-management-card">
-                <div className="category-management-card-image-wrapper">
-                  <img
-                    src={category.image}
-                    alt={category.name}
-                    className="category-management-card-image"
-                    onError={(e) => {
-                      e.target.src =
-                        "https://via.placeholder.com/60?text=No+Image";
-                    }}
-                  />
+          <div className="category-grid">
+            {categories.length === 0 ? (
+              <div className="empty-state">No categories found. Start by adding one.</div>
+            ) : (
+              categories.map((category) => (
+                <div key={category._id} className="category-card">
+                  <div className="category-card-image-box">
+                    <img
+                      src={category.image}
+                      alt={category.name}
+                      className="category-img"
+                      onError={(e) => {
+                        e.target.src = "https://via.placeholder.com/150?text=No+Image";
+                      }}
+                    />
+                  </div>
+                  <div className="category-card-details">
+                    <h3 className="category-name">{category.name}</h3>
+                    <p className="category-desc">
+                      {category.description || "No description provided for this category."}
+                    </p>
+                    <div className="category-actions">
+                      <button
+                        className="btn-icon-edit"
+                        onClick={() => handleEdit(category)}
+                        title="Edit Category"
+                      >
+                        <FontAwesomeIcon icon={faPenToSquare} /> Edit
+                      </button>
+                      <button
+                        className="btn-icon-delete"
+                        onClick={() => handleDelete(category._id)}
+                        title="Delete Category"
+                      >
+                        <FontAwesomeIcon icon={faTrash} /> Remove
+                      </button>
+                    </div>
+                  </div>
                 </div>
-                <div className="category-management-card-content">
-                  <h3 className="category-management-card-title">
-                    {category.name}
-                  </h3>
-                  <p className="category-management-card-description">
-                    {category.description || "No description"}
-                  </p>
-                </div>
-                <div className="category-management-card-actions">
-                  <button
-                    className="category-management-action-btn category-management-edit-btn"
-                    onClick={() => handleEdit(category)}
-                    title="Edit Category"
-                  >
-                    <FontAwesomeIcon icon={faPenToSquare} />
-                  </button>
-                  <button
-                    className="category-management-action-btn category-management-delete-btn"
-                    onClick={() => handleDelete(category._id)}
-                    title="Delete Category"
-                  >
-                    <FontAwesomeIcon icon={faTrash} />
-                  </button>
-                </div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         )}
 
         {showModal && (
-          <div className="category-management-modal-overlay">
-            {/* onClick={() => setShowModal(false)} */}
+          <div className="admin-modal-overlay">
             <div
-              className="category-management-modal-content"
+              className="admin-modal-content"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="category-management-modal-header">
+              <div className="admin-modal-header">
                 <h2>
                   {modalMode === "create"
-                    ? "Add New Category"
-                    : "Edit Category"}
+                    ? "Create New Category"
+                    : "Update Category"}
                 </h2>
                 <button
-                  className="category-management-modal-close-btn"
+                  className="btn-modal-close"
                   onClick={() => setShowModal(false)}
                 >
                   <FontAwesomeIcon icon={faXmark} />
@@ -248,89 +244,77 @@ const CategoryManagement = () => {
 
               <form
                 onSubmit={handleSubmit}
-                className="category-management-form"
+                className="admin-form"
               >
-                <div className="category-management-form-group">
-                  <label className="category-management-form-label">
-                    Category Name *
-                  </label>
+                <div className="form-group">
+                  <label className="form-label">Category Name</label>
                   <input
                     type="text"
                     name="name"
                     value={formData.name}
                     onChange={handleChange}
                     required
-                    placeholder="Enter category name"
-                    className="category-management-form-input"
+                    placeholder="e.g. Electronics, Fashion"
+                    className="form-input"
                   />
                 </div>
 
-                <div className="category-management-form-group">
-                  <label className="category-management-form-label">
-                    Description
-                  </label>
+                <div className="form-group">
+                  <label className="form-label">Description</label>
                   <textarea
                     name="description"
                     value={formData.description}
                     onChange={handleChange}
                     rows="3"
-                    placeholder="Enter category description"
-                    className="category-management-form-textarea"
+                    placeholder="Brief description of the category..."
+                    className="form-textarea"
                   />
                 </div>
 
-                <div className="category-management-form-group">
-                  <label className="category-management-form-label">
-                    Category Image URL
-                  </label>
+                <div className="form-group">
+                  <label className="form-label">Category Image URL</label>
                   <input
                     type="text"
                     name="image"
                     value={formData.image}
                     onChange={handleChange}
-                    placeholder="Enter image URL (e.g., https://example.com/image.jpg)"
-                    className="category-management-form-input"
+                    placeholder="https://example.com/image.jpg"
+                    className="form-input"
                   />
-                  <p className="category-management-upload-hint">
-                    Paste the URL of an image. You can use image hosting
-                    services like Imgur, Cloudinary, or direct URLs.
-                  </p>
-
-                  {formData.image && (
-                    <div className="category-management-preview-wrapper">
-                      <p className="category-management-preview-label">
-                        Preview:
-                      </p>
-                      <div className="category-management-preview-image-wrapper">
-                        <img
-                          src={formData.image}
-                          alt="Preview"
-                          className="category-management-preview-image"
-                          onError={(e) => {
-                            e.target.src =
-                              "https://via.placeholder.com/200?text=Invalid+URL";
-                          }}
-                        />
-                      </div>
-                    </div>
-                  )}
+                  <p className="form-hint">Paste a direct link to the category image.</p>
                 </div>
 
-                <div className="category-management-form-actions">
+                {formData.image && (
+                  <div className="image-preview-section">
+                    <label className="form-label">Image Preview</label>
+                    <div className="preview-container">
+                      <img
+                        src={formData.image}
+                        alt="Preview"
+                        className="preview-img"
+                        onError={(e) => {
+                          e.target.src = "https://via.placeholder.com/200?text=Invalid+URL";
+                        }}
+                      />
+                    </div>
+                  </div>
+                )}
+
+                <div className="admin-modal-footer">
                   <button
                     type="button"
-                    className="category-management-form-btn category-management-cancel-btn"
+                    className="btn-cancel"
                     onClick={() => setShowModal(false)}
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="category-management-form-btn category-management-submit-btn"
+                    className="btn-submit"
                   >
                     {modalMode === "create"
                       ? "Create Category"
-                      : "Update Category"}
+                      : "Save Changes"}
                   </button>
                 </div>
               </form>

@@ -160,18 +160,12 @@ const HomePage = () => {
 
   return (
     <div className="homepage">
-      {console.log("I am home page")}
       <div className="homepage-container">
         {/* Add Product Button */}
         {isAuthenticated && user?.role === "seller" && (
-          <div className="hero-section">
-            <div>
-              <h1>Welcome to BanglaMart</h1>
-            </div>
-            <button className="hero-button" onClick={handleCreate}>
-              + Add New Product
-            </button>
-          </div>
+          <button className="add-product-btn" onClick={handleCreate}>
+            Add Product
+          </button>
         )}
 
         {/* Categories Section */}

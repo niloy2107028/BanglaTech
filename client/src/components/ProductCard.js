@@ -1,9 +1,13 @@
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faStar } from "@fortawesome/free-solid-svg-icons";
+import { faStar, faCartPlus } from "@fortawesome/free-solid-svg-icons";
+import { useCart } from "../context/CartContext";
+import { useAuth } from "../context/AuthContext";
 import "./ProductCard.css";
 
 const ProductCard = ({ product, onDelete, onEdit, onView }) => {
+  const { addToCart } = useCart();
+  const { user } = useAuth();
   const discount = product.originalPrice
     ? Math.round(
         ((product.originalPrice - product.price) / product.originalPrice) * 100,
@@ -60,6 +64,9 @@ const ProductCard = ({ product, onDelete, onEdit, onView }) => {
               ৳{product.originalPrice.toLocaleString()}
             </div>
           )}
+          <div className="product-seller-info" style={{ fontSize: '0.8rem', color: '#6b7280', marginTop: '4px' }}>
+            Seller: <span style={{ fontWeight: '600', color: '#111827' }}>{product.seller?.name || 'BanglaMart'}</span>
+          </div>
         </div>
 
         {/* Stock Status */}
@@ -80,6 +87,17 @@ const ProductCard = ({ product, onDelete, onEdit, onView }) => {
           >
             View
           </button>
+          {/* Only show Add to Cart for Buyers or Guests */}
+          {(!user || user.role === "buyer") && (
+            <button
+              className="product-action-btn product-action-btn-cart"
+              onClick={() => addToCart(product._id)}
+              disabled={!product.inStock}
+              title="Add to Cart"
+            >
+              <FontAwesomeIcon icon={faCartPlus} />
+            </button>
+          )}
           {onEdit && (
             <button
               className="product-action-btn product-action-btn-edit"

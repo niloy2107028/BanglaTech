@@ -22,7 +22,7 @@ router.get("/mine", protect, authorize("seller", "admin"), getMyProducts);
 // for create update and delete we are calling two middlewares first
 // protect : req er cookie te token ase kina jodi thake tyle req.user set kore dey
 // authorize: give roles er aktao user er ase kina jodi thake tylei agaite parbe
-router.route("/").post(protect, authorize("seller", "admin"), createProduct);
+router.route("/").post(protect, authorize("seller"), createProduct);
 router
   .route("/:id")
   .get(getProduct)

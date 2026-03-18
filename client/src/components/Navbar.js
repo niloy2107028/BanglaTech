@@ -15,8 +15,10 @@ import {
   faGear,
   faBars,
   faXmark,
+  faSignOutAlt,
 } from "@fortawesome/free-solid-svg-icons";
 import { useAuth } from "../context/AuthContext";
+import { useCart } from "../context/CartContext";
 import "./Navbar.css";
 
 const Navbar = () => {
@@ -24,14 +26,18 @@ const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams] = useSearchParams();
-  const { user, loading, isAuthenticated } = useAuth();
+  const { user, loading, isAuthenticated, logout } = useAuth();
+  const { cartItemsCount } = useCart();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  // console.log("kire 1: " + searchParams);
-  // console.log("kire 3: ");
-  // console.log(location);
-  // console.log("kire 4");
-  // console.log(searchParams);
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate("/login");
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+  };
 
   const currentQuery = searchParams.get("q") || "";
 
@@ -80,10 +86,40 @@ const Navbar = () => {
 
   const actionItems = (
     <>
+      {/* Admin specific links */}
       {!loading && isAuthenticated && user?.role === "admin" && (
-        <Link to="/admin/categories" className="navbar-button">
-          <FontAwesomeIcon icon={faGear} /> <span>Manage Categories</span>
-        </Link>
+        <>
+          <Link to="/" className="navbar-button">
+            <FontAwesomeIcon icon={faGear} /> <span>Dashboard</span>
+          </Link>
+          <Link to="/admin/categories" className="navbar-button">
+            <FontAwesomeIcon icon={faGear} /> <span>Categories</span>
+          </Link>
+          <Link to="/store" className="navbar-button visit-site-nav-btn">
+            <span>Visit Site</span>
+          </Link>
+        </>
+      )}
+
+      {/* Seller specific links */}
+      {!loading && isAuthenticated && user?.role === "seller" && (
+        <>
+          <Link to="/seller/orders" className="navbar-button">
+            <FontAwesomeIcon icon={faCartShopping} /> <span>Store Orders</span>
+          </Link>
+        </>
+      )}
+
+      {/* Buyer specific links */}
+      {!loading && isAuthenticated && user?.role === "buyer" && (
+        <>
+          <Link to="/orders" className="navbar-button">
+            <span>My Orders</span>
+          </Link>
+          <Link to="/become-seller" className="navbar-button">
+            <span>Become Seller</span>
+          </Link>
+        </>
       )}
 
       {!loading && !isAuthenticated && (
@@ -98,15 +134,25 @@ const Navbar = () => {
       )}
 
       {!loading && isAuthenticated && (
-        <Link to="/profile" className="navbar-button">
-          <FontAwesomeIcon icon={faUser} /> <span>Account</span>
-        </Link>
+        <>
+          <Link to="/profile" className="navbar-button">
+            <FontAwesomeIcon icon={faUser} /> <span>Account</span>
+          </Link>
+          <button onClick={handleLogout} className="navbar-button navbar-logout-btn">
+            <FontAwesomeIcon icon={faSignOutAlt} /> <span>Logout</span>
+          </button>
+        </>
       )}
 
-      <button className="navbar-button">
-        <FontAwesomeIcon icon={faCartShopping} />
-        <span className="navbar-cart-badge">0</span>
-      </button>
+      {/* Only show cart for buyers and guests */}
+      {(!isAuthenticated || user?.role === "buyer") && (
+        <Link to="/cart" className="navbar-button">
+          <FontAwesomeIcon icon={faCartShopping} />
+          {cartItemsCount > 0 && (
+            <span className="navbar-cart-badge">{cartItemsCount}</span>
+          )}
+        </Link>
+      )}
     </>
   );
 
@@ -122,7 +168,7 @@ const Navbar = () => {
             </h2>
           </Link>
 
-          {/* Search Bar */}
+          {/* Search Bar - Always visible */}
           <div className="navbar-search-wrapper">
             <FontAwesomeIcon
               icon={faMagnifyingGlass}
@@ -173,6 +219,7 @@ const Navbar = () => {
           </button>
         </div>
 
+        {/* Mobile Search Bar - Always visible */}
         <div className="navbar-mobile-search">
           <FontAwesomeIcon
             icon={faMagnifyingGlass}

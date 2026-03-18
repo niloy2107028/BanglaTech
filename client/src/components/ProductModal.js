@@ -38,8 +38,8 @@ const ProductModal = ({ show, mode, product, onClose, onSave }) => {
   };
 
   useEffect(() => {
-    console.log("kire : " + product.category.name);
     if (product && (mode === "edit" || mode === "view")) {
+      console.log("kire : " + (product.category?.name || "No Category"));
       setFormData({
         name: product.name || "",
         brand: product.brand || "",
@@ -47,7 +47,7 @@ const ProductModal = ({ show, mode, product, onClose, onSave }) => {
           typeof product.category === "object" && product.category !== null
             ? product.category._id
             : product.category,
-        categoryName: product.category.name,
+        categoryName: product.category?.name || "",
         price: product.price || "",
         originalPrice: product.originalPrice || "",
         description: product.description || "",
@@ -56,6 +56,21 @@ const ProductModal = ({ show, mode, product, onClose, onSave }) => {
         featured: product.featured || false,
         rating: product.rating || "",
         reviews: product.reviews || "",
+      });
+    } else if (mode === "create") {
+      setFormData({
+        name: "",
+        brand: "",
+        category: "",
+        categoryName: "",
+        price: "",
+        originalPrice: "",
+        description: "",
+        image: "",
+        stock: "",
+        featured: false,
+        rating: "",
+        reviews: "",
       });
     }
   }, [product, mode]);

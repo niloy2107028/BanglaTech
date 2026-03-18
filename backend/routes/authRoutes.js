@@ -12,13 +12,21 @@ const {
   verifyEmail,
   verifyResetOTP,
   resendOTP,
+  getUsers,
+  deleteUser,
+  updateUserRole,
 } = require("../controllers/authController");
-const { protect } = require("../middleware/auth");
+const { protect, authorize } = require("../middleware/auth");
 
 router.post("/register", register);
 router.post("/login", login);
 router.post("/logout", logout);
 router.get("/me", protect, getMe);
+
+// Admin only routes for user management
+router.get("/users", protect, authorize("admin"), getUsers);
+router.delete("/users/:id", protect, authorize("admin"), deleteUser);
+router.put("/users/:id/role", protect, authorize("admin"), updateUserRole);
 
 // Google OAuth
 router.get(

@@ -269,3 +269,32 @@
   font-size: 0.75rem;
   font-weight: bold;
 }
+
+.visit-site-nav-btn {
+  background-color: #3b82f6 !important;
+  color: white !important;
+  border-radius: 8px !important;
+  margin-left: 10px;
+}
+
+.navbar-logout-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #fe424d !important;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: opacity 0.2s;
+}
+
+.navbar-logout-btn:hover {
+  opacity: 0.8;
+}
+
+/* Mobile styles for visit site button */
+.navbar-mobile-drawer .visit-site-nav-btn {
+  margin-left: 0;
+  margin-top: 10px;
+}
