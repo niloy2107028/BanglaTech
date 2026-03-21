@@ -29,6 +29,7 @@ import OrderHistory from "./components/OrderHistory";
 import SellerOrders from "./components/SellerOrders";
 import BecomeSeller from "./components/BecomeSeller";
 import AdminDashboard from "./components/AdminDashboard";
+import Chatbot from "./components/Chatbot";
 
 import "./App.css";
 
@@ -183,6 +184,7 @@ function App() {
             <main className="main-content">
               <AppRoutes products={products} setProducts={setProducts} />
             </main>
+            <Chatbot />
             <Footer />
           </div>
         </Router>
