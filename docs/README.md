@@ -1,247 +1,282 @@
-# BanglaMart - MERN E-commerce Platform
+# BanglaMart
 
-BanglaMart is a full-stack marketplace built with MongoDB, Express, React, and Node.js.
-It supports role-based commerce flows (buyer, seller, admin), order lifecycle management, reviews, and an AI chatbot with text, voice, and image input.
+A full-stack marketplace built with the MERN stack. Supports role-based commerce flows for buyers, sellers, and admins, with an AI-powered chatbot that accepts text, voice, and image input.
 
-## What Is Implemented
+## Table of Contents
 
-### Customer and Storefront
-- Category browsing and product listing
-- Product details page
-- Search page and category-level filtering UX
-- Cart management for buyers
-- Checkout and order history for buyers
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [Project Structure](#project-structure)
+- [Getting Started](#getting-started)
+- [Environment Variables](#environment-variables)
+- [API Endpoints](#api-endpoints)
+- [License](#license)
+
+## Features
+
+### Storefront and Discovery
+
+- Fully responsive layout (mobile-first)
+- Homepage featured products section with curated listings
+- Browse products by category
+- Product detail pages
+- Product search with keyword matching
+- AI chatbot for natural language product discovery (text, voice, image)
 
 ### Authentication and Accounts
-- Email/password registration and login
-- OTP-based email verification
-- Forgot password flow with OTP verification
-- Google OAuth login via Passport
+
+- Email and password registration with OTP-based email verification
+- Forgot password flow via OTP
+- Google OAuth login
 - Profile page for signed-in users
-- HTTP-only cookie-based auth session
+- Secure session management via HTTP-only cookies
 
-### Seller and Marketplace Flows
-- Buyer can apply to become seller
-- Seller application review by admin
-- Seller product CRUD (create, update, delete)
-- Seller orders view and order item status updates
+### Buyer
 
-### Admin Controls
-- Admin dashboard
+- Add to cart, update quantities, remove items
+- Checkout and place orders
+- View order history and cancel eligible order items
+
+### Seller
+
+- Apply to become a seller (buyer-initiated)
+- Manage product listings (create, update, delete)
+- View incoming orders and update item fulfillment status
+
+### Admin
+
+- Dashboard overview
 - Category management (create, update, delete)
-- User management and role updates
-- Seller application approval/rejection
+- User management and role assignment
+- Seller application review (approve or reject)
 
-### Reviews
-- Product review creation
-- Review voting
-- Reply to reviews
+### Reviews and Ratings
+
+- Only verified buyers (users who purchased the product) can create ratings and reviews
+- Only verified buyers can vote on reviews
+- Ratings and reviews are tied to confirmed purchases to ensure authenticity
 
 ### AI Chatbot
-- Text chat endpoint
-- Voice search endpoint (Whisper via Hugging Face)
-- Image search endpoint (vision caption + product retrieval)
-- Context-aware reply/search routing with chat history
-- Product card response payloads for UI rendering
+
+- Text chat with context-aware reply and product search routing
+- Audio input in chatbot currently uses the browser Web Speech API
+- Voice search endpoint support exists via Whisper (Hugging Face)
+- Image search with vision-based caption extraction and product retrieval
+- Chat history-aware follow-up handling
+- Returns structured product card payloads for UI rendering
 
 ## Tech Stack
 
 ### Frontend
+
 - React 18
 - Vite
 - React Router
 - Axios
 - Bootstrap
-- React Markdown
+- React Markdown + remark-gfm
 
 ### Backend
-- Node.js
-- Express
-- MongoDB + Mongoose
-- JWT + HTTP-only cookies
-- Passport (Google OAuth)
-- Multer (audio/image upload)
-- Nodemailer (OTP email)
-- OpenAI SDK (used with Hugging Face router base URL)
-- ChromaDB client (vector retrieval path)
 
-## Current Project Structure
+- Node.js + Express
+- MongoDB + Mongoose
+- JWT + cookie-parser + express-session
+- Passport + passport-google-oauth20
+- Multer for audio and image uploads
+- Nodemailer for OTP emails
+- OpenAI SDK (used with Hugging Face router-compatible endpoints)
+- ChromaDB client dependency present in project
+
+## Project Structure
 
 ```text
 BanglaTech/
-  backend/
-    config/
-    controllers/
-    middleware/
-    models/
-    routes/
-    services/chatbot/
-    utils/
-    seed.js
-    server.js
-  client/
-    src/
-      components/
-      context/
-      App.js
-    vite.config.js
-  docs/
-    README.md
-  package.json
+├── backend/
+│   ├── config/
+│   ├── controllers/
+│   ├── middleware/
+│   ├── models/
+│   ├── routes/
+│   ├── services/
+│   │   └── chatbot/
+│   ├── utils/
+│   ├── seed.js
+│   └── server.js
+├── client/
+│   ├── src/
+│   │   ├── components/
+│   │   ├── context/
+│   │   ├── App.js
+│   │   └── index.js
+│   ├── package.json
+│   └── vite.config.js
+├── docs/
+└── package.json
 ```
 
-## Environment Variables
+## Getting Started
 
-Create a .env file in project root with at least the following:
+### Prerequisites
 
-```env
-PORT=5000
-MONGODB_URI=mongodb://127.0.0.1:27017/banglamart
+- Node.js (recommended: v18+)
+- MongoDB running locally or a remote MongoDB URI
 
-JWT_SECRET=replace_with_secure_value
-JWT_EXPIRE=7d
-SESSION_SECRET=replace_with_secure_value
+### 1. Install Dependencies
 
-# Email (OTP)
-EMAIL_USER=your_gmail_address
-EMAIL_PASS=your_gmail_app_password
-
-# Optional Google OAuth
-GOOGLE_CLIENT_ID=your_google_client_id
-GOOGLE_CLIENT_SECRET=your_google_client_secret
-GOOGLE_CALLBACK_URL=http://localhost:5000/api/auth/google/callback
-
-# Hugging Face (text/voice chat routing)
-HUGGINGFACE_API_KEY=your_hf_key
-# or HF_API_KEY / HF_TOKEN
-
-# Image understanding key (image route currently uses this key)
-HF_API_KEY2=your_hf_image_key
-
-# Optional model overrides
-HF_CHAT_MODEL=MiniMaxAI/MiniMax-M2.5
-HF_GENERAL_CHAT_MODEL=Qwen/Qwen2.5-7B-Instruct
-HF_IMAGE_MODEL=Qwen/Qwen3-VL-8B-Instruct:novita
-HF_IMAGE_PARSER_MODEL=MiniMaxAI/MiniMax-M2.5
-```
-
-## Run Locally
-
-### 1. Install dependencies
-
-Backend (from project root):
+From project root:
 
 ```bash
 npm install
 ```
 
-Frontend:
+Install frontend dependencies:
 
 ```bash
 cd client
 npm install
+cd ..
 ```
 
-### 2. Seed sample data
+### 2. Configure Environment Variables
 
-From project root:
+Create a `.env` file in project root (example values in next section).
+
+### 3. Seed Database (Optional but Recommended)
 
 ```bash
 npm run seed
 ```
 
-### 3. Start backend
-
-From project root:
+### 4. Start Backend
 
 ```bash
 npm run dev
 ```
 
-Backend URL: http://localhost:5000
+Backend runs at `http://localhost:5000`.
 
-### 4. Start frontend
+### 5. Start Frontend
 
-In another terminal:
+In a new terminal:
 
 ```bash
 cd client
 npm run dev
 ```
 
-Frontend URL: http://localhost:3000
+Frontend runs at `http://localhost:3000`.
 
-## API Overview
+## Environment Variables
+
+Create a `.env` file in project root:
+
+```env
+# App
+PORT=5000
+NODE_ENV=development
+
+# Database
+MONGODB_URI=mongodb://127.0.0.1:27017/banglamart
+
+# Auth
+JWT_SECRET=replace_with_secure_value
+JWT_EXPIRE=7d
+SESSION_SECRET=replace_with_secure_value
+
+# Google OAuth (optional)
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
+GOOGLE_CALLBACK_URL=http://localhost:5000/api/auth/google/callback
+
+# Email (OTP)
+EMAIL_USER=your_email@gmail.com
+EMAIL_PASS=your_app_password
+
+# AI Providers
+HUGGINGFACE_API_KEY=your_hf_key
+HF_API_KEY2=your_hf_key_for_image
+HF_CHAT_MODEL=Qwen/Qwen3-VL-8B-Instruct
+HF_GENERAL_CHAT_MODEL=Qwen/Qwen3-VL-8B-Instruct
+HF_IMAGE_MODEL=Qwen/Qwen3-VL-8B-Instruct:novita
+HF_IMAGE_PARSER_MODEL=MiniMaxAI/MiniMax-M2.5
+```
+
+## API Endpoints
 
 ### Auth
-- POST /api/auth/register
-- POST /api/auth/verify-email
-- POST /api/auth/resend-otp
-- POST /api/auth/login
-- POST /api/auth/logout
-- GET /api/auth/me
-- POST /api/auth/forgot-password
-- POST /api/auth/verify-reset-otp
-- PUT /api/auth/reset-password
-- GET /api/auth/google
-- GET /api/auth/google/callback
 
-Admin-only auth management:
-- GET /api/auth/users
-- DELETE /api/auth/users/:id
-- PUT /api/auth/users/:id/role
+- `POST /api/auth/register`
+- `POST /api/auth/verify-email`
+- `POST /api/auth/resend-otp`
+- `POST /api/auth/login`
+- `POST /api/auth/logout`
+- `GET /api/auth/me`
+- `POST /api/auth/forgot-password`
+- `POST /api/auth/verify-reset-otp`
+- `PUT /api/auth/reset-password`
+- `GET /api/auth/google`
+- `GET /api/auth/google/callback`
 
-### Products and Categories
-- GET /api/products
-- GET /api/products/:id
-- GET /api/products/mine (seller/admin)
-- POST /api/products (seller)
-- PUT /api/products/:id (seller/admin)
-- DELETE /api/products/:id (seller/admin)
+Admin user management:
 
-- GET /api/categories
-- GET /api/categories/:id
-- POST /api/categories (admin)
-- PUT /api/categories/:id (admin)
-- DELETE /api/categories/:id (admin)
+- `GET /api/auth/users`
+- `DELETE /api/auth/users/:id`
+- `PUT /api/auth/users/:id/role`
 
-### Cart and Orders
-- GET /api/cart (buyer)
-- POST /api/cart (buyer)
-- PUT /api/cart/:productId (buyer)
-- DELETE /api/cart/:productId (buyer)
-- DELETE /api/cart (buyer)
+### Products
 
-- POST /api/orders (buyer)
-- GET /api/orders/myorders (buyer)
-- GET /api/orders/:id
-- GET /api/orders/seller (seller)
-- PUT /api/orders/:orderId/item/:productId/status (seller)
-- PUT /api/orders/:orderId/item/:productId/cancel (buyer)
+- `GET /api/products`
+- `GET /api/products/:id`
+- `GET /api/products/mine` (seller/admin)
+- `POST /api/products` (seller)
+- `PUT /api/products/:id` (seller/admin)
+- `DELETE /api/products/:id` (seller/admin)
 
-### Seller Application
-- POST /api/sellers/apply (buyer)
-- GET /api/sellers/my-application (buyer)
-- GET /api/sellers/applications (admin)
-- PUT /api/sellers/applications/:id (admin)
+### Categories
+
+- `GET /api/categories`
+- `GET /api/categories/:id`
+- `POST /api/categories` (admin)
+- `PUT /api/categories/:id` (admin)
+- `DELETE /api/categories/:id` (admin)
+
+### Cart (buyer)
+
+- `GET /api/cart`
+- `POST /api/cart`
+- `PUT /api/cart/:productId`
+- `DELETE /api/cart/:productId`
+- `DELETE /api/cart`
+
+### Orders
+
+- `POST /api/orders` (buyer)
+- `GET /api/orders/myorders` (buyer)
+- `GET /api/orders/:id`
+- `GET /api/orders/seller` (seller)
+- `PUT /api/orders/:orderId/item/:productId/status` (seller)
+- `PUT /api/orders/:orderId/item/:productId/cancel` (buyer)
+
+### Seller Applications
+
+- `POST /api/sellers/apply` (buyer)
+- `GET /api/sellers/my-application` (buyer)
+- `GET /api/sellers/applications` (admin)
+- `PUT /api/sellers/applications/:id` (admin)
 
 ### Reviews
-- GET /api/reviews/:productId
-- POST /api/reviews/:productId
-- POST /api/reviews/:reviewId/vote
-- POST /api/reviews/:reviewId/reply
+
+- `GET /api/reviews/:productId`
+- `POST /api/reviews/:productId`
+- `POST /api/reviews/:reviewId/vote`
+- `POST /api/reviews/:reviewId/reply`
 
 ### Chatbot
-- POST /api/chatbot/chat
-- POST /api/chatbot/voice-search
-- POST /api/chatbot/image-search
 
-## Notes
-- Frontend dev server is configured to run on port 3000 with strictPort enabled.
-- CORS on backend currently allows http://localhost:3000.
-- Uploaded files are processed in memory (Multer memory storage) for voice/image chatbot routes.
-- Chatbot behavior depends on external model availability and configured keys.
+- `POST /api/chatbot/chat`
+- `POST /api/chatbot/voice-search`
+- `POST /api/chatbot/image-search`
 
 ## License
 
-This project is for educational use.
+This project is for educational purposes.
