@@ -1,219 +1,247 @@
-# BanglaMart - General E-commerce Website
+# BanglaMart - MERN E-commerce Platform
 
-A full-stack e-commerce platform built with the MERN stack (MongoDB, Express, React, Node.js). BanglaMart is a comprehensive online marketplace where you can shop everything from electronics to fashion, home goods, beauty products, and more!
+BanglaMart is a full-stack marketplace built with MongoDB, Express, React, and Node.js.
+It supports role-based commerce flows (buyer, seller, admin), order lifecycle management, reviews, and an AI chatbot with text, voice, and image input.
 
-## Features
+## What Is Implemented
 
-- **Category-based Shopping**: Browse through 10 diverse product categories
-- **Featured Products**: Highlighted products on the homepage
-- **Advanced Filtering**: Filter products by price (low to high, high to low) and brand
-- **Product Management**: Full CRUD operations for products (Create, Read, Update, Delete)
-- **Responsive Design**: Clean and modern UI inspired by Bikroy.com
-- **Smart Navigation**: Browser back/forward button support with page reloading
-- **MongoDB Integration**: Efficient data storage and retrieval
-- **React Router**: Seamless navigation between pages
+### Customer and Storefront
+- Category browsing and product listing
+- Product details page
+- Search page and category-level filtering UX
+- Cart management for buyers
+- Checkout and order history for buyers
 
-## Product Categories
+### Authentication and Accounts
+- Email/password registration and login
+- OTP-based email verification
+- Forgot password flow with OTP verification
+- Google OAuth login via Passport
+- Profile page for signed-in users
+- HTTP-only cookie-based auth session
 
-1. **Electronics** - TVs, cameras, headphones, and more
-2. **Fashion** - Clothing, shoes, and accessories
-3. **Home & Living** - Furniture, decor, and home essentials
-4. **Beauty & Health** - Skincare, cosmetics, and health products
-5. **Sports & Outdoors** - Fitness equipment and outdoor gear
-6. **Books & Stationery** - Books, notebooks, and art supplies
-7. **Toys & Games** - Educational toys and board games
-8. **Automotive** - Car accessories and tools
-9. **Food & Groceries** - Organic food and pantry items
-10. **Mobile & Accessories** - Smartphones, earbuds, and mobile accessories
+### Seller and Marketplace Flows
+- Buyer can apply to become seller
+- Seller application review by admin
+- Seller product CRUD (create, update, delete)
+- Seller orders view and order item status updates
+
+### Admin Controls
+- Admin dashboard
+- Category management (create, update, delete)
+- User management and role updates
+- Seller application approval/rejection
+
+### Reviews
+- Product review creation
+- Review voting
+- Reply to reviews
+
+### AI Chatbot
+- Text chat endpoint
+- Voice search endpoint (Whisper via Hugging Face)
+- Image search endpoint (vision caption + product retrieval)
+- Context-aware reply/search routing with chat history
+- Product card response payloads for UI rendering
 
 ## Tech Stack
 
 ### Frontend
-
-- **React.js** (v18.2.0) - Component-based UI framework
-- **React Router DOM** (v6) - Client-side routing
-- **Bootstrap 5** - Responsive styling
-- **Axios** - HTTP requests
-- **Vite** - Fast build tool and dev server
+- React 18
+- Vite
+- React Router
+- Axios
+- Bootstrap
+- React Markdown
 
 ### Backend
+- Node.js
+- Express
+- MongoDB + Mongoose
+- JWT + HTTP-only cookies
+- Passport (Google OAuth)
+- Multer (audio/image upload)
+- Nodemailer (OTP email)
+- OpenAI SDK (used with Hugging Face router base URL)
+- ChromaDB client (vector retrieval path)
 
-- **Node.js** - JavaScript runtime
-- **Express.js** - Web application framework
-- **MongoDB** - NoSQL database
-- **Mongoose** - MongoDB object modeling
+## Current Project Structure
 
-## Installation
-
-### Prerequisites
-
-- Node.js (v14 or higher)
-- MongoDB Server running locally on port 27017
-
-### Backend Setup
-
-1. Navigate to the project root:
-
-```bash
-cd BanglaTech
+```text
+BanglaTech/
+  backend/
+    config/
+    controllers/
+    middleware/
+    models/
+    routes/
+    services/chatbot/
+    utils/
+    seed.js
+    server.js
+  client/
+    src/
+      components/
+      context/
+      App.js
+    vite.config.js
+  docs/
+    README.md
+  package.json
 ```
 
-2. Install backend dependencies:
+## Environment Variables
+
+Create a .env file in project root with at least the following:
+
+```env
+PORT=5000
+MONGODB_URI=mongodb://127.0.0.1:27017/banglamart
+
+JWT_SECRET=replace_with_secure_value
+JWT_EXPIRE=7d
+SESSION_SECRET=replace_with_secure_value
+
+# Email (OTP)
+EMAIL_USER=your_gmail_address
+EMAIL_PASS=your_gmail_app_password
+
+# Optional Google OAuth
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
+GOOGLE_CALLBACK_URL=http://localhost:5000/api/auth/google/callback
+
+# Hugging Face (text/voice chat routing)
+HUGGINGFACE_API_KEY=your_hf_key
+# or HF_API_KEY / HF_TOKEN
+
+# Image understanding key (image route currently uses this key)
+HF_API_KEY2=your_hf_image_key
+
+# Optional model overrides
+HF_CHAT_MODEL=MiniMaxAI/MiniMax-M2.5
+HF_GENERAL_CHAT_MODEL=Qwen/Qwen2.5-7B-Instruct
+HF_IMAGE_MODEL=Qwen/Qwen3-VL-8B-Instruct:novita
+HF_IMAGE_PARSER_MODEL=MiniMaxAI/MiniMax-M2.5
+```
+
+## Run Locally
+
+### 1. Install dependencies
+
+Backend (from project root):
 
 ```bash
 npm install
 ```
 
-3. Seed the database with sample products:
-
-```bash
-node backend/seed.js
-```
-
-4. Start the backend server:
-
-```bash
-npm run dev
-```
-
-The backend will run on `http://localhost:5000`
-
-### Frontend Setup
-
-1. Navigate to the client folder:
+Frontend:
 
 ```bash
 cd client
-```
-
-2. Install frontend dependencies:
-
-```bash
 npm install
 ```
 
-3. Start the development server:
+### 2. Seed sample data
+
+From project root:
+
+```bash
+npm run seed
+```
+
+### 3. Start backend
+
+From project root:
 
 ```bash
 npm run dev
 ```
 
-The frontend will run on `http://localhost:3001` (or the next available port)
+Backend URL: http://localhost:5000
 
-## Project Structure
+### 4. Start frontend
 
-```
-BanglaTech/
-├── backend/
-│   ├── controllers/
-│   │   └── productController.js
-│   ├── models/
-│   │   └── Product.js
-│   ├── routes/
-│   │   └── productRoutes.js
-│   ├── seed.js
-│   └── server.js
-├── client/
-│   ├── src/
-│   │   ├── components/
-│   │   │   ├── CategoryCard.js
-│   │   │   ├── CategoryView.js
-│   │   │   ├── Footer.js
-│   │   │   ├── HomePage.js
-│   │   │   ├── Navbar.js
-│   │   │   ├── ProductCard.js
-│   │   │   └── ProductModal.js
-│   │   ├── App.js
-│   │   └── index.js
-│   └── package.json
-├── package.json
-└── README.md
+In another terminal:
+
+```bash
+cd client
+npm run dev
 ```
 
-## API Endpoints
+Frontend URL: http://localhost:3000
 
-### Products
+## API Overview
 
-- `GET /api/products` - Get all products
-- `GET /api/products/:id` - Get single product by ID
-- `POST /api/products` - Create new product
-- `PUT /api/products/:id` - Update product by ID
-- `DELETE /api/products/:id` - Delete product by ID
+### Auth
+- POST /api/auth/register
+- POST /api/auth/verify-email
+- POST /api/auth/resend-otp
+- POST /api/auth/login
+- POST /api/auth/logout
+- GET /api/auth/me
+- POST /api/auth/forgot-password
+- POST /api/auth/verify-reset-otp
+- PUT /api/auth/reset-password
+- GET /api/auth/google
+- GET /api/auth/google/callback
 
-## Database
+Admin-only auth management:
+- GET /api/auth/users
+- DELETE /api/auth/users/:id
+- PUT /api/auth/users/:id/role
 
-- **Database Name**: `banglamart`
-- **Connection String**: `mongodb://localhost:27017/banglamart`
-- **Collections**: products
+### Products and Categories
+- GET /api/products
+- GET /api/products/:id
+- GET /api/products/mine (seller/admin)
+- POST /api/products (seller)
+- PUT /api/products/:id (seller/admin)
+- DELETE /api/products/:id (seller/admin)
 
-### Sample Product Schema
+- GET /api/categories
+- GET /api/categories/:id
+- POST /api/categories (admin)
+- PUT /api/categories/:id (admin)
+- DELETE /api/categories/:id (admin)
 
-```javascript
-{
-  name: String,
-  price: Number,
-  category: String,
-  brand: String,
-  description: String,
-  image: String,
-  stock: Number,
-  featured: Boolean
-}
-```
+### Cart and Orders
+- GET /api/cart (buyer)
+- POST /api/cart (buyer)
+- PUT /api/cart/:productId (buyer)
+- DELETE /api/cart/:productId (buyer)
+- DELETE /api/cart (buyer)
 
-## Usage
+- POST /api/orders (buyer)
+- GET /api/orders/myorders (buyer)
+- GET /api/orders/:id
+- GET /api/orders/seller (seller)
+- PUT /api/orders/:orderId/item/:productId/status (seller)
+- PUT /api/orders/:orderId/item/:productId/cancel (buyer)
 
-1. **Homepage**: View all product categories and featured products
-2. **Category View**: Click any category card to see filtered products
-3. **Filtering**: Use price sorting and brand filters on category pages
-4. **Product Details**: Click "View Details" to see full product information
-5. **Edit/Delete**: Manage products using the edit and delete buttons
-6. **Navigation**: Use the "Back to Home" button or browser back button to return to homepage
+### Seller Application
+- POST /api/sellers/apply (buyer)
+- GET /api/sellers/my-application (buyer)
+- GET /api/sellers/applications (admin)
+- PUT /api/sellers/applications/:id (admin)
 
-## Features in Detail
+### Reviews
+- GET /api/reviews/:productId
+- POST /api/reviews/:productId
+- POST /api/reviews/:reviewId/vote
+- POST /api/reviews/:reviewId/reply
 
-### Category-Based Navigation
-
-- Click on any of the 10 category cards on the homepage
-- Each category shows the number of available products
-- Navigate seamlessly between different categories
-
-### Product Filtering
-
-- **Sort by Price**: Choose "Low to High" or "High to Low"
-- **Filter by Brand**: Select from available brands in each category
-- **Reset Filters**: Clear all filters with one click
-
-### Product Management
-
-- **View**: See detailed product information including description, price, and stock
-- **Edit**: Update product details through a modal interface
-- **Delete**: Remove products with confirmation prompt
-
-## Browser Compatibility
-
-- Chrome (recommended)
-- Firefox
-- Edge
-- Safari
+### Chatbot
+- POST /api/chatbot/chat
+- POST /api/chatbot/voice-search
+- POST /api/chatbot/image-search
 
 ## Notes
-
-- The database is seeded with 24 sample products across all categories
-- Browser back/forward navigation triggers page reload for consistent state
-- All category links and navigation use page reload for reliability
-
-## Future Enhancements
-
-- User authentication and authorization
-- Shopping cart functionality
-- Order management system
-- Payment gateway integration
-- Product search functionality
-- Product reviews and ratings
-- Wishlist feature
-- Admin dashboard
+- Frontend dev server is configured to run on port 3000 with strictPort enabled.
+- CORS on backend currently allows http://localhost:3000.
+- Uploaded files are processed in memory (Multer memory storage) for voice/image chatbot routes.
+- Chatbot behavior depends on external model availability and configured keys.
 
 ## License
 
-This project is for educational purposes.
+This project is for educational use.
