@@ -15,6 +15,7 @@ const ProductList = ({
   showOwnerActions = false,
   refreshEndpoint = "/api/products",
 }) => {
+  const navigate = useNavigate();
   const [filteredProducts, setFilteredProducts] = useState([]);
   // Stores products after filtering & sorting.
   const [priceSort, setPriceSort] = useState("");
@@ -79,9 +80,7 @@ const ProductList = ({
   // ei 3 tar jekono akta change hoile ei portion run hbe
 
   const handleView = (product) => {
-    setCurrentProduct(product);
-    setModalMode("view");
-    setShowModal(true);
+    navigate(`/product/${product._id}`);
   };
 
   const handleEdit = (product) => {

@@ -6,8 +6,6 @@ import axios from "axios";
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  console.log("i am inside auth context ");
-
   const [user, setUser] = useState(null);
   // null = not logged in
   // const [loading, setLoading] = useState(true);
@@ -39,14 +37,11 @@ export const AuthProvider = ({ children }) => {
 
   const checkAuth = async () => {
     try {
-      console.log("i am inside check auth ");
       const res = await axios.get("/api/auth/me", { withCredentials: true });
-      setUser(res.data.user);
-    } catch {
+      setUser(res.data?.user || null);
+    } catch (error) {
       setUser(null);
     } finally {
-      // finally  ALWAYS runs at the end
-      console.log("finally");
       setLoading(false);
     }
   };

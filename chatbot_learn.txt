@@ -1,1 +1,0 @@
-install sdk => npm install groq-sdk

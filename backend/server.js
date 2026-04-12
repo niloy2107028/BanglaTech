@@ -96,7 +96,10 @@ app.use("/api/auth", require("./routes/authRoutes"));
 app.use("/api/cart", require("./routes/cartRoutes"));
 app.use("/api/orders", require("./routes/orderRoutes"));
 app.use("/api/sellers", require("./routes/sellerRoutes"));
-app.use("/api/chatbot", require("./routes/chatbotRoutes"));
+const chatbotRoutes = require("./routes/chatbotRoutes");
+app.use("/api/chatbot", chatbotRoutes);
+app.use("/api", chatbotRoutes);
+app.use("/api/reviews", require("./routes/reviewRoutes"));
 
 // Root route
 app.get("/", (req, res) => {

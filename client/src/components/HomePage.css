@@ -6,9 +6,9 @@
 }
 
 .homepage-container {
-  max-width: 1350px;
+  max-width: 1800px;
+  width: 95%;
   margin: 0 auto;
-  /* background-color: red; */
   padding: 1rem;
 }
 

@@ -1,5 +1,13 @@
 const Product = require("../models/Product");
 const Category = require("../models/Category");
+const { invalidateChatbotCaches } = require("../services/chatbot/cacheService");
+const { markVectorIndexStale, triggerVectorRefresh } = require("../services/chatbot/searchService");
+
+function onCatalogMutation() {
+  invalidateChatbotCaches();
+  markVectorIndexStale();
+  triggerVectorRefresh();
+}
 
 // @desc    Get all products
 // @route   GET /api/products
@@ -129,6 +137,8 @@ exports.createProduct = async (req, res) => {
     await product.populate("category", "name");
     await product.populate("seller", "name email role");
 
+    onCatalogMutation();
+
     res.status(201).json({
       success: true,
       message: "Product created successfully",
@@ -189,6 +199,8 @@ exports.updateProduct = async (req, res) => {
     await product.populate("category", "name");
     await product.populate("seller", "name email role");
 
+    onCatalogMutation();
+
     res.json({
       success: true,
       message: "Product updated successfully",
@@ -228,6 +240,8 @@ exports.deleteProduct = async (req, res) => {
     }
 
     await product.deleteOne();
+
+    onCatalogMutation();
 
     res.json({
       success: true,

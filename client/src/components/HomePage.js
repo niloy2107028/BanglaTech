@@ -90,10 +90,7 @@ const HomePage = () => {
   // Set mode to view
   // Open modal
   const handleView = (product) => {
-    // a function
-    setCurrentProduct(product);
-    setModalMode("view");
-    setShowModal(true);
+    navigate(`/product/${product._id}`);
   };
 
   // Same as view but mode is "edit".
