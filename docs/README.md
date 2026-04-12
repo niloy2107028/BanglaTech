@@ -26,6 +26,7 @@ BanglaMart is a production-inspired online marketplace that covers the full comm
 ## Features
 
 ### 🏪 Storefront & Discovery
+
 - Category-based product browsing across diverse listings
 - Featured products section on the homepage
 - Advanced filtering by price (low → high, high → low) and brand
@@ -34,6 +35,7 @@ BanglaMart is a production-inspired online marketplace that covers the full comm
 - Client-side navigation powered by React Router with browser history support
 
 ### 🔐 Authentication & Accounts
+
 - Email/password registration with OTP-based email verification
 - Forgot password flow via OTP
 - Google OAuth login
@@ -41,27 +43,33 @@ BanglaMart is a production-inspired online marketplace that covers the full comm
 - User profile page for signed-in users
 
 ### 🛒 Buyer
+
 - Add to cart, update quantities, remove items
 - Checkout and place orders
 - View order history and cancel eligible order items
 
 ### 🧾 Seller
+
 - Apply to become a seller (buyer-initiated application)
 - Manage product listings with full CRUD operations
 - View and update incoming order fulfillment status
+- View hot-category insights to identify products performing best by most sold or most clicked
 
 ### 🛠️ Admin
+
 - Dashboard overview
 - Category management (create, update, delete)
 - User management and role assignment
 - Seller application review (approve or reject)
 
 ### ⭐ Reviews & Ratings
+
 - Reviews and ratings restricted to verified purchasers only
 - Review voting also gated to confirmed buyers
 - All review activity tied to purchase history to ensure authenticity
 
 ### 🤖 AI Chatbot
+
 - Text chat with context-aware replies and product search routing
 - Voice input via browser Web Speech API (Whisper/Hugging Face endpoint also supported)
 - Image input with vision-based caption extraction and product retrieval
@@ -73,24 +81,26 @@ BanglaMart is a production-inspired online marketplace that covers the full comm
 ## Tech Stack
 
 ### Frontend
-| Technology | Purpose |
-|---|---|
-| React 18 + Vite | UI framework and build tooling |
-| React Router | Client-side navigation |
-| Axios | HTTP client |
-| Bootstrap | UI component library |
-| React Markdown + remark-gfm | Chatbot response rendering |
+
+| Technology                  | Purpose                        |
+| --------------------------- | ------------------------------ |
+| React 18 + Vite             | UI framework and build tooling |
+| React Router                | Client-side navigation         |
+| Axios                       | HTTP client                    |
+| Bootstrap                   | UI component library           |
+| React Markdown + remark-gfm | Chatbot response rendering     |
 
 ### Backend
-| Technology | Purpose |
-|---|---|
-| Node.js + Express | Server and API layer |
-| MongoDB + Mongoose | Database and ODM |
-| JWT + cookie-parser + express-session | Authentication and session management |
-| Passport + passport-google-oauth20 | Google OAuth |
-| Multer | Audio and image file uploads |
-| Nodemailer | OTP email delivery |
-| OpenAI SDK | AI provider integration (via Hugging Face-compatible endpoints) |
+
+| Technology                            | Purpose                                                         |
+| ------------------------------------- | --------------------------------------------------------------- |
+| Node.js + Express                     | Server and API layer                                            |
+| MongoDB + Mongoose                    | Database and ODM                                                |
+| JWT + cookie-parser + express-session | Authentication and session management                           |
+| Passport + passport-google-oauth20    | Google OAuth                                                    |
+| Multer                                | Audio and image file uploads                                    |
+| Nodemailer                            | OTP email delivery                                              |
+| OpenAI SDK                            | AI provider integration (via Hugging Face-compatible endpoints) |
 
 ---
 
@@ -126,17 +136,20 @@ BanglaTech/
 ## Getting Started
 
 ### Prerequisites
+
 - Node.js v18 or higher
 - MongoDB (local instance or remote URI)
 
 ### 1. Install Dependencies
 
 From the project root:
+
 ```bash
 npm install
 ```
 
 Then install frontend dependencies:
+
 ```bash
 cd client && npm install && cd ..
 ```
@@ -145,7 +158,7 @@ cd client && npm install && cd ..
 
 Create a `.env` file in the project root. See the [Environment Variables](#environment-variables) section below for all required values.
 
-### 3. Seed the Database *(Optional but Recommended)*
+### 3. Seed the Database _(Optional but Recommended)_
 
 ```bash
 npm run seed
@@ -162,6 +175,7 @@ The backend runs at **http://localhost:5000**.
 ### 5. Start the Frontend
 
 In a separate terminal:
+
 ```bash
 cd client
 npm run dev
@@ -212,90 +226,90 @@ HF_IMAGE_PARSER_MODEL=MiniMaxAI/MiniMax-M2.5
 
 ### Auth — `/api/auth`
 
-| Method | Endpoint | Description | Access |
-|---|---|---|---|
-| POST | `/register` | Register a new user | Public |
-| POST | `/verify-email` | Verify email via OTP | Public |
-| POST | `/resend-otp` | Resend OTP | Public |
-| POST | `/login` | Log in | Public |
-| POST | `/logout` | Log out | Auth |
-| GET | `/me` | Get current user | Auth |
-| POST | `/forgot-password` | Request password reset OTP | Public |
-| POST | `/verify-reset-otp` | Verify reset OTP | Public |
-| PUT | `/reset-password` | Reset password | Public |
-| GET | `/google` | Initiate Google OAuth | Public |
-| GET | `/google/callback` | Google OAuth callback | Public |
-| GET | `/users` | List all users | Admin |
-| DELETE | `/users/:id` | Delete a user | Admin |
-| PUT | `/users/:id/role` | Update a user's role | Admin |
+| Method | Endpoint            | Description                | Access |
+| ------ | ------------------- | -------------------------- | ------ |
+| POST   | `/register`         | Register a new user        | Public |
+| POST   | `/verify-email`     | Verify email via OTP       | Public |
+| POST   | `/resend-otp`       | Resend OTP                 | Public |
+| POST   | `/login`            | Log in                     | Public |
+| POST   | `/logout`           | Log out                    | Auth   |
+| GET    | `/me`               | Get current user           | Auth   |
+| POST   | `/forgot-password`  | Request password reset OTP | Public |
+| POST   | `/verify-reset-otp` | Verify reset OTP           | Public |
+| PUT    | `/reset-password`   | Reset password             | Public |
+| GET    | `/google`           | Initiate Google OAuth      | Public |
+| GET    | `/google/callback`  | Google OAuth callback      | Public |
+| GET    | `/users`            | List all users             | Admin  |
+| DELETE | `/users/:id`        | Delete a user              | Admin  |
+| PUT    | `/users/:id/role`   | Update a user's role       | Admin  |
 
 ### Products — `/api/products`
 
-| Method | Endpoint | Description | Access |
-|---|---|---|---|
-| GET | `/` | List all products | Public |
-| GET | `/:id` | Get a product | Public |
-| GET | `/mine` | Get seller's own products | Seller / Admin |
-| POST | `/` | Create a product | Seller |
-| PUT | `/:id` | Update a product | Seller / Admin |
-| DELETE | `/:id` | Delete a product | Seller / Admin |
+| Method | Endpoint | Description               | Access         |
+| ------ | -------- | ------------------------- | -------------- |
+| GET    | `/`      | List all products         | Public         |
+| GET    | `/:id`   | Get a product             | Public         |
+| GET    | `/mine`  | Get seller's own products | Seller / Admin |
+| POST   | `/`      | Create a product          | Seller         |
+| PUT    | `/:id`   | Update a product          | Seller / Admin |
+| DELETE | `/:id`   | Delete a product          | Seller / Admin |
 
 ### Categories — `/api/categories`
 
-| Method | Endpoint | Description | Access |
-|---|---|---|---|
-| GET | `/` | List all categories | Public |
-| GET | `/:id` | Get a category | Public |
-| POST | `/` | Create a category | Admin |
-| PUT | `/:id` | Update a category | Admin |
-| DELETE | `/:id` | Delete a category | Admin |
+| Method | Endpoint | Description         | Access |
+| ------ | -------- | ------------------- | ------ |
+| GET    | `/`      | List all categories | Public |
+| GET    | `/:id`   | Get a category      | Public |
+| POST   | `/`      | Create a category   | Admin  |
+| PUT    | `/:id`   | Update a category   | Admin  |
+| DELETE | `/:id`   | Delete a category   | Admin  |
 
 ### Cart — `/api/cart`
 
-| Method | Endpoint | Description | Access |
-|---|---|---|---|
-| GET | `/` | Get cart | Buyer |
-| POST | `/` | Add item to cart | Buyer |
-| PUT | `/:productId` | Update item quantity | Buyer |
-| DELETE | `/:productId` | Remove item from cart | Buyer |
-| DELETE | `/` | Clear entire cart | Buyer |
+| Method | Endpoint      | Description           | Access |
+| ------ | ------------- | --------------------- | ------ |
+| GET    | `/`           | Get cart              | Buyer  |
+| POST   | `/`           | Add item to cart      | Buyer  |
+| PUT    | `/:productId` | Update item quantity  | Buyer  |
+| DELETE | `/:productId` | Remove item from cart | Buyer  |
+| DELETE | `/`           | Clear entire cart     | Buyer  |
 
 ### Orders — `/api/orders`
 
-| Method | Endpoint | Description | Access |
-|---|---|---|---|
-| POST | `/` | Place an order | Buyer |
-| GET | `/myorders` | Get buyer's orders | Buyer |
-| GET | `/:id` | Get order by ID | Auth |
-| GET | `/seller` | Get seller's incoming orders | Seller |
-| PUT | `/:orderId/item/:productId/status` | Update fulfillment status | Seller |
-| PUT | `/:orderId/item/:productId/cancel` | Cancel an order item | Buyer |
+| Method | Endpoint                           | Description                  | Access |
+| ------ | ---------------------------------- | ---------------------------- | ------ |
+| POST   | `/`                                | Place an order               | Buyer  |
+| GET    | `/myorders`                        | Get buyer's orders           | Buyer  |
+| GET    | `/:id`                             | Get order by ID              | Auth   |
+| GET    | `/seller`                          | Get seller's incoming orders | Seller |
+| PUT    | `/:orderId/item/:productId/status` | Update fulfillment status    | Seller |
+| PUT    | `/:orderId/item/:productId/cancel` | Cancel an order item         | Buyer  |
 
 ### Seller Applications — `/api/sellers`
 
-| Method | Endpoint | Description | Access |
-|---|---|---|---|
-| POST | `/apply` | Submit seller application | Buyer |
-| GET | `/my-application` | View own application status | Buyer |
-| GET | `/applications` | List all applications | Admin |
-| PUT | `/applications/:id` | Approve or reject application | Admin |
+| Method | Endpoint            | Description                   | Access |
+| ------ | ------------------- | ----------------------------- | ------ |
+| POST   | `/apply`            | Submit seller application     | Buyer  |
+| GET    | `/my-application`   | View own application status   | Buyer  |
+| GET    | `/applications`     | List all applications         | Admin  |
+| PUT    | `/applications/:id` | Approve or reject application | Admin  |
 
 ### Reviews — `/api/reviews`
 
-| Method | Endpoint | Description | Access |
-|---|---|---|---|
-| GET | `/:productId` | Get reviews for a product | Public |
-| POST | `/:productId` | Submit a review | Verified Buyer |
-| POST | `/:reviewId/vote` | Vote on a review | Verified Buyer |
-| POST | `/:reviewId/reply` | Reply to a review | Auth |
+| Method | Endpoint           | Description               | Access         |
+| ------ | ------------------ | ------------------------- | -------------- |
+| GET    | `/:productId`      | Get reviews for a product | Public         |
+| POST   | `/:productId`      | Submit a review           | Verified Buyer |
+| POST   | `/:reviewId/vote`  | Vote on a review          | Verified Buyer |
+| POST   | `/:reviewId/reply` | Reply to a review         | Auth           |
 
 ### Chatbot — `/api/chatbot`
 
-| Method | Endpoint | Description | Access |
-|---|---|---|---|
-| POST | `/chat` | Text-based chat | Auth |
-| POST | `/voice-search` | Voice/audio search | Auth |
-| POST | `/image-search` | Image-based search | Auth |
+| Method | Endpoint        | Description        | Access |
+| ------ | --------------- | ------------------ | ------ |
+| POST   | `/chat`         | Text-based chat    | Auth   |
+| POST   | `/voice-search` | Voice/audio search | Auth   |
+| POST   | `/image-search` | Image-based search | Auth   |
 
 ---
 
