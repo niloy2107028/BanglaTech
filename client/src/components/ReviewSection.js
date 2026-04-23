@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import axios from "../api";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStar, faThumbsUp, faThumbsDown, faReply, faShieldAlt } from "@fortawesome/free-solid-svg-icons";
 import { useAuth } from "../context/AuthContext";
@@ -176,20 +176,20 @@ const ReviewSection = ({ productId, productSellerId }) => {
 
               <div className="review-actions">
                 <button 
-                  className={`vote-btn ${review.upvotes.includes(user?._id) ? "active-up" : ""}`}
+                  className={`vote-btn ${(review.upvotes || []).includes(user?._id) ? "active-up" : ""}`}
                   onClick={() => handleVote(review._id, "upvote")}
                 >
-                  <FontAwesomeIcon icon={faThumbsUp} /> {review.upvotes.length}
+                  <FontAwesomeIcon icon={faThumbsUp} /> {(review.upvotes || []).length}
                 </button>
                 <button 
-                  className={`vote-btn ${review.downvotes.includes(user?._id) ? "active-down" : ""}`}
+                  className={`vote-btn ${(review.downvotes || []).includes(user?._id) ? "active-down" : ""}`}
                   onClick={() => handleVote(review._id, "downvote")}
                 >
-                  <FontAwesomeIcon icon={faThumbsDown} /> {review.downvotes.length}
+                  <FontAwesomeIcon icon={faThumbsDown} /> {(review.downvotes || []).length}
                 </button>
                 
                 {/* Reply logic: Only reviewer or product seller can reply */}
-                {(user?._id === review.user || user?._id === productSellerId) && (
+                {(String(user?._id || "") === String(review.user || "") || String(user?._id || "") === String(productSellerId || "")) && (
                   <button className="reply-btn" onClick={() => setReplyingTo(replyingTo === review._id ? null : review._id)}>
                     <FontAwesomeIcon icon={faReply} /> Reply
                   </button>
@@ -198,11 +198,11 @@ const ReviewSection = ({ productId, productSellerId }) => {
 
               {/* Replies Section */}
               <div className="replies-container">
-                {review.replies.map((reply, idx) => (
+                {(review.replies || []).map((reply, idx) => (
                   <div key={idx} className="reply-item">
                     <div className="reply-header">
                       {reply.name} 
-                      {reply.user === productSellerId && <span className="text-blue-500 text-xs ml-2">[Seller]</span>}
+                      {String(reply.user || "") === String(productSellerId || "") && <span className="text-blue-500 text-xs ml-2">[Seller]</span>}
                     </div>
                     <p className="reply-text">{reply.text}</p>
                   </div>

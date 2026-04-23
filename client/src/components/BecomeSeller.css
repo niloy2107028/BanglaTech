@@ -49,7 +49,6 @@
   border: 1px solid #d1d5db;
   border-radius: 10px;
   font-size: 1rem;
-  transition: all 0.2s;
 }
 
 .become-seller-form textarea {
@@ -74,14 +73,18 @@
   font-size: 1.1rem;
   font-weight: 700;
   cursor: pointer;
-  transition: all 0.2s;
   margin-top: 10px;
 }
 
-.submit-btn:hover:not(:disabled) {
-  background: #ef3540;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(254, 66, 77, 0.2);
+@media (hover: hover) and (pointer: fine) {
+  .submit-btn:not(:disabled):hover {
+    background: #dc2626;
+  }
+
+  .become-seller-container:hover,
+  .status-card:hover {
+    box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
+  }
 }
 
 .status-card {

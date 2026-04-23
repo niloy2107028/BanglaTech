@@ -74,11 +74,14 @@
   font-weight: 600;
   color: #111827;
   text-decoration: none;
-  transition: color 0.2s;
 }
 
-.cart-item-name:hover {
-  color: #fe424d;
+@media (hover: hover) and (pointer: fine) {
+  .cart-item-name:hover {
+    color: var(--primary-dark);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
 }
 
 .cart-item-price {
@@ -111,17 +114,18 @@
   border-radius: 6px;
   cursor: pointer;
   color: #111827;
-  transition: all 0.2s;
-}
-
-.quantity-controls button:hover:not(:disabled) {
-  background: #fe424d;
-  color: white;
 }
 
 .quantity-controls button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .quantity-controls button:not(:disabled):hover {
+    background: #e2e8f0;
+    color: var(--primary-dark);
+  }
 }
 
 .quantity-controls span {
@@ -136,11 +140,12 @@
   color: #9ca3af;
   cursor: pointer;
   font-size: 1.1rem;
-  transition: color 0.2s;
 }
 
-.remove-btn:hover {
-  color: #ef4444;
+@media (hover: hover) and (pointer: fine) {
+  .remove-btn:hover {
+    color: #dc2626;
+  }
 }
 
 .cart-item-total {
@@ -204,13 +209,13 @@
   align-items: center;
   justify-content: center;
   gap: 10px;
-  transition: all 0.2s;
 }
 
-.checkout-btn:hover {
-  background: #ef3540;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(254, 66, 77, 0.2);
+@media (hover: hover) and (pointer: fine) {
+  .checkout-btn:hover,
+  .btn-primary:hover {
+    background: #dc2626;
+  }
 }
 
 .continue-shopping {
@@ -223,8 +228,12 @@
   font-size: 0.95rem;
 }
 
-.continue-shopping:hover {
-  color: #fe424d;
+@media (hover: hover) and (pointer: fine) {
+  .continue-shopping:hover {
+    color: var(--primary-dark);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
 }
 
 .cart-empty {

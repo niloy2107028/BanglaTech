@@ -1,81 +1,44 @@
-/* Custom scrollbar - not possible with Tailwind */
 ::-webkit-scrollbar {
   width: 10px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: #edf2f7;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #fe424d;
-  border-radius: 5px;
+  background: linear-gradient(180deg, #0f9d7a, #ff5a5f);
+  border-radius: 999px;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: #ff6b35;
-}
-
-/* Spin animation for loading spinner */
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
-.animate-spin-slow {
-  animation: spin 1s linear infinite;
-}
-
-/* Modal slide-in animation */
-@keyframes modalSlideIn {
-  from {
-    opacity: 0;
-    transform: translateY(-30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.animate-modal-slide {
-  animation: modalSlideIn 0.3s ease;
-}
-
-/* App container */
-.app-container {
+.app-shell {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  width: 100%;
-  overflow-x: hidden;
-  /* to prevent horizontal scrolling  */
 }
 
-/* Loading state */
+.main-content {
+  flex: 1;
+}
+
 .app-loading {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 100vh;
+  min-height: 60vh;
   gap: 1rem;
 }
 
 .app-loading-spinner {
-  width: 3rem;
-  height: 3rem;
-  border: 4px solid #d1d5db;
-  border-top-color: #10b981;
+  width: 3.25rem;
+  height: 3.25rem;
+  border: 4px solid rgba(15, 157, 122, 0.16);
+  border-top-color: var(--primary);
   border-radius: 50%;
-  animation: spin 1s linear infinite;
 }
 
 .app-loading-text {
-  font-size: 1.25rem;
-  color: #4b5563;
+  font-size: 1.05rem;
+  color: var(--muted);
 }

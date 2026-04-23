@@ -15,13 +15,8 @@
   color: #64748b;
   font-weight: 600;
   font-size: 0.95rem;
-  transition: all 0.2s;
   position: relative;
   padding-bottom: 10px;
-}
-
-.admin-local-nav a:hover {
-  color: #0f172a;
 }
 
 .admin-local-nav a.active {
@@ -57,14 +52,23 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  transition: all 0.2s ease;
   box-shadow: 0 4px 12px rgba(254, 66, 77, 0.2);
 }
 
-.btn-add-category:hover {
-  background-color: #e33b45;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(254, 66, 77, 0.3);
+@media (hover: hover) and (pointer: fine) {
+  .admin-local-nav a:hover {
+    color: #fe424d;
+  }
+
+  .btn-add-category:hover,
+  .btn-submit:hover {
+    background: #dc2626;
+  }
+
+  .category-card:hover {
+    border-color: rgba(15, 157, 122, 0.32);
+    box-shadow: 0 8px 22px rgba(15, 23, 42, 0.08);
+  }
 }
 
 /* Category Grid */
@@ -79,14 +83,8 @@
   border-radius: 20px;
   border: 1px solid #e2e8f0;
   overflow: hidden;
-  transition: all 0.3s ease;
   display: flex;
   flex-direction: column;
-}
-
-.category-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.05);
 }
 
 .category-card-image-box {
@@ -100,11 +98,6 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.3s ease;
-}
-
-.category-card:hover .category-img {
-  transform: scale(1.05);
 }
 
 .category-card-details {
@@ -148,7 +141,6 @@
   align-items: center;
   justify-content: center;
   gap: 6px;
-  transition: all 0.2s;
 }
 
 .btn-icon-edit {
@@ -156,17 +148,21 @@
   color: #0369a1;
 }
 
-.btn-icon-edit:hover {
-  background-color: #e0f2fe;
-}
-
 .btn-icon-delete {
   background-color: #fff1f2;
   color: #be123c;
 }
 
-.btn-icon-delete:hover {
-  background-color: #fee2e2;
+@media (hover: hover) and (pointer: fine) {
+  .btn-icon-edit:hover {
+    background-color: #e0f2fe;
+    color: #075985;
+  }
+
+  .btn-icon-delete:hover {
+    background-color: #ffe4e6;
+    color: #9f1239;
+  }
 }
 
 /* Modal Enhancements */
@@ -189,12 +185,6 @@
   border-radius: 24px;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
   overflow: hidden;
-  animation: modalIn 0.3s ease-out;
-}
-
-@keyframes modalIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
 }
 
 .admin-modal-header {
@@ -222,12 +212,13 @@
   justify-content: center;
   color: #64748b;
   cursor: pointer;
-  transition: all 0.2s;
 }
 
-.btn-modal-close:hover {
-  background: #e2e8f0;
-  color: #0f172a;
+@media (hover: hover) and (pointer: fine) {
+  .btn-modal-close:hover {
+    background: #e2e8f0;
+    color: #334155;
+  }
 }
 
 .admin-form {
@@ -253,7 +244,6 @@
   border-radius: 12px;
   font-size: 1rem;
   color: #0f172a;
-  transition: all 0.2s;
 }
 
 .form-input:focus, .form-textarea:focus {
@@ -305,7 +295,6 @@
   font-weight: 700;
   font-size: 1rem;
   cursor: pointer;
-  transition: all 0.2s;
 }
 
 .btn-cancel {
@@ -314,20 +303,18 @@
   color: #64748b;
 }
 
-.btn-cancel:hover {
-  background: #f1f5f9;
-  color: #0f172a;
-}
-
 .btn-submit {
   background: #fe424d;
   border: none;
   color: white;
 }
 
-.btn-submit:hover {
-  background: #e33b45;
-  box-shadow: 0 4px 12px rgba(254, 66, 77, 0.2);
+@media (hover: hover) and (pointer: fine) {
+  .btn-cancel:hover {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+    color: #334155;
+  }
 }
 
 @media (max-width: 640px) {

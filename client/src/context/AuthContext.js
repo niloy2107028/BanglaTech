@@ -1,7 +1,7 @@
 // AuthContext is used to manage and share authentication state (user login status) across the entire React application without passing props.
 
 import React, { createContext, useContext, useState, useEffect } from "react";
-import axios from "axios";
+import axios from "../api";
 
 const AuthContext = createContext();
 
@@ -42,6 +42,7 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       setUser(null);
     } finally {
+      // finally  ALWAYS runs at the end
       setLoading(false);
     }
   };
@@ -75,10 +76,6 @@ export const AuthProvider = ({ children }) => {
   // !! means convert a value to boolean.
   const isAuthenticated = !!user;
 
-  const p = () => {
-    console.log("niloy");
-  };
-
   return (
     <AuthContext.Provider
       value={{
@@ -88,7 +85,6 @@ export const AuthProvider = ({ children }) => {
         login,
         register,
         logout,
-        p,
         refreshAuth: checkAuth,
       }}
     >

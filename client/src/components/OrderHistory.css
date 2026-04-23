@@ -31,6 +31,12 @@
   padding: 24px;
 }
 
+@media (hover: hover) and (pointer: fine) {
+  .order-card:hover {
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+  }
+}
+
 .order-header {
   display: flex;
   justify-content: space-between;
@@ -115,11 +121,12 @@
   font-size: 0.8rem;
   font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.2s;
 }
 
-.cancel-item-btn:hover {
-  background-color: #dc2626;
+@media (hover: hover) and (pointer: fine) {
+  .cancel-item-btn:hover {
+    background-color: #dc2626;
+  }
 }
 
 .item-cancellation-msg {

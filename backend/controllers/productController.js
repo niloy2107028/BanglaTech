@@ -1,7 +1,23 @@
 const Product = require("../models/Product");
 const Category = require("../models/Category");
+const UserPreference = require("../models/UserPreference");
 const { invalidateChatbotCaches } = require("../services/chatbot/cacheService");
-const { markVectorIndexStale, triggerVectorRefresh } = require("../services/chatbot/searchService");
+const {
+  markVectorIndexStale,
+  triggerVectorRefresh,
+} = require("../services/chatbot/searchService");
+const {
+  trackUserKeywords,
+  splitSearchTerms,
+  extractProductKeywords,
+  scoreProductAgainstKeywords,
+} = require("../utils/recommendationKeywords");
+const {
+  buildSearchVocabulary,
+  buildSearchQuery,
+  suggestSearchCorrection,
+  normalizeText,
+} = require("../utils/searchCorrection");
 
 function onCatalogMutation() {
   invalidateChatbotCaches();
@@ -9,56 +25,239 @@ function onCatalogMutation() {
   triggerVectorRefresh();
 }
 
+async function resolveCategoryFilter(category) {
+  if (!category) return null;
+  const categoryDoc = await Category.findOne({ name: category });
+  return categoryDoc?._id || null;
+}
+
+async function fetchProductsWithQuery(query, pageNumber, limit) {
+  const products = await Product.find(query)
+    .populate("category", "name")
+    .populate("seller", "name email")
+    .sort({ createdAt: -1 })
+    .skip((pageNumber - 1) * limit)
+    .limit(limit);
+
+  const total = await Product.countDocuments(query);
+
+  return { products, total };
+}
+
 // @desc    Get all products
 // @route   GET /api/products
 // @access  Public
 exports.getAllProducts = async (req, res) => {
   try {
-    const { search, category, featured, page = 1 } = req.query;
+    const { search, category, categoryName, featured, page = 1 } = req.query;
     const limit = 15;
-    let query = {};
+    const pageNumber = Math.max(Number(page) || 1, 1);
+    const baseQuery = {};
+    const categoryFilter = category || categoryName;
 
-    if (search) {
-      const words = search.trim().split(/\s+/);
-      query.$and = words.map((word) => ({
-        $or: [
-          { name: { $regex: word, $options: "i" } },
-          { brand: { $regex: word, $options: "i" } },
-          { categoryName: { $regex: word, $options: "i" } },
-        ],
-      }));
-    }
-
-    if (category) {
-      const categoryDoc = await Category.findOne({ name: category });
-      if (categoryDoc) {
-        query.category = categoryDoc._id;
+    if (categoryFilter) {
+      const categoryId = await resolveCategoryFilter(categoryFilter);
+      if (categoryId) {
+        baseQuery.category = categoryId;
+      } else {
+        baseQuery.categoryName = { $regex: categoryFilter, $options: "i" };
       }
     }
 
     if (featured === "true") {
-      query.featured = true;
+      baseQuery.featured = true;
     }
 
-    const products = await Product.find(query)
-      .populate("category", "name")
-      .populate("seller", "name email")
-      .sort({ createdAt: -1 });
+    const originalSearch = String(search || "").trim();
 
-    const total = await Product.countDocuments(query);
+    if (!originalSearch) {
+      const { products, total } = await fetchProductsWithQuery(
+        baseQuery,
+        pageNumber,
+        limit,
+      );
+
+      return res.json({
+        success: true,
+        count: products.length,
+        total,
+        page: pageNumber,
+        pages: Math.ceil(total / limit),
+        data: products,
+        searchMeta: null,
+      });
+    }
+
+    const originalQuery = {
+      ...baseQuery,
+      ...buildSearchQuery(originalSearch),
+    };
+
+    const originalResult = await fetchProductsWithQuery(
+      originalQuery,
+      pageNumber,
+      limit,
+    );
+
+    const vocabularyProducts = await Product.find(baseQuery)
+      .select("name brand categoryName description")
+      .lean();
+    const vocabulary = buildSearchVocabulary(vocabularyProducts);
+    const suggestion = suggestSearchCorrection(originalSearch, vocabulary);
+
+    let didYouMean = suggestion.changed ? suggestion.correctedQuery : null;
+
+    if (suggestion.changed && normalizeText(suggestion.correctedQuery)) {
+      const correctedQuery = {
+        ...baseQuery,
+        ...buildSearchQuery(suggestion.correctedQuery),
+      };
+      const correctedResult = await fetchProductsWithQuery(
+        correctedQuery,
+        pageNumber,
+        limit,
+      );
+
+      didYouMean = correctedResult.total > 0 ? suggestion.correctedQuery : null;
+    }
 
     res.json({
       success: true,
-      count: products.length,
-      total,
-      page: Number(page),
-      pages: Math.ceil(total / limit),
-      data: products,
+      count: originalResult.products.length,
+      total: originalResult.total,
+      page: pageNumber,
+      pages: Math.ceil(originalResult.total / limit),
+      data: originalResult.products,
+      searchMeta: {
+        originalQuery: originalSearch,
+        correctedQuery: suggestion.changed ? suggestion.correctedQuery : null,
+        appliedQuery: originalSearch,
+        wasCorrected: false,
+        didYouMean,
+      },
     });
   } catch (error) {
     res.status(500).json({
       success: false,
       message: "Error fetching products",
+      error: error.message,
+    });
+  }
+};
+
+// @desc    Get personalized recommendations for logged in user
+// @route   GET /api/products/recommendations
+// @access  Private
+exports.getRecommendedProducts = async (req, res) => {
+  try {
+    const limit = Math.min(Math.max(Number(req.query.limit) || 8, 1), 20);
+    const preference = await UserPreference.findOne({ user: req.user._id });
+    const keywords = preference?.keywords || [];
+
+    if (keywords.length === 0) {
+      return res.json({
+        success: true,
+        personalized: false,
+        keywords: [],
+        data: [],
+      });
+    }
+
+    const allProducts = await Product.find({ stock: { $gt: 0 } })
+      .populate("category", "name")
+      .populate("seller", "name email");
+
+    const scoredProducts = allProducts
+      .map((product) => ({
+        product,
+        recommendationScore: scoreProductAgainstKeywords(
+          product.toObject(),
+          keywords,
+        ),
+      }))
+      .filter((entry) => entry.recommendationScore > 0)
+      .sort((a, b) => b.recommendationScore - a.recommendationScore)
+      .slice(0, limit)
+      .map((entry) => ({
+        ...entry.product.toObject(),
+        recommendationScore: entry.recommendationScore,
+      }));
+
+    res.json({
+      success: true,
+      personalized: scoredProducts.length > 0,
+      keywords: keywords.slice(0, 10).map((item) => item.value),
+      data: scoredProducts,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Error fetching recommendations",
+      error: error.message,
+    });
+  }
+};
+
+// @desc    Track search keywords for recommendation profile
+// @route   POST /api/products/recommendations/track-search
+// @access  Private
+exports.trackSearchKeywords = async (req, res) => {
+  try {
+    const keywords = splitSearchTerms(req.body.search || "");
+    const preference = await trackUserKeywords(
+      req.user._id,
+      keywords,
+      "search",
+      2,
+    );
+
+    res.json({
+      success: true,
+      message: "Search preferences updated",
+      keywords: preference?.keywords?.slice(0, 10) || [],
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Error tracking search keywords",
+      error: error.message,
+    });
+  }
+};
+
+// @desc    Track a product view for recommendation profile
+// @route   POST /api/products/:id/track-view
+// @access  Private
+exports.trackProductView = async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id).populate(
+      "category",
+      "name",
+    );
+
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        message: "Product not found",
+      });
+    }
+
+    const preference = await trackUserKeywords(
+      req.user._id,
+      extractProductKeywords(product),
+      "view",
+      1,
+    );
+
+    res.json({
+      success: true,
+      message: "Product view tracked",
+      keywords: preference?.keywords?.slice(0, 10) || [],
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Error tracking product view",
       error: error.message,
     });
   }
@@ -93,7 +292,6 @@ exports.getMyProducts = async (req, res) => {
 // @access  Public
 exports.getProduct = async (req, res) => {
   try {
-    console.log(req.params);
     const product = await Product.findById(req.params.id)
       .populate("category", "name")
       .populate("seller", "name email");
@@ -120,12 +318,11 @@ exports.getProduct = async (req, res) => {
 
 // @desc    Create new product
 // @route   POST /api/products
-// @access  Public
+// @access  Private
 exports.createProduct = async (req, res) => {
   try {
     req.body.seller = req.user.id;
 
-    // Get category name if category ID is provided
     if (req.body.category) {
       const category = await Category.findById(req.body.category);
       if (category) {
@@ -155,15 +352,10 @@ exports.createProduct = async (req, res) => {
 
 // @desc    Update product
 // @route   PUT /api/products/:id
-// @access  Public
+// @access  Private
 exports.updateProduct = async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
-
-    // req.params.id → which product
-    // req.body → new data
-    // new: true → return updated product
-    // runValidators: true → apply schema validation
 
     if (!product) {
       return res.status(404).json({
@@ -182,7 +374,6 @@ exports.updateProduct = async (req, res) => {
       });
     }
 
-    // Prevent non-admin users from changing product owner.
     if (req.user.role !== "admin") {
       delete req.body.seller;
     }
@@ -217,7 +408,7 @@ exports.updateProduct = async (req, res) => {
 
 // @desc    Delete product
 // @route   DELETE /api/products/:id
-// @access  Public
+// @access  Private
 exports.deleteProduct = async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);

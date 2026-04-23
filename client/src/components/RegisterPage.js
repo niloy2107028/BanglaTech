@@ -1,22 +1,24 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import axios from "axios";
-import { useAuth } from "../context/AuthContext";
-import "./RegisterPage.css";
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import axios from '../api';
+import { useAuth } from '../context/AuthContext';
+import { useLanguage } from '../context/LanguageContext';
+import './RegisterPage.css';
+import { googleAuthUrl } from '../api';
 
 const RegisterPage = () => {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [otp, setOtp] = useState("");
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [otp, setOtp] = useState('');
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
   const [showOtpInput, setShowOtpInput] = useState(false);
   const [countdown, setCountdown] = useState(0);
 
   const { register } = useAuth();
-  const navigate = useNavigate();
+  const { t } = useLanguage();
 
   useEffect(() => {
     let timer;
@@ -30,16 +32,16 @@ const RegisterPage = () => {
 
   const handleRegister = async (e) => {
     e.preventDefault();
-    setError("");
-    setSuccess("");
+    setError('');
+    setSuccess('');
     setLoading(true);
     try {
       const data = await register(name, email, password);
       setSuccess(data.message);
       setShowOtpInput(true);
-      setCountdown(60); // Start 1-minute countdown
+      setCountdown(60);
     } catch (err) {
-      setError(err.response?.data?.message || "Registration failed");
+      setError(err.response?.data?.message || 'Registration failed');
     } finally {
       setLoading(false);
     }
@@ -47,22 +49,22 @@ const RegisterPage = () => {
 
   const handleVerifyOtp = async (e) => {
     e.preventDefault();
-    setError("");
+    setError('');
     setLoading(true);
     try {
       const res = await axios.post(
-        "/api/auth/verify-email",
+        '/api/auth/verify-email',
         { email: email.trim().toLowerCase(), otp: otp.trim() },
-        { withCredentials: true },
+        { withCredentials: true }
       );
       if (res.data.success) {
-        setSuccess("Email verified successfully! Redirecting...");
+        setSuccess('Email verified successfully! Redirecting...');
         setTimeout(() => {
-          window.location.href = "/";
+          window.location.href = '/';
         }, 2000);
       }
     } catch (err) {
-      setError(err.response?.data?.message || "Verification failed");
+      setError(err.response?.data?.message || 'Verification failed');
     } finally {
       setLoading(false);
     }
@@ -70,32 +72,28 @@ const RegisterPage = () => {
 
   const handleResendOtp = async () => {
     if (countdown > 0) return;
-    setError("");
-    setSuccess("");
+    setError('');
+    setSuccess('');
     try {
-      const res = await axios.post("/api/auth/resend-otp", {
+      const res = await axios.post('/api/auth/resend-otp', {
         email: email.trim().toLowerCase(),
-        type: "register",
+        type: 'register',
       });
       if (res.data.success) {
-        setSuccess("Code resent successfully!");
-        setCountdown(60); // Reset countdown
+        setSuccess('Code resent successfully!');
+        setCountdown(60);
       }
     } catch (err) {
-      setError(err.response?.data?.message || "Failed to resend code");
+      setError(err.response?.data?.message || 'Failed to resend code');
     }
   };
 
   return (
     <section className="auth-page auth-page-register">
       <div className="auth-card">
-        <h2 className="auth-title">
-          {showOtpInput ? "Verify Email" : "Create Account"}
-        </h2>
+        <h2 className="auth-title">{showOtpInput ? t('auth.verifyEmail') : t('auth.createAccount')}</h2>
         <p className="auth-subtitle">
-          {showOtpInput
-            ? `We've sent a 6-digit code to ${email}`
-            : "Join BanglaMart and start shopping today."}
+          {showOtpInput ? t('auth.sentCodeTo', { email }) : t('auth.registerSubtitle')}
         </p>
 
         {error && <p className="auth-error">{error}</p>}
@@ -105,10 +103,10 @@ const RegisterPage = () => {
           <>
             <form className="auth-form" onSubmit={handleRegister}>
               <div className="auth-form-group">
-                <label>Full Name</label>
+                <label>{t('auth.fullName')}</label>
                 <input
                   type="text"
-                  placeholder="Enter your name"
+                  placeholder={t('auth.enterName')}
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   required
@@ -116,10 +114,10 @@ const RegisterPage = () => {
                 />
               </div>
               <div className="auth-form-group">
-                <label>Email Address</label>
+                <label>{t('auth.emailAddress')}</label>
                 <input
                   type="email"
-                  placeholder="Enter your email"
+                  placeholder={t('auth.enterEmail')}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
@@ -127,57 +125,44 @@ const RegisterPage = () => {
                 />
               </div>
               <div className="auth-form-group">
-                <label>Password</label>
+                <label>{t('auth.password')}</label>
                 <input
                   type="password"
-                  placeholder="Min 6 characters"
+                  placeholder={t('auth.minSix')}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   className="auth-input"
                 />
               </div>
-              <button
-                type="submit"
-                disabled={loading}
-                className="auth-submit-btn"
-              >
-                {loading ? (
-                  <div className="auth-spinner"></div>
-                ) : (
-                  "Create Account"
-                )}
+              <button type="submit" disabled={loading} className="auth-submit-btn">
+                {loading ? <div className="auth-spinner"></div> : t('auth.createAccount')}
               </button>
             </form>
 
             <div className="auth-divider">
-              <span>OR</span>
+              <span>{t('auth.or')}</span>
             </div>
 
-            <button
-              className="google-btn"
-              onClick={() =>
-                (window.location.href = "http://localhost:5000/api/auth/google")
-              }
-            >
+            <button className="google-btn" onClick={() => (window.location.href = googleAuthUrl)}>
               <img
                 src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
                 alt="Google"
               />
-              <span>Continue with Google</span>
+              <span>{t('auth.continueWithGoogle')}</span>
             </button>
 
             <p className="auth-switch">
-              Already have an account? <Link to="/login">Login</Link>
+              {t('auth.alreadyAccount')} <Link to="/login">{t('navbar.login')}</Link>
             </p>
           </>
         ) : (
           <form className="auth-form" onSubmit={handleVerifyOtp}>
             <div className="auth-form-group">
-              <label>6-Digit Verification Code</label>
+              <label>{t('auth.sixDigitCode')}</label>
               <input
                 type="text"
-                placeholder="Enter 6-digit code"
+                placeholder={t('auth.enterSixDigit')}
                 value={otp}
                 onChange={(e) => setOtp(e.target.value)}
                 required
@@ -186,27 +171,23 @@ const RegisterPage = () => {
               />
             </div>
             <button type="submit" disabled={loading} className="auth-submit-btn">
-              {loading ? <div className="auth-spinner"></div> : "Verify Code"}
+              {loading ? <div className="auth-spinner"></div> : t('auth.verifyCode')}
             </button>
-            <div className="auth-resend-container" style={{ marginTop: "15px", textAlign: "center", fontSize: "0.9rem" }}>
+            <div className="auth-resend-container" style={{ marginTop: '15px', textAlign: 'center', fontSize: '0.9rem' }}>
               {countdown > 0 ? (
-                <p style={{ color: "#6b7280" }}>Resend code in {countdown}s</p>
+                <p style={{ color: '#6b7280' }}>{t('auth.resendIn', { count: countdown })}</p>
               ) : (
                 <button
                   type="button"
                   onClick={handleResendOtp}
-                  style={{ background: "none", border: "none", color: "#fe424d", cursor: "pointer", fontWeight: "600" }}
+                  style={{ background: 'none', border: 'none', color: '#fe424d', cursor: 'pointer', fontWeight: '600' }}
                 >
-                  Resend Verification Code
+                  {t('auth.resendVerification')}
                 </button>
               )}
             </div>
-            <button
-              type="button"
-              className="auth-back-btn"
-              onClick={() => setShowOtpInput(false)}
-            >
-              Back to Registration
+            <button type="button" className="auth-back-btn" onClick={() => setShowOtpInput(false)}>
+              {t('auth.backToRegistration')}
             </button>
           </form>
         )}

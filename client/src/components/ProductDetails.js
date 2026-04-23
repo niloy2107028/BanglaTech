@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
+import axios from "../api";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faStar, faCartPlus, faChevronLeft, faChevronRight, faMinus, faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faStar, faCartPlus, faChevronRight, faMinus, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { useCart } from "../context/CartContext";
+import { useLanguage } from "../context/LanguageContext";
 import ProductCard from "./ProductCard"; // For related products
 import ReviewSection from "./ReviewSection";
 import "./ProductDetails.css";
@@ -12,6 +13,7 @@ const ProductDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { addToCart } = useCart();
+  const { formatCurrency, formatNumber } = useLanguage();
   
   const [product, setProduct] = useState(null);
   const [relatedProducts, setRelatedProducts] = useState([]);
@@ -27,7 +29,9 @@ const ProductDetails = () => {
         setProduct(response.data.data);
         
         // Fetch related products (same category)
-        const relatedRes = await axios.get(`/api/products?categoryName=${response.data.data.categoryName}`);
+        const relatedRes = await axios.get(
+          `/api/products?categoryName=${encodeURIComponent(response.data.data.categoryName || "")}`,
+        );
         setRelatedProducts(relatedRes.data.data.filter(p => p._id !== id).slice(0, 4));
         
         setLoading(false);
@@ -43,17 +47,12 @@ const ProductDetails = () => {
     window.scrollTo(0, 0);
   }, [id]);
 
-  const handleAddToCart = () => {
+  const handleAddToCart = async () => {
     if (product && product.inStock) {
-      // Logic for multi-quantity add to cart depends on CartContext implementation
-      // Currently, most basic CartContexts handle one at a time, but if it supports quantity:
-      // addToCart(product._id, quantity); 
-      // For now, let's stick to the current implementation but call it 'quantity' times if needed
-      // OR better: assume cart context can be updated later to handle quantity.
-      for(let i = 0; i < quantity; i++) {
-        addToCart(product._id);
+      const added = await addToCart(product._id, quantity);
+      if (added) {
+        alert(`Added ${quantity} ${product.name} to cart!`);
       }
-      alert(`Added ${quantity} ${product.name} to cart!`);
     }
   };
 
@@ -126,26 +125,26 @@ const ProductDetails = () => {
                 <FontAwesomeIcon
                   key={index}
                   icon={faStar}
-                  className={`star-icon ${index < Math.floor(product.rating) ? "star-filled" : "star-empty"}`}
+                  className={`star-icon ${index < Math.floor(product.rating || 0) ? "star-filled" : "star-empty"}`}
                 />
               ))}
             </div>
-            <span className="review-count">({product.reviews} customer reviews)</span>
+            <span className="review-count">({formatNumber(product.reviews)} customer reviews)</span>
           </div>
 
           <div className="product-details-price-card">
             <div className="price-main">
-              ৳{product.price.toLocaleString()}
+              {formatCurrency(product.price)}
               {discount > 0 && (
                 <>
-                  <span className="original-price-strikethrough">৳{product.originalPrice.toLocaleString()}</span>
+                  <span className="original-price-strikethrough">{formatCurrency(product.originalPrice)}</span>
                   <span className="discount-tag">-{discount}% OFF</span>
                 </>
               )}
             </div>
             
             <div className={`stock-status ${product.inStock ? "stock-in" : "stock-out"}`}>
-              {product.inStock ? `Available (${product.stock} items left)` : "Currently Unavailable"}
+              {product.inStock ? `Available (${formatNumber(product.stock)} items left)` : "Currently Unavailable"}
             </div>
           </div>
 

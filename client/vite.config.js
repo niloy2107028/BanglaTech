@@ -22,7 +22,7 @@ export default defineConfig({
     proxy: {
       "/api": {
         // Any request that starts with /api will be forwarded to the backend.
-        target: "http://127.0.0.1:5000",
+        target: process.env.VITE_PROXY_TARGET || "http://127.0.0.1:5000",
         changeOrigin: true,
         //         Normally the request header would say:
         // Origin: http://localhost:5173

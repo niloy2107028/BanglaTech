@@ -1,10 +1,16 @@
 const mongoose = require("mongoose");
+const fs = require("fs");
 const path = require("path");
-require("dotenv").config({ path: path.join(__dirname, "../.env") });
+const backendEnvPath = path.join(__dirname, ".env");
+const rootEnvPath = path.join(__dirname, "../.env");
+require("dotenv").config({
+  path: fs.existsSync(backendEnvPath) ? backendEnvPath : rootEnvPath,
+});
 
 const Product = require("./models/Product");
 const Category = require("./models/Category");
 const User = require("./models/User");
+const UserPreference = require("./models/UserPreference");
 
 // Categories data
 // array of obeject
@@ -68,12 +74,14 @@ const users = [
     email: "tushar.seller@banglamart.com",
     password: "seller123",
     role: "seller",
+    isVerified: true,
   },
   {
     name: "Niloy",
     email: "niloy.seller@banglamart.com",
     password: "seller123",
     role: "seller",
+    isVerified: true,
   },
 ];
 
@@ -603,6 +611,236 @@ const sampleProducts = [
   },
 ];
 
+const recommendationSeedKeywords = {
+  Niloy: [
+    "smartphone",
+    "electronics",
+    "mobile accessories",
+    "bluetooth earbuds",
+    "wireless mouse",
+    "laptop sleeve",
+    "power bank",
+    "gaming keyboard",
+    "backpack",
+    "fashion",
+  ],
+};
+
+const generatedProductBlueprints = {
+  Electronics: {
+    brands: ["Samsung", "Sony", "LG", "Asus", "Xiaomi"],
+    names: [
+      "Smart Monitor",
+      "Portable Projector",
+      "Bluetooth Speaker",
+      "Gaming Keyboard",
+      "Smart Door Camera",
+      "USB-C Hub",
+      "Mechanical Keyboard",
+      "Streaming Webcam",
+      "Office Printer",
+      "Tablet Stand",
+    ],
+    basePrice: 2200,
+    image:
+      "https://images.unsplash.com/photo-1498049794561-7780e7231661?w=600&h=600&fit=crop",
+  },
+  Fashion: {
+    brands: ["Aarong", "Yellow", "Ecstasy", "Cats Eye", "Richman"],
+    names: [
+      "Casual Polo Shirt",
+      "Premium Panjabi",
+      "Cotton Saree",
+      "Denim Jacket",
+      "Travel Hoodie",
+      "Canvas Sneakers",
+      "Leather Wallet",
+      "Crossbody Bag",
+      "Formal Shirt",
+      "Weekend T-Shirt",
+    ],
+    basePrice: 900,
+    image:
+      "https://images.unsplash.com/photo-1445205170230-053b83016050?w=600&h=600&fit=crop",
+  },
+  "Home & Living": {
+    brands: ["Hatil", "Walton", "Navana", "Otobi", "Vision"],
+    names: [
+      "Storage Rack",
+      "Bedside Lamp",
+      "Air Fryer",
+      "Electric Kettle",
+      "Floor Cushion",
+      "Kitchen Organizer",
+      "Microwave Oven",
+      "Coffee Table",
+      "Wall Shelf",
+      "Table Fan",
+    ],
+    basePrice: 1200,
+    image:
+      "https://images.unsplash.com/photo-1484101403633-562f891dc89a?w=600&h=600&fit=crop",
+  },
+  "Beauty & Health": {
+    brands: ["Neutrogena", "Garnier", "Nivea", "Philips", "Panasonic"],
+    names: [
+      "Face Wash",
+      "Hair Serum",
+      "Body Lotion",
+      "Trimmer Kit",
+      "Sunscreen",
+      "Electric Toothbrush",
+      "Beard Groomer",
+      "Skin Care Combo",
+      "Facial Mist",
+      "Hair Straightener",
+    ],
+    basePrice: 650,
+    image:
+      "https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=600&h=600&fit=crop",
+  },
+  "Sports & Outdoors": {
+    brands: ["Decathlon", "Nike", "Adidas", "Yonex", "Wilson"],
+    names: [
+      "Yoga Block Set",
+      "Football",
+      "Badminton Racket",
+      "Running Bottle",
+      "Cycling Helmet",
+      "Camping Lantern",
+      "Resistance Band",
+      "Gym Duffel Bag",
+      "Training Shorts",
+      "Hiking Backpack",
+    ],
+    basePrice: 850,
+    image:
+      "https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=600&h=600&fit=crop",
+  },
+  "Books & Stationery": {
+    brands: ["Matador", "Parker", "Oxford", "Pilot", "M&G"],
+    names: [
+      "Notebook Set",
+      "Gel Pen Pack",
+      "Desk Planner",
+      "Sketchbook",
+      "Exam Preparation Book",
+      "Office Folder",
+      "Sticky Notes Bundle",
+      "Highlighter Set",
+      "Whiteboard Kit",
+      "Calligraphy Pen",
+    ],
+    basePrice: 220,
+    image:
+      "https://images.unsplash.com/photo-1495446815901-a7297e633e8d?w=600&h=600&fit=crop",
+  },
+  "Toys & Games": {
+    brands: ["Lego", "Funskool", "Hasbro", "Melissa & Doug", "Nerf"],
+    names: [
+      "Building Blocks",
+      "Puzzle Board",
+      "RC Car",
+      "Art Play Kit",
+      "Memory Game",
+      "Toy Kitchen Set",
+      "Science Box",
+      "Story Cube",
+      "Foam Dart Blaster",
+      "Board Game",
+    ],
+    basePrice: 480,
+    image:
+      "https://images.unsplash.com/photo-1558060370-d644479cb6f7?w=600&h=600&fit=crop",
+  },
+  Automotive: {
+    brands: ["Bosch", "Castrol", "Shell", "Yamaha", "Toyota"],
+    names: [
+      "Car Vacuum Cleaner",
+      "Seat Cover Set",
+      "Helmet Visor",
+      "Phone Mount",
+      "Tyre Inflator",
+      "Engine Oil Pack",
+      "LED Fog Light",
+      "Bike Cover",
+      "Wash Kit",
+      "Jump Starter",
+    ],
+    basePrice: 980,
+    image:
+      "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=600&h=600&fit=crop",
+  },
+  "Food & Groceries": {
+    brands: ["Pran", "ACI", "Square", "Fresh", "Radhuni"],
+    names: [
+      "Premium Rice Pack",
+      "Mustard Oil",
+      "Organic Honey",
+      "Spice Combo",
+      "Healthy Oats",
+      "Tea Collection",
+      "Instant Soup",
+      "Dates Pack",
+      "Dry Fruit Mix",
+      "Breakfast Combo",
+    ],
+    basePrice: 180,
+    image:
+      "https://images.unsplash.com/photo-1543168256-418811576931?w=600&h=600&fit=crop",
+  },
+  "Mobile & Accessories": {
+    brands: ["Xiaomi", "Realme", "Baseus", "JBL", "Anker"],
+    names: [
+      "Fast Charger",
+      "MagSafe Case",
+      "Bluetooth Earbuds",
+      "Gaming Phone Cooler",
+      "Power Bank",
+      "Tripod Selfie Stick",
+      "Screen Protector Set",
+      "Wireless Mouse",
+      "Phone Gimbal",
+      "Laptop Sleeve",
+    ],
+    basePrice: 450,
+    image:
+      "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=600&h=600&fit=crop",
+  },
+};
+
+const generatedProducts = Object.entries(generatedProductBlueprints).flatMap(
+  ([category, blueprint], categoryIndex) =>
+    blueprint.names.map((name, index) => {
+      const brand = blueprint.brands[index % blueprint.brands.length];
+      const price = blueprint.basePrice + categoryIndex * 120 + index * 160;
+      const originalPrice = Math.round(price * 1.18);
+      const stock = 8 + ((index + categoryIndex) % 18);
+      const rating = Number((4 + (index % 5) * 0.15).toFixed(1));
+      const reviews = 18 + categoryIndex * 11 + index * 7;
+
+      return {
+        name: `${brand} ${name}`,
+        brand,
+        category,
+        price,
+        originalPrice,
+        description: `${brand} ${name} is a dependable ${category.toLowerCase()} product tailored for BanglaMart shoppers who want quality and value.`,
+        specifications: {
+          Category: category,
+          Finish: index % 2 === 0 ? "Premium" : "Standard",
+          Warranty: index % 3 === 0 ? "12 months" : "6 months",
+          Availability: "Bangladesh",
+        },
+        image: blueprint.image,
+        stock,
+        featured: index % 4 === 0,
+        rating,
+        reviews,
+      };
+    }),
+);
+
 // Seed function
 const seedDatabase = async () => {
   let id_updated = 0;
@@ -654,8 +892,10 @@ const seedDatabase = async () => {
       categoryMap[cat.name] = cat._id;
     });
 
+    const allProducts = [...sampleProducts, ...generatedProducts];
+
     // Map products to use category ObjectIds
-    const productsWithCategoryIds = sampleProducts.map((product) => {
+    const productsWithCategoryIds = allProducts.map((product) => {
       const categoryId = categoryMap[product.category];
       // we are using name for getting the id from map
       if (!categoryId) {

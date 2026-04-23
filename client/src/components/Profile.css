@@ -1,97 +1,342 @@
 .profile-page {
-  min-height: calc(100vh - 190px);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  padding: 34px 16px;
-  background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
+  min-height: calc(100vh - 88px);
+  padding: 2.5rem 1rem 4rem;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.78) 0%, rgba(244, 247, 251, 0.95) 100%),
+    var(--bg);
+}
+
+.profile-container {
+  width: min(100%, 1280px);
+  margin: 0 auto;
 }
 
 .profile-card {
   width: 100%;
-  max-width: 720px;
-  background-color: #ffffff;
-  border: 1px solid #e5e7eb;
-  border-radius: 14px;
-  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
-  padding: 28px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(226, 232, 240, 0.95);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  backdrop-filter: blur(16px);
+}
+
+.profile-header {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.5rem;
+  background:
+    linear-gradient(135deg, rgba(15, 157, 122, 0.13), rgba(255, 90, 95, 0.1)),
+    #ffffff;
+  border-bottom: 1px solid rgba(226, 232, 240, 0.9);
+}
+
+.profile-avatar {
+  width: 76px;
+  aspect-ratio: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 20px;
+  background: linear-gradient(135deg, var(--primary), #10b981);
+  color: #ffffff;
+  font-size: 1.45rem;
+  font-weight: 800;
+  letter-spacing: 0;
+  box-shadow: 0 16px 30px rgba(15, 157, 122, 0.24);
+}
+
+.profile-heading {
+  min-width: 0;
+}
+
+.profile-kicker {
+  margin: 0 0 0.35rem;
+  color: var(--primary-dark);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .profile-title {
-  margin: 0 0 18px;
-  color: #1f2937;
-  font-size: 1.8rem;
+  margin: 0;
+  color: var(--text);
+  font-size: clamp(1.55rem, 3vw, 2.25rem);
+  line-height: 1.1;
+  letter-spacing: 0;
+  overflow-wrap: anywhere;
+}
+
+.profile-subtitle {
+  margin: 0.45rem 0 0;
+  color: var(--muted);
+  font-size: 0.98rem;
+  overflow-wrap: anywhere;
+}
+
+.profile-role-badge {
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  min-height: 34px;
+  padding: 0.45rem 0.85rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.profile-role-badge.BUYER {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.profile-role-badge.SELLER {
+  background: #dcfce7;
+  color: #047857;
+}
+
+.profile-role-badge.ADMIN {
+  background: #f5f3ff;
+  color: #6d28d9;
+}
+
+.profile-info-section {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  background: rgba(226, 232, 240, 0.95);
 }
 
 .profile-row {
-  border: 1px solid #e5e7eb;
-  border-radius: 10px;
-  padding: 12px 14px;
-  margin-bottom: 12px;
-  background-color: #f9fafb;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 0.85rem;
+  min-width: 0;
+  padding: 1.1rem 1.25rem;
+  background: rgba(255, 255, 255, 0.94);
+}
+
+.profile-row-icon,
+.profile-seller-icon {
+  width: 42px;
+  aspect-ratio: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+  background: rgba(15, 157, 122, 0.1);
+  color: var(--primary);
+  flex: 0 0 auto;
 }
 
 .profile-label {
   margin: 0;
-  color: #6b7280;
-  font-size: 0.82rem;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
 }
 
 .profile-value {
-  margin: 6px 0 0;
-  color: #111827;
+  margin: 0.28rem 0 0;
+  color: var(--text);
   font-size: 1rem;
-  font-weight: 600;
-}
-
-.profile-value.profile-role-badge {
-  display: inline-block;
-  padding: 4px 12px;
-  border-radius: 999px;
-  font-size: 0.85rem;
   font-weight: 700;
-  margin-top: 8px;
+  overflow-wrap: anywhere;
 }
 
-.profile-role-badge.BUYER { background: #f3f4f6; color: #4b5563; }
-.profile-role-badge.SELLER { background: #ecfdf5; color: #059669; }
-.profile-role-badge.ADMIN { background: #f5f3ff; color: #7c3aed; }
+.profile-seller-summary {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 1.2rem 1.5rem;
+  border-top: 1px solid rgba(226, 232, 240, 0.9);
+  background: linear-gradient(135deg, rgba(255, 90, 95, 0.08), rgba(15, 157, 122, 0.08));
+}
+
+.profile-seller-icon {
+  background: rgba(255, 90, 95, 0.1);
+  color: var(--accent);
+}
+
+.profile-actions-section {
+  padding: 1.25rem 1.5rem 1.5rem;
+  background: #ffffff;
+}
 
 .profile-logout-section {
-  margin-top: 32px;
-  padding-top: 16px;
-  border-top: 1px dashed #e2e8f0;
+  display: flex;
+  justify-content: flex-end;
 }
 
 .profile-logout-btn {
-  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  min-height: 46px;
   border: none;
-  border-radius: 10px;
-  background: #ef4444;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-dark));
   color: #ffffff;
-  font-weight: 600;
-  font-size: 1rem;
-  padding: 12px 20px;
+  font-weight: 800;
+  font-size: 0.96rem;
+  padding: 0.8rem 1.25rem;
   cursor: pointer;
-  transition: background 0.2s;
+  box-shadow: 0 14px 28px rgba(239, 68, 68, 0.18);
 }
 
-.profile-logout-btn:hover {
-  background: #dc2626;
+.profile-logout-btn:focus-visible {
+  outline: 3px solid rgba(255, 90, 95, 0.28);
+  outline-offset: 3px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .profile-card:hover {
+    border-color: rgba(15, 157, 122, 0.24);
+  }
+
+  .profile-row:hover {
+    background: #f8fafc;
+  }
+
+  .profile-logout-btn:hover {
+    background: #dc2626;
+  }
 }
 
 .profile-loading {
-  padding: 24px;
+  width: min(100%, 640px);
+  margin: 3rem auto;
+  padding: 1.25rem;
   text-align: center;
-  color: #4b5563;
+  color: var(--muted);
   font-size: 1rem;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.86);
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
 }
 
 .profile-products-wrap {
   width: 100%;
-  max-width: 1280px;
-  margin-top: 12px;
+  margin-top: 2rem;
+}
+
+.profile-products-wrap .productList-view {
+  padding: 0;
+}
+
+.profile-products-wrap .productList-view-header {
+  text-align: left;
+  margin-bottom: 1rem;
+}
+
+.profile-products-wrap .productList-view-header h1 {
+  font-size: clamp(1.5rem, 2.5vw, 2rem);
+}
+
+.profile-products-wrap .productList-view-filters {
+  border-radius: var(--radius-lg);
+  align-items: stretch;
+}
+
+@media (min-width: 768px) {
+  .profile-card {
+    display: grid;
+    grid-template-columns: minmax(300px, 0.95fr) minmax(420px, 1.55fr);
+  }
+
+  .profile-header {
+    grid-template-columns: 1fr;
+    align-content: start;
+    align-items: start;
+    border-right: 1px solid rgba(226, 232, 240, 0.9);
+    border-bottom: none;
+  }
+
+  .profile-avatar {
+    width: 88px;
+  }
+
+  .profile-info-section {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+  }
+
+  .profile-seller-summary,
+  .profile-actions-section {
+    grid-column: 1;
+  }
+
+  .profile-actions-section {
+    display: flex;
+    align-items: end;
+  }
+
+  .profile-logout-section,
+  .profile-logout-btn {
+    width: 100%;
+  }
+}
+
+@media (min-width: 1024px) {
+  .profile-page {
+    padding: 3rem 1.5rem 4.5rem;
+  }
+
+  .profile-info-section {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 767px) {
+  .profile-page {
+    padding: 1.25rem 0.85rem 3rem;
+  }
+
+  .profile-header {
+    grid-template-columns: auto 1fr;
+    padding: 1.1rem;
+  }
+
+  .profile-avatar {
+    width: 58px;
+    border-radius: 16px;
+    font-size: 1.1rem;
+  }
+
+  .profile-role-badge {
+    grid-column: 1 / -1;
+  }
+
+  .profile-info-section {
+    grid-template-columns: 1fr;
+  }
+
+  .profile-row,
+  .profile-seller-summary,
+  .profile-actions-section {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .profile-logout-section,
+  .profile-logout-btn {
+    width: 100%;
+  }
+
+  .profile-products-wrap .productList-view-header {
+    text-align: center;
+  }
 }

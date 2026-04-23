@@ -1,5 +1,6 @@
 const Cart = require("../models/Cart");
 const Product = require("../models/Product");
+const { trackUserKeywords, extractProductKeywords } = require("../utils/recommendationKeywords");
 
 // @desc    Get user cart
 // @route   GET /api/cart
@@ -8,7 +9,7 @@ exports.getCart = async (req, res) => {
   try {
     let cart = await Cart.findOne({ user: req.user._id }).populate(
       "items.product",
-      "name price image stock",
+      "name price image stock categoryName brand",
     );
 
     if (!cart) {
@@ -64,7 +65,9 @@ exports.addToCart = async (req, res) => {
     }
 
     await cart.save();
-    await cart.populate("items.product", "name price image stock");
+    await cart.populate("items.product", "name price image stock categoryName brand");
+
+    await trackUserKeywords(req.user._id, extractProductKeywords(product), "cart", 3);
 
     res.json({
       success: true,
@@ -116,7 +119,9 @@ exports.updateCartItem = async (req, res) => {
 
     cart.items[itemIndex].quantity = qty;
     await cart.save();
-    await cart.populate("items.product", "name price image stock");
+    await cart.populate("items.product", "name price image stock categoryName brand");
+
+    await trackUserKeywords(req.user._id, extractProductKeywords(product), "cart", 3);
 
     res.json({
       success: true,
@@ -147,7 +152,7 @@ exports.removeFromCart = async (req, res) => {
     );
 
     await cart.save();
-    await cart.populate("items.product", "name price image stock");
+    await cart.populate("items.product", "name price image stock categoryName brand");
 
     res.json({
       success: true,

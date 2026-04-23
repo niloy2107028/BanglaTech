@@ -1,12 +1,14 @@
-import React, { useState, useEffect, useMemo } from "react";
-import axios from "axios";
-import { useParams, useNavigate } from "react-router-dom";
-// useParams() → Gets URL parameters (like category name from URL).
-// useNavigate() → Used to navigate to another page (you commented it).
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "../api";
+import { useAuth } from "../context/AuthContext";
+import { useLanguage } from "../context/LanguageContext";
 
 import ProductCard from "./ProductCard";
 import ProductModal from "./ProductModal";
 import "./ProductList.css";
+
+const PRODUCTS_PER_PAGE = 12;
 
 const ProductList = ({
   products = [],
@@ -17,58 +19,45 @@ const ProductList = ({
 }) => {
   const navigate = useNavigate();
   const [filteredProducts, setFilteredProducts] = useState([]);
-  // Stores products after filtering & sorting.
   const [priceSort, setPriceSort] = useState("");
-  // Stores sorting option (low-to-high / high-to-low).
   const [selectedBrand, setSelectedBrand] = useState("");
-  // Stores selected brand filter.
   const [showModal, setShowModal] = useState(false);
-  // Controls modal visibility.
-  const [modalMode, setModalMode] = useState("view");
-  // Stores modal mode (view or edit).
+  const [modalMode, setModalMode] = useState("edit");
   const [currentProduct, setCurrentProduct] = useState(null);
-  // Stores product currently opened in modal.
-
-  // Memoize products to avoid recalculating on every render
-  // In React:
-  // Every time state changes → component re-renders.
-  // When component re-renders:
-  // All normal variables are recalculated
-  // All filter/map operations run again
-  // Even if nothing related changed.
-  // That can slow your app if:
-  // You have many products
-  // You do heavy filtering/sorting
+  const [currentPage, setCurrentPage] = useState(1);
+  const productsTopRef = useRef(null);
+  const { isAuthenticated } = useAuth();
+  const { t, formatNumber } = useLanguage();
 
   const brands = useMemo(
-    // Step-by-step:
-    // map() → get all brands
-    // new Set() → remove duplicates
-    // ... → convert Set back to array
-    // sort() → sort alphabetically
-
-    () => [...new Set(products.map((p) => p.brand))].sort(),
+    () => [...new Set(products.map((p) => p.brand).filter(Boolean))].sort(),
     [products],
-    // Recalculate only when category products change.
+  );
+  const totalPages = Math.max(
+    1,
+    Math.ceil(filteredProducts.length / PRODUCTS_PER_PAGE),
+  );
+  const pageStartIndex = (currentPage - 1) * PRODUCTS_PER_PAGE;
+  const paginatedProducts = filteredProducts.slice(
+    pageStartIndex,
+    pageStartIndex + PRODUCTS_PER_PAGE,
+  );
+  const pageNumbers = Array.from(
+    { length: totalPages },
+    (_, index) => index + 1,
   );
 
-  // Reset filters when products changes
   useEffect(() => {
     resetFilters();
   }, [products]);
 
   useEffect(() => {
     let result = [...products];
-    // Copy array (avoid mutating original)
-    // The ... spread operator creates a new array copy.
-    // just assign korle reference create hoto copy na
 
-    // Filter by brand
     if (selectedBrand) {
       result = result.filter((p) => p.brand === selectedBrand);
     }
 
-    // Sort by price
     if (priceSort === "low-to-high") {
       result.sort((a, b) => a.price - b.price);
     } else if (priceSort === "high-to-low") {
@@ -77,9 +66,33 @@ const ProductList = ({
 
     setFilteredProducts(result);
   }, [products, priceSort, selectedBrand]);
-  // ei 3 tar jekono akta change hoile ei portion run hbe
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [products, priceSort, selectedBrand]);
+
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages);
+    }
+  }, [currentPage, totalPages]);
+
+  const trackProductView = async (productId) => {
+    if (!isAuthenticated) return;
+
+    try {
+      await axios.post(
+        `/api/products/${productId}/track-view`,
+        {},
+        { withCredentials: true },
+      );
+    } catch (error) {
+      console.error("Error tracking product view:", error);
+    }
+  };
 
   const handleView = (product) => {
+    trackProductView(product._id);
     navigate(`/product/${product._id}`);
   };
 
@@ -90,16 +103,15 @@ const ProductList = ({
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm("Are you sure you want to delete this product?")) {
+    if (window.confirm(t("product.deletePrompt"))) {
       try {
         await axios.delete(`/api/products/${id}`, { withCredentials: true });
-        // window.location.reload();
         setProducts((prevProducts) =>
           prevProducts.filter((product) => product._id !== id),
         );
       } catch (error) {
         console.error("Error deleting product:", error);
-        alert("Failed to delete product");
+        alert(t("product.deleteFailed"));
       }
     }
   };
@@ -111,15 +123,12 @@ const ProductList = ({
 
   const handleModalSave = async () => {
     setShowModal(false);
-    // window.location.reload();
-    // This reloads entire page
 
     try {
       const response = await axios.get(refreshEndpoint, {
         withCredentials: true,
       });
-      // GET request + sends cookies
-      setProducts(response.data.data);
+      setProducts(response.data.data || []);
     } catch (error) {
       console.error("Error fetching products: ", error);
     }
@@ -130,41 +139,54 @@ const ProductList = ({
     setSelectedBrand("");
   };
 
+  const goToPage = (page) => {
+    const nextPage = Math.min(Math.max(page, 1), totalPages);
+    if (nextPage === currentPage) return;
+
+    setCurrentPage(nextPage);
+    requestAnimationFrame(() => {
+      productsTopRef.current?.scrollIntoView({ block: "start" });
+    });
+  };
+
   return (
     <div className="productList-view">
-      <div className="productList-view-container">
-        {/* Header */}
+      <div className="productList-view-container" ref={productsTopRef}>
         <div className="productList-view-header">
-          <h1>{title}</h1>
-          <p>{filteredProducts.length} products found</p>
+          <h1>{title || t("common.allProducts")}</h1>
+          <p>
+            {t("common.productsFound", {
+              count: formatNumber(filteredProducts.length),
+            })}
+          </p>
         </div>
 
-        {/* Filters */}
         <div className="productList-view-filters">
           <div className="productList-view-filter-group">
             <label className="productList-view-filter-label">
-              Sort by Price:
+              {t("common.sortByPrice")}
             </label>
             <select
               value={priceSort}
               onChange={(e) => setPriceSort(e.target.value)}
               className="productList-view-filter-select"
             >
-              <option value="">Default</option>
-              <option value="low-to-high">Price: Low to High</option>
-              <option value="high-to-low">Price: High to Low</option>
+              <option value="">{t("common.default")}</option>
+              <option value="low-to-high">{t("common.lowToHigh")}</option>
+              <option value="high-to-low">{t("common.highToLow")}</option>
             </select>
           </div>
 
           <div className="productList-view-filter-group">
-            <label className="productList-view-filter-label">Brand:</label>
+            <label className="productList-view-filter-label">
+              {t("common.brand")}
+            </label>
             <select
               value={selectedBrand}
               onChange={(e) => setSelectedBrand(e.target.value)}
               className="productList-view-filter-select"
             >
-              <option value="">All Brands</option>
-              {/* it's value is null  */}
+              <option value="">{t("common.allBrands")}</option>
               {brands.map((brand) => (
                 <option key={brand} value={brand}>
                   {brand}
@@ -178,38 +200,77 @@ const ProductList = ({
               className="productList-view-reset-btn"
               onClick={resetFilters}
             >
-              Reset Filters
+              {t("common.resetFilters")}
             </button>
           )}
         </div>
 
-        {/* Products Grid */}
         {filteredProducts.length > 0 ? (
-          <div className="productList-view-products-grid">
-            {filteredProducts.map((product) => (
-              <ProductCard
-                key={product._id}
-                product={product}
-                onView={handleView}
-                onEdit={showOwnerActions ? handleEdit : undefined}
-                onDelete={showOwnerActions ? handleDelete : undefined}
-              />
-            ))}
-          </div>
+          <>
+            <div className="productList-view-products-grid">
+              {paginatedProducts.map((product) => (
+                <ProductCard
+                  key={product._id}
+                  product={product}
+                  onView={handleView}
+                  onEdit={showOwnerActions ? handleEdit : undefined}
+                  onDelete={showOwnerActions ? handleDelete : undefined}
+                />
+              ))}
+            </div>
+
+            {totalPages > 1 && (
+              <nav
+                className="productList-view-pagination"
+                aria-label="Product list pagination"
+              >
+                <button
+                  type="button"
+                  className="productList-view-page-btn"
+                  onClick={() => goToPage(currentPage - 1)}
+                  disabled={currentPage === 1}
+                >
+                  {t("common.previous", {}, "Previous")}
+                </button>
+
+                <div className="productList-view-page-numbers">
+                  {pageNumbers.map((page) => (
+                    <button
+                      key={page}
+                      type="button"
+                      className={`productList-view-page-number ${page === currentPage ? "active" : ""}`}
+                      onClick={() => goToPage(page)}
+                      aria-current={page === currentPage ? "page" : undefined}
+                    >
+                      {formatNumber(page)}
+                    </button>
+                  ))}
+                </div>
+
+                <button
+                  type="button"
+                  className="productList-view-page-btn"
+                  onClick={() => goToPage(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                >
+                  {t("common.next", {}, "Next")}
+                </button>
+              </nav>
+            )}
+          </>
         ) : (
           <div className="productList-view-no-products">
-            <p>No products found with the selected filters.</p>
+            <p>{t("common.noProductsSelectedFilters")}</p>
             <button
               onClick={resetFilters}
               className="productList-view-clear-filters-btn"
             >
-              Clear Filters
+              {t("common.clearFilters")}
             </button>
           </div>
         )}
       </div>
 
-      {/* Product Modal */}
       {showModal && (
         <ProductModal
           show={showModal}
