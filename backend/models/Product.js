@@ -112,6 +112,24 @@ productSchema.pre("save", function (next) {
   //middle ware next function for continue next things
 });
 
+productSchema.index(
+  {
+    name: "text",
+    brand: "text",
+    categoryName: "text",
+    description: "text",
+  },
+  {
+    weights: {
+      name: 8,
+      brand: 5,
+      categoryName: 4,
+      description: 2,
+    },
+    name: "product_text_search_idx",
+  },
+);
+
 module.exports = mongoose.model("Product", productSchema);
 
 // Final Product Structure in Database

@@ -390,9 +390,9 @@ exports.logout = (req, res) => {
 // @route   GET /api/auth/me
 exports.getMe = async (req, res) => {
   if (!req.user) {
-    return res.status(401).json({
-      success: false,
-      message: "Not authorized, please login",
+    return res.json({
+      success: true,
+      user: null,
     });
   }
 

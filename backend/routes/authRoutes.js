@@ -16,12 +16,12 @@ const {
   deleteUser,
   updateUserRole,
 } = require("../controllers/authController");
-const { protect, authorize } = require("../middleware/auth");
+const { protect, authorize, optionalProtect } = require("../middleware/auth");
 
 router.post("/register", register);
 router.post("/login", login);
 router.post("/logout", logout);
-router.get("/me", protect, getMe);
+router.get("/me", optionalProtect, getMe);
 
 // Admin only routes for user management
 router.get("/users", protect, authorize("admin"), getUsers);

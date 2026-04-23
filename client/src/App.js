@@ -30,6 +30,7 @@ import SellerOrders from "./components/SellerOrders";
 import BecomeSeller from "./components/BecomeSeller";
 import AdminDashboard from "./components/AdminDashboard";
 import Chatbot from "./components/Chatbot";
+import ProductDetails from "./components/ProductDetails";
 
 import "./App.css";
 
@@ -71,6 +72,7 @@ function AppRoutes({ products, setProducts }) {
             <CategoryView products={products} setProducts={setProducts} />
           }
         />
+        <Route path="/product/:id" element={<ProductDetails />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />

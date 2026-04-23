@@ -1,46 +1,50 @@
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 
-// Protect: user must be logged in
-exports.protect = async (req, res, next) => {
+async function attachUserIfTokenValid(req) {
   const token = req.cookies.token;
-  // Read token from HTTP-only cookie
-
-  if (!token) {
-    console.log("no token found. I am inside auth protect middleware");
-    // Browser console only shows frontend logs
-    //check vs code backend terminal for this
-    return res
-      .status(401)
-      .json({ success: false, message: "Not authorized, please login" });
-  } else {
-    console.log("token found in protect middleware");
-  }
+  if (!token) return null;
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    // Verify and decode the token
-
-    req.user = await User.findById(decoded.id);
-    if (!req.user) {
-      // Token may belong to a deleted user (e.g., after reseeding DB)
-      res.cookie("token", "", {
-        expires: new Date(0),
-        httpOnly: true,
-      });
-      return res
-        .status(401)
-        .json({
-          success: false,
-          message: "User no longer exists. Please login again",
-        });
-    }
-    // Attach user to request so next middleware/controller can use it
-
-    next();
+    const user = await User.findById(decoded.id);
+    req.user = user || null;
+    return user || null;
   } catch (error) {
-    return res.status(401).json({ success: false, message: "Invalid token" });
+    req.user = null;
+    return null;
   }
+}
+
+// Protect: user must be logged in
+exports.protect = async (req, res, next) => {
+  const token = req.cookies.token;
+  if (!token) {
+    return res
+      .status(401)
+      .json({ success: false, message: "Not authorized, please login" });
+  }
+
+  const user = await attachUserIfTokenValid(req);
+  if (!user) {
+    res.cookie("token", "", {
+      expires: new Date(0),
+      httpOnly: true,
+    });
+    return res
+      .status(401)
+      .json({
+        success: false,
+        message: "Invalid token or user no longer exists. Please login again",
+      });
+  }
+
+  next();
+};
+
+exports.optionalProtect = async (req, res, next) => {
+  await attachUserIfTokenValid(req);
+  next();
 };
 
 // Authorize: user must have specific role
