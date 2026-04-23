@@ -1,6 +1,7 @@
 const Order = require("../models/Order");
 const Product = require("../models/Product");
 const Cart = require("../models/Cart");
+const { trackUserKeywords, extractProductKeywords } = require("../utils/recommendationKeywords");
 
 // @desc    Create new order
 // @route   POST /api/orders
@@ -14,6 +15,7 @@ exports.createOrder = async (req, res) => {
     }
 
     const itemsWithSellers = [];
+    const orderedProducts = [];
 
     // Check stock and get seller for all items
     for (const item of orderItems) {
@@ -37,6 +39,7 @@ exports.createOrder = async (req, res) => {
         seller: product.seller._id,
         sellerName: product.seller.name || "Unknown Seller",
       });
+      orderedProducts.push(product);
     }
 
     // Create order
@@ -49,11 +52,13 @@ exports.createOrder = async (req, res) => {
 
     const createdOrder = await order.save();
 
-    // Update stock
+    // Update stock and keep inStock in sync
     for (const item of orderItems) {
-      await Product.findByIdAndUpdate(item.product, {
-        $inc: { stock: -item.qty },
-      });
+      const productDoc = await Product.findById(item.product);
+      if (productDoc) {
+        productDoc.stock = Math.max(productDoc.stock - item.qty, 0);
+        await productDoc.save();
+      }
     }
 
     // Clear cart
@@ -62,6 +67,13 @@ exports.createOrder = async (req, res) => {
       cart.items = [];
       await cart.save();
     }
+
+    await trackUserKeywords(
+      req.user._id,
+      orderedProducts.flatMap((product) => extractProductKeywords(product)),
+      "order",
+      5,
+    );
 
     res.status(201).json({
       success: true,
@@ -154,9 +166,11 @@ exports.updateOrderItemStatus = async (req, res) => {
       item.cancellationReason = cancellationReason || "Seller cancelled the order";
       
       // Return stock back to product
-      await Product.findByIdAndUpdate(item.product, {
-        $inc: { stock: item.qty },
-      });
+      const productDoc = await Product.findById(item.product);
+      if (productDoc) {
+        productDoc.stock += item.qty;
+        await productDoc.save();
+      }
     } else {
       // Normal workflow
       if (newStatusIndex <= currentStatusIndex) {
@@ -230,9 +244,11 @@ exports.cancelOrderItem = async (req, res) => {
     item.cancellationReason = reason || "Cancelled by buyer";
 
     // Return stock back to product
-    await Product.findByIdAndUpdate(item.product, {
-      $inc: { stock: item.qty },
-    });
+    const productDoc = await Product.findById(item.product);
+    if (productDoc) {
+      productDoc.stock += item.qty;
+      await productDoc.save();
+    }
 
     // Update global status if necessary
     const allCancelled = order.orderItems.every((i) => i.status === "Cancelled");

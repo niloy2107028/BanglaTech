@@ -25,10 +25,16 @@
   border-radius: 8px;
   font-weight: 500;
   margin-bottom: 1rem;
-  transition: background-color 0.3s ease;
   cursor: pointer;
   border: none;
   font-size: 0.875rem;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .category-view-back-btn:hover,
+  .category-view-clear-filters-btn:hover {
+    background-color: #047857;
+  }
 }
 
 /* Larger button on medium screens */
@@ -37,10 +43,6 @@
     padding: 0.75rem 1.5rem;
     font-size: 1rem;
   }
-}
-
-.category-view-back-btn:hover {
-  background-color: #047857;
 }
 
 .category-view-header {
@@ -84,6 +86,13 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
+@media (hover: hover) and (pointer: fine) {
+  .category-view-filters:hover,
+  .category-view-no-products:hover {
+    box-shadow: 0 8px 22px rgba(15, 23, 42, 0.08);
+  }
+}
+
 @media (min-width: 768px) {
   .category-view-filters {
     flex-direction: row;
@@ -118,7 +127,6 @@
   font-size: 1rem;
   background-color: white;
   cursor: pointer;
-  transition: border-color 0.3s ease;
 }
 
 .category-view-filter-select:focus {
@@ -133,19 +141,20 @@
   border-radius: 8px;
   font-weight: 500;
   cursor: pointer;
-  transition: background-color 0.3s ease;
   align-self: flex-end;
   border: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .category-view-reset-btn:hover {
+    background-color: #b91c1c;
+  }
 }
 
 @media (min-width: 768px) {
   .category-view-reset-btn {
     align-self: stretch;
   }
-}
-
-.category-view-reset-btn:hover {
-  background-color: #b91c1c;
 }
 
 .category-view-products-grid {
@@ -202,10 +211,5 @@
   border-radius: 8px;
   font-weight: 500;
   cursor: pointer;
-  transition: background-color 0.3s ease;
   border: none;
-}
-
-.category-view-clear-filters-btn:hover {
-  background-color: #047857;
 }

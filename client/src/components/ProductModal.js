@@ -1,408 +1,201 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faXmark } from "@fortawesome/free-solid-svg-icons";
-import "./ProductModal.css";
+import React, { useState, useEffect } from 'react';
+import axios from '../api';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faXmark } from '@fortawesome/free-solid-svg-icons';
+import { useLanguage } from '../context/LanguageContext';
+import './ProductModal.css';
+
+const emptyForm = {
+  name: '',
+  brand: '',
+  category: '',
+  categoryName: '',
+  price: '',
+  originalPrice: '',
+  description: '',
+  image: '',
+  stock: '',
+  featured: false,
+  rating: '',
+  reviews: '',
+};
 
 const ProductModal = ({ show, mode, product, onClose, onSave }) => {
-  const [formData, setFormData] = useState({
-    name: "",
-    brand: "",
-    category: "",
-    categoryName: "",
-    price: "",
-    originalPrice: "",
-    description: "",
-    image: "",
-    stock: "",
-    featured: false,
-    rating: "",
-    reviews: "",
-  });
-
+  const [formData, setFormData] = useState(emptyForm);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
   const [categories, setCategories] = useState([]);
+  const { t, formatCurrency, translateCategoryName } = useLanguage();
 
   useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get('/api/categories');
+        setCategories(response.data.data || []);
+      } catch (fetchError) {
+        console.error('Error fetching categories:', fetchError);
+      }
+    };
+
     fetchCategories();
   }, []);
 
-  const fetchCategories = async () => {
-    try {
-      const response = await axios.get("/api/categories");
-      setCategories(response.data.data);
-    } catch (error) {
-      console.error("Error fetching categories:", error);
-    }
-  };
-
   useEffect(() => {
-    if (product && (mode === "edit" || mode === "view")) {
-      console.log("kire : " + (product.category?.name || "No Category"));
+    if (product && (mode === 'edit' || mode === 'view')) {
       setFormData({
-        name: product.name || "",
-        brand: product.brand || "",
+        name: product.name || '',
+        brand: product.brand || '',
         category:
-          typeof product.category === "object" && product.category !== null
+          typeof product.category === 'object' && product.category !== null
             ? product.category._id
             : product.category,
-        categoryName: product.category?.name || "",
-        price: product.price || "",
-        originalPrice: product.originalPrice || "",
-        description: product.description || "",
-        image: product.image || "",
-        stock: product.stock || "",
+        categoryName: product.category?.name || product.categoryName || '',
+        price: product.price || '',
+        originalPrice: product.originalPrice || '',
+        description: product.description || '',
+        image: product.image || '',
+        stock: product.stock || '',
         featured: product.featured || false,
-        rating: product.rating || "",
-        reviews: product.reviews || "",
+        rating: product.rating || '',
+        reviews: product.reviews || '',
       });
-    } else if (mode === "create") {
-      setFormData({
-        name: "",
-        brand: "",
-        category: "",
-        categoryName: "",
-        price: "",
-        originalPrice: "",
-        description: "",
-        image: "",
-        stock: "",
-        featured: false,
-        rating: "",
-        reviews: "",
-      });
+    } else if (mode === 'create') {
+      setFormData(emptyForm);
     }
   }, [product, mode]);
 
   const handleChange = (e) => {
-    // <input name="price" onChange={handleChange} />
-    // When user changes any input, this function updates that specific field in formData automatically.
     const { name, value, type, checked } = e.target;
-    // Take these from the input attributes
-
-    setFormData({
-      ...formData,
-      [name]: type === "checkbox" ? checked : value,
-      // Use the input’s name as the key.
-      // If input is checkbox → use true/false
-      // Otherwise → use input value
-    });
+    setFormData((prev) => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
   };
 
   const handleSubmit = async (e) => {
-    // Runs when form is submitted
-    // <form onSubmit={handleSubmit}></form>
     e.preventDefault();
-    // Prevents page reload.
-    // Normally:
-    // Submitting form reloads page
-
     setLoading(true);
-    setError("");
+    setError('');
 
     try {
-      if (mode === "create") {
-        await axios.post("/api/products", formData, { withCredentials: true });
-      } else if (mode === "edit") {
-        await axios.put(`/api/products/${product._id}`, formData, {
-          withCredentials: true,
-        });
+      if (mode === 'create') {
+        await axios.post('/api/products', formData, { withCredentials: true });
+      } else if (mode === 'edit') {
+        await axios.put(`/api/products/${product._id}`, formData, { withCredentials: true });
       }
       onSave();
-      // it calls handleModalSave. Reason it do the re-rendering of updated product
     } catch (err) {
-      setError(err.response?.data?.message || "An error occurred");
+      setError(err.response?.data?.message || 'An error occurred');
       setLoading(false);
     }
   };
 
   if (!show) return null;
-  // Login for the modal will or will not appear on screen
-
-  const isViewMode = mode === "view";
+  const isViewMode = mode === 'view';
 
   return (
     <div className="product-modal-overlay">
-      {/* onClick={onClose} */}
-      <div
-        className="product-modal-content"
-        onClick={(e) => e.stopPropagation()}
-      >
-        {/* e.stopPropagation keno?
-        In JavaScript:
-
-        When you click a child element →
-        The event goes upward to its parent →
-        Then parent’s parent →
-        Until it reaches the root.
-
-        This is called event bubbling.
-
-        So normally:
-
-        Click inside .modal-content
-        It triggers .modal-content
-        Then it ALSO triggers .modal-overlay
-        Modal closes
-        (e) => e.stopPropagation()
-        It means:
-        “Stop the event from going to parent elements.” */}
-
-        {/* Modal Header */}
+      <div className="product-modal-content" onClick={(e) => e.stopPropagation()}>
         <div className="product-modal-header">
           <h2>
-            {mode === "create" && "Add New Product"}
-            {mode === "edit" && "Edit Product"}
-            {mode === "view" && "Product Details"}
+            {mode === 'create' && t('product.addNewProduct')}
+            {mode === 'edit' && t('product.editProduct')}
+            {mode === 'view' && t('product.productDetails')}
           </h2>
           <button className="product-modal-close-btn" onClick={onClose}>
             <FontAwesomeIcon icon={faXmark} />
           </button>
         </div>
 
-        {/* Modal Body */}
         <div className="product-modal-body">
           {isViewMode ? (
-            // View Mode
             <div className="product-modal-view">
               <div className="product-modal-view-image-wrapper">
-                <img
-                  src={formData.image}
-                  alt={formData.name}
-                  className="product-modal-view-image"
-                />
+                <img src={formData.image} alt={formData.name} className="product-modal-view-image" />
               </div>
               <div className="product-modal-view-details">
-                <div className="product-modal-view-row">
-                  <strong>Product Name:</strong>
-                  <span>{formData.name}</span>
-                </div>
-                <div className="product-modal-view-row">
-                  <strong>Brand:</strong>
-                  <span>{formData.brand}</span>
-                </div>
-                <div className="product-modal-view-row">
-                  <strong>Category:</strong>
-                  <span>{formData.categoryName}</span>
-                </div>
-                <div className="product-modal-view-row">
-                  <strong>Price:</strong>
-                  <span className="product-modal-view-price">
-                    ৳{formData.price.toLocaleString()}
-                  </span>
-                </div>
-                {formData.originalPrice && (
-                  <div className="product-modal-view-row">
-                    <strong>Original Price:</strong>
-                    <span className="product-modal-view-original-price">
-                      ৳{formData.originalPrice.toLocaleString()}
-                    </span>
-                  </div>
-                )}
-                <div className="product-modal-view-row">
-                  <strong>Stock:</strong>
-                  <span>{formData.stock} units</span>
-                </div>
-                <div className="product-modal-view-row">
-                  <strong>Rating:</strong>
-                  <span>
-                    {formData.rating} / 5 ({formData.reviews} reviews)
-                  </span>
-                </div>
-                <div className="product-modal-view-row">
-                  <strong>Featured:</strong>
-                  <span>{formData.featured ? "Yes" : "No"}</span>
-                </div>
-                <div className="product-modal-view-description">
-                  <strong>Description:</strong>
-                  <p>{formData.description}</p>
-                </div>
+                <div className="product-modal-view-row"><strong>{t('product.productName')}:</strong><span>{formData.name}</span></div>
+                <div className="product-modal-view-row"><strong>{t('common.brand')}:</strong><span>{formData.brand}</span></div>
+                <div className="product-modal-view-row"><strong>{t('navbar.categories')}:</strong><span>{translateCategoryName(formData.categoryName)}</span></div>
+                <div className="product-modal-view-row"><strong>{t('product.price')}:</strong><span className="product-modal-view-price">{formatCurrency(formData.price)}</span></div>
+                {formData.originalPrice && <div className="product-modal-view-row"><strong>{t('product.originalPrice')}:</strong><span className="product-modal-view-original-price">{formatCurrency(formData.originalPrice)}</span></div>}
+                <div className="product-modal-view-row"><strong>{t('product.stock')}:</strong><span>{formData.stock} {t('product.units')}</span></div>
+                <div className="product-modal-view-row"><strong>{t('product.rating')}:</strong><span>{formData.rating} / 5 ({formData.reviews} {t('common.reviews')})</span></div>
+                <div className="product-modal-view-row"><strong>{t('product.featured')}:</strong><span>{formData.featured ? t('common.yes') : t('common.no')}</span></div>
+                <div className="product-modal-view-description"><strong>{t('product.description')}:</strong><p>{formData.description}</p></div>
               </div>
             </div>
           ) : (
-            // Create/Edit Mode
             <form onSubmit={handleSubmit}>
               {error && <div className="product-modal-error">{error}</div>}
 
               <div className="product-modal-form-row">
                 <div className="product-modal-form-group">
-                  <label>Product Name *</label>
-                  <input
-                    type="text"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    required
-                    placeholder="Enter product name"
-                    className="product-modal-form-input"
-                  />
+                  <label>{t('product.productName')} *</label>
+                  <input type="text" name="name" value={formData.name} onChange={handleChange} required placeholder={t('product.productName')} className="product-modal-form-input" />
                 </div>
-
                 <div className="product-modal-form-group">
-                  <label>Brand *</label>
-                  <input
-                    type="text"
-                    name="brand"
-                    value={formData.brand}
-                    onChange={handleChange}
-                    required
-                    placeholder="Enter brand name"
-                    className="product-modal-form-input"
-                  />
+                  <label>{t('common.brand')} *</label>
+                  <input type="text" name="brand" value={formData.brand} onChange={handleChange} required placeholder={t('common.brand')} className="product-modal-form-input" />
                 </div>
               </div>
 
               <div className="product-modal-form-row">
                 <div className="product-modal-form-group">
-                  <label>Category *</label>
-                  <select
-                    name="category"
-                    value={formData.category}
-                    onChange={handleChange}
-                    required
-                    className="product-modal-form-input"
-                  >
-                    <option value="">Select a category</option>
+                  <label>{t('navbar.categories')} *</label>
+                  <select name="category" value={formData.category} onChange={handleChange} required className="product-modal-form-input">
+                    <option value="">{t('category.categoryName')}</option>
                     {categories.map((cat) => (
-                      <option key={cat._id} value={cat._id}>
-                        {cat.icon} {cat.name}
-                      </option>
+                      <option key={cat._id} value={cat._id}>{translateCategoryName(cat.name)}</option>
                     ))}
                   </select>
                 </div>
-
                 <div className="product-modal-form-group">
-                  <label>Price (৳) *</label>
-                  <input
-                    type="number"
-                    name="price"
-                    value={formData.price}
-                    onChange={handleChange}
-                    required
-                    min="0"
-                    placeholder="Enter price"
-                    className="product-modal-form-input"
-                  />
+                  <label>{t('product.price')} (৳) *</label>
+                  <input type="number" name="price" value={formData.price} onChange={handleChange} required min="0" placeholder={t('product.price')} className="product-modal-form-input" />
                 </div>
               </div>
 
               <div className="product-modal-form-row">
                 <div className="product-modal-form-group">
-                  <label>Original Price (৳)</label>
-                  <input
-                    type="number"
-                    name="originalPrice"
-                    value={formData.originalPrice}
-                    onChange={handleChange}
-                    min="0"
-                    placeholder="Enter original price (optional)"
-                    className="product-modal-form-input"
-                  />
+                  <label>{t('product.originalPrice')} (৳)</label>
+                  <input type="number" name="originalPrice" value={formData.originalPrice} onChange={handleChange} min="0" placeholder={t('product.originalPrice')} className="product-modal-form-input" />
                 </div>
-
                 <div className="product-modal-form-group">
-                  <label>Stock Quantity *</label>
-                  <input
-                    type="number"
-                    name="stock"
-                    value={formData.stock}
-                    onChange={handleChange}
-                    required
-                    min="0"
-                    placeholder="Enter stock quantity"
-                    className="product-modal-form-input"
-                  />
+                  <label>{t('product.stock')} *</label>
+                  <input type="number" name="stock" value={formData.stock} onChange={handleChange} required min="0" placeholder={t('product.stock')} className="product-modal-form-input" />
                 </div>
               </div>
 
               <div className="product-modal-form-row">
                 <div className="product-modal-form-group">
-                  <label>Rating (0-5)</label>
-                  <input
-                    type="number"
-                    name="rating"
-                    value={formData.rating}
-                    onChange={handleChange}
-                    min="0"
-                    max="5"
-                    step="0.1"
-                    placeholder="Enter rating"
-                    className="product-modal-form-input"
-                  />
+                  <label>{t('product.rating')} (0-5)</label>
+                  <input type="number" name="rating" value={formData.rating} onChange={handleChange} min="0" max="5" step="0.1" placeholder={t('product.rating')} className="product-modal-form-input" />
                 </div>
-
                 <div className="product-modal-form-group">
-                  <label>Number of Reviews</label>
-                  <input
-                    type="number"
-                    name="reviews"
-                    value={formData.reviews}
-                    onChange={handleChange}
-                    min="0"
-                    placeholder="Enter review count"
-                    className="product-modal-form-input"
-                  />
+                  <label>{t('common.reviews')}</label>
+                  <input type="number" name="reviews" value={formData.reviews} onChange={handleChange} min="0" placeholder={t('common.reviews')} className="product-modal-form-input" />
                 </div>
               </div>
 
               <div className="product-modal-form-group">
-                <label>Image URL *</label>
-                <input
-                  type="url"
-                  name="image"
-                  value={formData.image}
-                  onChange={handleChange}
-                  required
-                  placeholder="Enter image URL"
-                  className="product-modal-form-input"
-                />
+                <label>{t('category.imageUrl')} *</label>
+                <input type="url" name="image" value={formData.image} onChange={handleChange} required placeholder={t('category.imageUrl')} className="product-modal-form-input" />
               </div>
 
               <div className="product-modal-form-group">
-                <label>Description *</label>
-                <textarea
-                  name="description"
-                  value={formData.description}
-                  onChange={handleChange}
-                  required
-                  rows="4"
-                  placeholder="Enter product description"
-                  className="product-modal-form-textarea"
-                />
+                <label>{t('product.description')} *</label>
+                <textarea name="description" value={formData.description} onChange={handleChange} required rows="4" placeholder={t('product.description')} className="product-modal-form-textarea" />
               </div>
 
               <div className="product-modal-form-checkbox">
                 <label>
-                  <input
-                    type="checkbox"
-                    name="featured"
-                    checked={formData.featured}
-                    onChange={handleChange}
-                  />
-                  <span>Featured Product</span>
+                  <input type="checkbox" name="featured" checked={formData.featured} onChange={handleChange} />
+                  <span>{t('product.featured')}</span>
                 </label>
               </div>
 
-              {/* Modal Footer */}
               <div className="product-modal-footer">
-                <button
-                  type="button"
-                  className="product-modal-btn-cancel"
-                  onClick={onClose}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="product-modal-btn-submit"
-                  disabled={loading}
-                >
-                  {loading
-                    ? "Saving..."
-                    : mode === "create"
-                      ? "Create Product"
-                      : "Update Product"}
+                <button type="button" className="product-modal-btn-cancel" onClick={onClose}>{t('common.cancel')}</button>
+                <button type="submit" className="product-modal-btn-submit" disabled={loading}>
+                  {loading ? 'Saving...' : mode === 'create' ? t('product.addNewProduct') : t('product.editProduct')}
                 </button>
               </div>
             </form>
@@ -411,9 +204,7 @@ const ProductModal = ({ show, mode, product, onClose, onSave }) => {
 
         {isViewMode && (
           <div className="product-modal-footer">
-            <button className="product-modal-btn-cancel" onClick={onClose}>
-              Close
-            </button>
+            <button className="product-modal-btn-cancel" onClick={onClose}>{t('common.close')}</button>
           </div>
         )}
       </div>

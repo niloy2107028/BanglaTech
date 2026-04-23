@@ -1,32 +1,34 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
-import "./BecomeSeller.css";
+import React, { useState, useEffect } from 'react';
+import axios from '../api';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import { useLanguage } from '../context/LanguageContext';
+import './BecomeSeller.css';
 
 const BecomeSeller = () => {
   const [formData, setFormData] = useState({
-    shopName: "",
-    shopDescription: "",
-    address: "",
-    phone: "",
+    shopName: '',
+    shopDescription: '',
+    address: '',
+    phone: '',
   });
   const [loading, setLoading] = useState(false);
-  const [status, setStatus] = useState("idle"); // idle, pending, approved, rejected
+  const [status, setStatus] = useState('idle');
   const [application, setApplication] = useState(null);
   const { user } = useAuth();
+  const { t } = useLanguage();
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchApplication = async () => {
       try {
-        const res = await axios.get("/api/sellers/my-application", { withCredentials: true });
+        const res = await axios.get('/api/sellers/my-application', { withCredentials: true });
         if (res.data.success && res.data.data) {
           setApplication(res.data.data);
           setStatus(res.data.data.status);
         }
       } catch (err) {
-        console.error("Error fetching application:", err);
+        console.error('Error fetching application:', err);
       }
     };
     fetchApplication();
@@ -40,38 +42,38 @@ const BecomeSeller = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const res = await axios.post("/api/sellers/apply", formData, { withCredentials: true });
+      const res = await axios.post('/api/sellers/apply', formData, { withCredentials: true });
       if (res.data.success) {
         setApplication(res.data.data);
-        setStatus("pending");
+        setStatus('pending');
       }
     } catch (err) {
-      alert(err.response?.data?.message || "Error submitting application");
+      alert(err.response?.data?.message || 'Error submitting application');
     } finally {
       setLoading(false);
     }
   };
 
-  if (user?.role === "seller") {
+  if (user?.role === 'seller') {
     return (
       <div className="become-seller-page">
         <div className="status-card approved">
-          <h2>Congratulations!</h2>
-          <p>You are already a registered seller on BanglaMart.</p>
-          <button className="btn-primary" onClick={() => navigate("/profile")}>Go to Dashboard</button>
+          <h2>{t('seller.congrats')}</h2>
+          <p>{t('seller.alreadySeller')}</p>
+          <button className="btn-primary" onClick={() => navigate('/profile')}>{t('seller.goDashboard')}</button>
         </div>
       </div>
     );
   }
 
-  if (status === "pending") {
+  if (status === 'pending') {
     return (
       <div className="become-seller-page">
         <div className="status-card pending">
-          <h2>Application Under Review</h2>
-          <p>Your application for <strong>{application?.shopName}</strong> is being reviewed by our admin team.</p>
-          <p>We will notify you once your application is processed.</p>
-          <button className="btn-secondary" onClick={() => navigate("/")}>Back to Home</button>
+          <h2>{t('seller.underReview')}</h2>
+          <p>{t('seller.reviewDescription', { shopName: application?.shopName || '' })}</p>
+          <p>{t('seller.reviewNotice')}</p>
+          <button className="btn-secondary" onClick={() => navigate('/')}>{t('seller.backHome')}</button>
         </div>
       </div>
     );
@@ -81,17 +83,17 @@ const BecomeSeller = () => {
     <div className="become-seller-page">
       <div className="become-seller-container">
         <div className="become-seller-header">
-          <h1>Start Your Business Journey</h1>
-          <p>Fill out the form below to become a verified seller on BanglaMart.</p>
+          <h1>{t('seller.journeyTitle')}</h1>
+          <p>{t('seller.journeyDescription')}</p>
         </div>
 
         <form onSubmit={handleSubmit} className="become-seller-form">
           <div className="form-group">
-            <label>Shop Name</label>
+            <label>{t('seller.shopName')}</label>
             <input
               type="text"
               name="shopName"
-              placeholder="Enter your shop name"
+              placeholder={t('seller.shopNamePlaceholder')}
               required
               value={formData.shopName}
               onChange={handleChange}
@@ -99,10 +101,10 @@ const BecomeSeller = () => {
           </div>
 
           <div className="form-group">
-            <label>Shop Description</label>
+            <label>{t('seller.shopDescription')}</label>
             <textarea
               name="shopDescription"
-              placeholder="Tell us about your products..."
+              placeholder={t('seller.shopDescriptionPlaceholder')}
               required
               value={formData.shopDescription}
               onChange={handleChange}
@@ -110,11 +112,11 @@ const BecomeSeller = () => {
           </div>
 
           <div className="form-group">
-            <label>Business Address</label>
+            <label>{t('seller.businessAddress')}</label>
             <input
               type="text"
               name="address"
-              placeholder="Full physical address"
+              placeholder={t('seller.businessAddressPlaceholder')}
               required
               value={formData.address}
               onChange={handleChange}
@@ -122,7 +124,7 @@ const BecomeSeller = () => {
           </div>
 
           <div className="form-group">
-            <label>Contact Phone</label>
+            <label>{t('seller.contactPhone')}</label>
             <input
               type="tel"
               name="phone"
@@ -134,7 +136,7 @@ const BecomeSeller = () => {
           </div>
 
           <button type="submit" className="submit-btn" disabled={loading}>
-            {loading ? "Submitting..." : "Submit Application"}
+            {loading ? t('seller.submitting') : t('seller.submitApplication')}
           </button>
         </form>
       </div>

@@ -1,4 +1,3 @@
-const { response } = require("express");
 const User = require("../models/User");
 const PendingUser = require("../models/PendingUser");
 const jwt = require("jsonwebtoken");
@@ -28,7 +27,7 @@ const sendTokenResponse = (user, statusCode, res, redirect = false) => {
   res.cookie("token", token, cookieOptions);
 
   if (redirect) {
-    return res.redirect("http://localhost:3000/");
+    return res.redirect(process.env.CLIENT_URL || "http://localhost:3000/");
   }
 
   res.status(statusCode).json({

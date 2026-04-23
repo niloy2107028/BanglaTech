@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node backend/server.js",
     "dev": "nodemon backend/server.js",
-    "client": "npm start --prefix client",
+    "client": "npm run dev --prefix client",
     "dev:full": "concurrently \"npm run dev\" \"npm run client\"",
     "seed": "node backend/seed.js",
     "install-all": "npm install && cd client && npm install"

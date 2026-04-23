@@ -4,9 +4,16 @@
   padding: 1.5rem;
   text-align: center;
   cursor: pointer;
-  transition: all 0.3s ease;
   border: 2px solid #f3f4f6;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .category-card:hover {
+    border-color: rgba(15, 157, 122, 0.4);
+    background-color: #f8fafc;
+    box-shadow: 0 8px 22px rgba(15, 23, 42, 0.08);
+  }
 }
 
 /* More padding on larger screens */
@@ -14,11 +21,6 @@
   .category-card {
     padding: 2rem;
   }
-}
-
-.category-card:hover {
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-  border-color: #10b981;
 }
 
 .category-card-image-wrapper {

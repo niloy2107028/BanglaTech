@@ -28,13 +28,8 @@
   color: #64748b;
   font-weight: 600;
   font-size: 0.95rem;
-  transition: all 0.2s;
   position: relative;
   padding-bottom: 10px;
-}
-
-.admin-local-nav a:hover {
-  color: #0f172a;
 }
 
 .admin-local-nav a.active {
@@ -60,9 +55,15 @@
   background-color: transparent;
 }
 
-.visit-site-link:hover {
-  background-color: #3b82f6 !important;
-  color: white !important;
+@media (hover: hover) and (pointer: fine) {
+  .admin-local-nav a:hover {
+    color: #fe424d;
+  }
+
+  .visit-site-link:hover {
+    background-color: #eff6ff;
+    color: #1d4ed8 !important;
+  }
 }
 
 .admin-title {
@@ -91,12 +92,16 @@
   border-radius: 16px;
   box-shadow: 0 1px 3px rgba(0,0,0,0.1);
   border: 1px solid #e2e8f0;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.stat-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+@media (hover: hover) and (pointer: fine) {
+  .stat-card:hover,
+  .app-card:hover,
+  .table-wrapper:hover,
+  .overview-section:hover {
+    border-color: rgba(15, 157, 122, 0.28);
+    box-shadow: 0 8px 22px rgba(15, 23, 42, 0.08);
+  }
 }
 
 .stat-label {
@@ -138,17 +143,23 @@
   color: #64748b;
   cursor: pointer;
   border-radius: 8px;
-  transition: all 0.2s;
-}
-
-.admin-tabs button:hover {
-  color: #0f172a;
 }
 
 .admin-tabs button.active {
   background: white;
   color: #fe424d;
   box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .admin-tabs button:not(.active):hover {
+    background: #e2e8f0;
+    color: #334155;
+  }
+
+  .alert-banner button:hover {
+    background: #dc2626;
+  }
 }
 
 /* Overview Section */
@@ -273,11 +284,22 @@
   border-radius: 8px;
   font-weight: 600;
   cursor: pointer;
-  transition: opacity 0.2s;
 }
 
 .btn-approve { background: #10b981; color: white; }
 .btn-reject { background: #ef4444; color: white; }
+
+@media (hover: hover) and (pointer: fine) {
+  .btn-approve:hover {
+    background: #059669;
+  }
+
+  .btn-reject:hover,
+  .btn-delete:hover {
+    background: #fee2e2;
+    color: #b91c1c;
+  }
+}
 
 /* Table Section */
 .table-wrapper {
@@ -329,10 +351,6 @@
   cursor: pointer;
   padding: 4px 8px;
   border-radius: 4px;
-}
-
-.btn-delete:hover {
-  background: #fee2e2;
 }
 
 .empty-state {

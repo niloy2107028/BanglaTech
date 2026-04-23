@@ -4,23 +4,96 @@
   box-sizing: border-box;
 }
 
-/* Base responsive typography */
+:root {
+  --bg: #f4f7fb;
+  --surface: #ffffff;
+  --surface-soft: #f8fafc;
+  --text: #0f172a;
+  --muted: #64748b;
+  --border: #e2e8f0;
+  --primary: #0f9d7a;
+  --primary-dark: #0a7f62;
+  --accent: #ff5a5f;
+  --accent-dark: #ef4444;
+  --shadow-sm: 0 8px 24px rgba(15, 23, 42, 0.06);
+  --shadow-md: 0 18px 40px rgba(15, 23, 42, 0.1);
+  --shadow-focus: 0 0 0 4px rgba(15, 157, 122, 0.14);
+  --radius-lg: 20px;
+}
+
 html {
   font-size: 16px;
-  scroll-behavior: smooth;
+  scroll-behavior: auto;
 }
 
 body {
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-family: Inter, "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #f8f9fa;
+  background:
+    radial-gradient(circle at top left, rgba(15, 157, 122, 0.08), transparent 26%),
+    radial-gradient(circle at top right, rgba(255, 90, 95, 0.08), transparent 24%),
+    var(--bg);
+  color: var(--text);
   overflow-x: hidden;
 }
 
-/* Prevent horizontal scroll on mobile */
 html,
-body {
+body,
+#root {
+  min-height: 100%;
   max-width: 100%;
   overflow-x: hidden;
+}
+
+a {
+  color: inherit;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+button,
+a,
+select,
+input,
+textarea,
+[role="button"] {
+  outline-color: transparent;
+}
+
+button:focus-visible,
+a:focus-visible,
+select:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+[role="button"]:focus-visible {
+  outline: 3px solid rgba(15, 157, 122, 0.35);
+  outline-offset: 3px;
+  box-shadow: var(--shadow-focus);
+}
+
+button:disabled,
+button[aria-disabled="true"] {
+  cursor: not-allowed;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  button:not(:disabled):hover,
+  [role="button"]:hover {
+    box-shadow: inset 0 0 0 999px rgba(255, 255, 255, 0.08);
+  }
+
+  a:hover {
+    text-decoration-color: currentColor;
+  }
+}
+
+button:not(:disabled):active,
+[role="button"]:active {
+  box-shadow: inset 0 0 0 999px rgba(15, 23, 42, 0.08);
 }

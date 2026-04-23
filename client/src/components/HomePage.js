@@ -1,10 +1,8 @@
-import React, { useState, useEffect, useMemo } from "react";
-import axios from "axios";
-// Used to send HTTP requests to backend
-
+import React, { useEffect, useState } from "react";
+import axios from "../api";
 import { useNavigate } from "react-router-dom";
-// Used to change page programmatically (navigate to another route).
 import { useAuth } from "../context/AuthContext";
+import { useLanguage } from "../context/LanguageContext";
 
 import CategoryCard from "./CategoryCard";
 import ProductCard from "./ProductCard";
@@ -13,120 +11,100 @@ import ProductList from "./ProductList";
 import "./HomePage.css";
 
 const HomePage = () => {
-  // This is a functional component.
-  // It receives products as props.
-
   const [showModal, setShowModal] = useState(false);
   const [products, setProducts] = useState([]);
-  // Controls whether modal is open or closed.
-  const [modalMode, setModalMode] = useState("view");
-  // Stores modal mode:
-  // "view" → just viewing
-  // "edit" → editing product
-
+  const [recommendedProducts, setRecommendedProducts] = useState([]);
+  const [recommendationKeywords, setRecommendationKeywords] = useState([]);
+  const [recommendationsPersonalized, setRecommendationsPersonalized] =
+    useState(false);
+  const [modalMode, setModalMode] = useState("create");
   const [currentProduct, setCurrentProduct] = useState(null);
-  // Stores the selected product.
-
   const [categories, setCategories] = useState([]);
-  // Stores categories list.
+  const [loading, setLoading] = useState(true);
 
   const navigate = useNavigate();
   const { user, isAuthenticated } = useAuth();
-  // Used to go to another page like:
-  // navigate("/category/Electronics")
+  const { t, translateCategoryName } = useLanguage();
 
   useEffect(() => {
-    fetchCategories();
-    fetchFeaturedProducts();
-  }, []);
+    const loadHomePage = async () => {
+      setLoading(true);
+      try {
+        await Promise.all([
+          fetchCategories(),
+          fetchFeaturedProducts(),
+          isAuthenticated ? fetchRecommendations() : Promise.resolve(),
+        ]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadHomePage();
+  }, [isAuthenticated]);
 
   const fetchFeaturedProducts = async () => {
     try {
       const response = await axios.get("/api/products?featured=true");
-
-      setProducts(response.data.data);
+      setProducts(response.data.data || []);
     } catch (error) {
-      console.error("Error fetching products:", error);
+      console.error("Error fetching featured products:", error);
+      setProducts([]);
+    }
+  };
+
+  const fetchRecommendations = async () => {
+    try {
+      const response = await axios.get(
+        "/api/products/recommendations?limit=8",
+        {
+          withCredentials: true,
+        },
+      );
+      setRecommendedProducts(response.data.data || []);
+      setRecommendationKeywords(response.data.keywords || []);
+      setRecommendationsPersonalized(Boolean(response.data.personalized));
+    } catch (error) {
+      console.error("Error fetching recommendations:", error);
+      setRecommendedProducts([]);
+      setRecommendationKeywords([]);
+      setRecommendationsPersonalized(false);
     }
   };
 
   const fetchCategories = async () => {
     try {
       const response = await axios.get("/api/categories");
-      // console.log(response);
-      setCategories(response.data.data);
+      setCategories(response.data.data || []);
     } catch (error) {
       console.error("Error fetching categories:", error);
+      setCategories([]);
     }
   };
 
-  // Count Products Per Category
-  // const getCategoryProductCount = (categoryName) => {
-  //   return products.filter((p) => {
-  //     const productCategory = p.category.name;
+  const trackProductView = async (productId) => {
+    if (!isAuthenticated) return;
 
-  //     return productCategory === categoryName;
-  //   }).length;
-  // };
-  // instead we will create a map
-  // it will cause o(n) time instead of o(mn)
+    try {
+      await axios.post(
+        `/api/products/${productId}/track-view`,
+        {},
+        { withCredentials: true },
+      );
+    } catch (error) {
+      console.error("Error tracking product view:", error);
+    }
+  };
 
-  // const categoryCount = useMemo(() => {
-  //   const counts = {};
-
-  //   products.forEach((product) => {
-  //     const name = product.category.name;
-  //     counts[name] = (counts[name] || 0) + 1;
-  //   });
-
-  //   return counts;
-  // }, [products]);
-
-  // Now React will recompute categoryCount only when products change.
-  // no need reason in this component we are not getting all the products
-
-  // When user clicks view:
-  // Store selected product
-  // Set mode to view
-  // Open modal
   const handleView = (product) => {
+    trackProductView(product._id);
     navigate(`/product/${product._id}`);
   };
 
-  // Same as view but mode is "edit".
-  const handleEdit = (product) => {
-    setCurrentProduct(product);
-    setModalMode("edit");
-    setShowModal(true);
-  };
-
-  // Create New Product
   const handleCreate = () => {
     setCurrentProduct(null);
     setModalMode("create");
     setShowModal(true);
-  };
-
-  // Delete Product
-  const handleDelete = async (id) => {
-    if (window.confirm("Are you sure you want to delete this product?")) {
-      try {
-        await axios.delete(`/api/products/${id}`);
-        // window.location.reload();
-        // It:
-        // Reloads the entire page
-        // Destroys React state
-        // Makes your app slow
-        // Breaks SPA (Single Page Application) concept
-
-        setProducts((prevProducts) =>
-          prevProducts.filter((product) => product._id !== id),
-        );
-      } catch (error) {
-        console.error("Error deleting product:", error);
-        alert("Failed to delete product");
-      }
-    }
   };
 
   const handleModalClose = () => {
@@ -136,21 +114,17 @@ const HomePage = () => {
 
   const handleModalSave = async () => {
     setShowModal(false);
-    // Refresh products list
-    try {
-      const response = await axios.get("/api/products");
-      setProducts(response.data.data);
-    } catch (error) {
-      console.error("Error fetching products:", error);
-    }
+    await Promise.all([
+      fetchFeaturedProducts(),
+      isAuthenticated ? fetchRecommendations() : Promise.resolve(),
+    ]);
   };
 
-  if (products.length === 0) {
-    // as data fetching function is async function so loading will be shown untill fetch
+  if (loading) {
     return (
       <div className="homepage-loading">
         <div className="loading-spinner"></div>
-        <p className="loading-text">Loading...</p>
+        <p className="loading-text">{t("common.loading")}</p>
       </div>
     );
   }
@@ -158,54 +132,115 @@ const HomePage = () => {
   return (
     <div className="homepage">
       <div className="homepage-container">
-        {/* Add Product Button */}
+        <section className="homepage-hero">
+          <div className="homepage-hero-copy">
+            <span className="homepage-hero-badge">{t("home.heroBadge")}</span>
+            <h1>{t("home.heroTitle")}</h1>
+            <p>{t("home.heroDescription")}</p>
+            <div className="homepage-hero-actions">
+              <button
+                onClick={() => navigate("/search")}
+                className="homepage-primary-btn"
+              >
+                {t("home.exploreProducts")}
+              </button>
+              <button
+                onClick={() => navigate("/category/Electronics")}
+                className="homepage-secondary-btn"
+              >
+                {t("home.browseElectronics")}
+              </button>
+            </div>
+          </div>
+          <div className="homepage-hero-stats">
+            <div className="hero-stat-card">
+              <strong>{categories.length}+</strong>
+              <span>{t("home.popularCategories")}</span>
+            </div>
+            <div className="hero-stat-card">
+              <strong>{products.length}+</strong>
+              <span>{t("home.featuredPicks")}</span>
+            </div>
+            <div className="hero-stat-card">
+              <strong>Fast</strong>
+              <span>{t("home.fastFlow")}</span>
+            </div>
+          </div>
+        </section>
+
+        {isAuthenticated &&
+          recommendationsPersonalized &&
+          recommendedProducts.length > 0 && (
+            <section className="recommended-section">
+              <div className="section-header section-header-left">
+                <div>
+                  <h2>{t("home.recommendedTitle")}</h2>
+                  <p>{t("home.recommendedDescription")}</p>
+                </div>
+                {recommendationKeywords.length > 0 && (
+                  <div className="recommendation-keywords">
+                    {recommendationKeywords.slice(0, 6).map((keyword) => (
+                      <span key={keyword} className="recommendation-chip">
+                        {keyword}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+              <div className="homepage-product-grid">
+                {recommendedProducts.map((product) => (
+                  <ProductCard
+                    key={product._id}
+                    product={product}
+                    onView={handleView}
+                  />
+                ))}
+              </div>
+            </section>
+          )}
+
         {isAuthenticated && user?.role === "seller" && (
           <button className="add-product-btn" onClick={handleCreate}>
-            Add Product
+            {t("home.addProduct")}
           </button>
         )}
 
-        {/* Categories Section */}
         <section className="categories-section">
           <div className="section-header">
-            <h2>Shop by Category</h2>
-            <p>Browse products from various categories</p>
+            <h2>{t("home.shopByCategory")}</h2>
+            <p>{t("home.shopByCategoryDesc")}</p>
           </div>
           <div className="categories-grid">
             {categories.map((category) => (
               <CategoryCard
                 key={category._id}
-                category={category.name}
+                category={translateCategoryName(category.name)}
                 image={category.image}
-                // productCount={categoryCount[category.name]}
-                onClick={
-                  () =>
-                    navigate(`/category/${encodeURIComponent(category.name)}`)
-
-                  // This makes the category name safe for URLs.
-                  // Example:
-                  // Category Name	  Encoded URL
-                  // Home Appliances	Home%20Appliances
-                  // Men & Women	    Men%20%26%20Women
+                onClick={() =>
+                  navigate(`/category/${encodeURIComponent(category.name)}`)
                 }
               />
             ))}
           </div>
         </section>
 
-        {/* Featured Products Section */}
         {products.length > 0 && (
           <section className="featured-section">
-            <div className="section-header">
-              <h2>Featured Products</h2>
-              <p>Check out our featured items</p>
+            <div className="section-header section-header-left">
+              <div>
+                <h2>{t("home.featuredProducts")}</h2>
+                <p>{t("home.featuredDescription")}</p>
+              </div>
             </div>
-            <ProductList products={products} setProducts={setProducts} />
+            <ProductList
+              products={products}
+              setProducts={setProducts}
+              refreshEndpoint="/api/products?featured=true"
+            />
           </section>
         )}
       </div>
 
-      {/* Product Modal */}
       {showModal && (
         <ProductModal
           show={showModal}

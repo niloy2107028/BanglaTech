@@ -1,22 +1,16 @@
-import React from "react";
-import { Navigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import React from 'react';
+import { Navigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import { useLanguage } from '../context/LanguageContext';
 
 const ProtectedRoute = ({ children, requiredRole }) => {
   const { user, loading } = useAuth();
+  const { t } = useLanguage();
 
-  if (loading) return <p>Loading ...</p>;
-
+  if (loading) return <p>{t('common.loading')}</p>;
   if (!user) return <Navigate to="/login" replace />;
-  // Not logged in → redirect to login page
-
-  if (requiredRole && user.role !== requiredRole) {
-    return <Navigate to="/" replace />;
-    // Logged in but wrong role → redirect home
-  }
-
+  if (requiredRole && user.role !== requiredRole) return <Navigate to="/" replace />;
   return children;
-  // All checks passed → show the page
 };
 
 export default ProtectedRoute;

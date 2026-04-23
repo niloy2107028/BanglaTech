@@ -1,27 +1,32 @@
-import React, { useState, useEffect, useRef } from "react";
-import axios from "axios";
+import React, { useEffect, useRef, useState } from "react";
+import axios from "../api";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { useLanguage } from "../context/LanguageContext";
 import "./Chatbot.css";
 
 const CHAT_HISTORY_STORAGE_KEY = "banglamart_chat_history_v1";
-const DEFAULT_CHAT_HISTORY = [
-  {
-    role: "assistant",
-    content: "Hello! I am your assistant. How can I help you today?",
-  },
-];
 
-function readStoredChatHistory() {
-  if (typeof window === "undefined") return DEFAULT_CHAT_HISTORY;
+function getDefaultChatHistory(initialMessage) {
+  return [
+    {
+      role: "assistant",
+      content: initialMessage,
+      isDefaultGreeting: true,
+    },
+  ];
+}
+
+function readStoredChatHistory(initialMessage) {
+  if (typeof window === "undefined") return getDefaultChatHistory(initialMessage);
 
   try {
     const raw = window.sessionStorage.getItem(CHAT_HISTORY_STORAGE_KEY);
-    if (!raw) return DEFAULT_CHAT_HISTORY;
+    if (!raw) return getDefaultChatHistory(initialMessage);
 
     const parsed = JSON.parse(raw);
     if (!Array.isArray(parsed) || parsed.length === 0) {
-      return DEFAULT_CHAT_HISTORY;
+      return getDefaultChatHistory(initialMessage);
     }
 
     const sanitized = parsed
@@ -29,24 +34,36 @@ function readStoredChatHistory() {
         role: item?.role === "user" ? "user" : "assistant",
         content: String(item?.content || ""),
         imageDataUrl:
-          typeof item?.imageDataUrl === "string" && item.imageDataUrl.startsWith("data:image/")
+          typeof item?.imageDataUrl === "string" &&
+          item.imageDataUrl.startsWith("data:image/")
             ? item.imageDataUrl
             : "",
         cards: Array.isArray(item?.cards) ? item.cards : [],
         products: Array.isArray(item?.products) ? item.products : [],
+        isDefaultGreeting: Boolean(item?.isDefaultGreeting),
       }))
       .filter((item) => item.content.trim().length > 0);
 
-    return sanitized.length > 0 ? sanitized : DEFAULT_CHAT_HISTORY;
+    return sanitized.length > 0
+      ? sanitized
+      : getDefaultChatHistory(initialMessage);
   } catch (error) {
-    return DEFAULT_CHAT_HISTORY;
+    return getDefaultChatHistory(initialMessage);
   }
 }
 
 const Chatbot = () => {
+  const { t, language } = useLanguage();
+  const initialMessage = t(
+    "chatbot.initialMessage",
+    {},
+    "Hello! I am the BanglaMart bot. How can I help you today?",
+  );
   const [isOpen, setIsOpen] = useState(false);
   const [message, setMessage] = useState("");
-  const [chatHistory, setChatHistory] = useState(() => readStoredChatHistory());
+  const [chatHistory, setChatHistory] = useState(() =>
+    readStoredChatHistory(initialMessage),
+  );
   const [loading, setLoading] = useState(false);
   const [pendingImage, setPendingImage] = useState(null);
   const [isListening, setIsListening] = useState(false);
@@ -67,8 +84,8 @@ const Chatbot = () => {
         ? item.products
         : Array.isArray(item?.cards)
           ? item.cards
-            .map((card) => String(card?.productId || "").trim())
-            .filter(Boolean)
+              .map((card) => String(card?.productId || "").trim())
+              .filter(Boolean)
           : [],
     }));
 
@@ -78,7 +95,9 @@ const Chatbot = () => {
     const output = [];
 
     for (const card of cards) {
-      const key = String(card?.productId || card?.name || "").trim().toLowerCase();
+      const key = String(card?.productId || card?.name || "")
+        .trim()
+        .toLowerCase();
       if (!key || seen.has(key)) continue;
       seen.add(key);
       output.push(card);
@@ -88,6 +107,20 @@ const Chatbot = () => {
   };
 
   useEffect(() => {
+    setChatHistory((prev) => {
+      if (
+        prev.length === 1 &&
+        prev[0].role === "assistant" &&
+        prev[0].isDefaultGreeting
+      ) {
+        return getDefaultChatHistory(initialMessage);
+      }
+
+      return prev;
+    });
+  }, [language, initialMessage]);
+
+  useEffect(() => {
     scrollRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [chatHistory, isOpen]);
 
@@ -95,9 +128,12 @@ const Chatbot = () => {
     if (typeof window === "undefined") return;
 
     try {
-      window.sessionStorage.setItem(CHAT_HISTORY_STORAGE_KEY, JSON.stringify(chatHistory));
+      window.sessionStorage.setItem(
+        CHAT_HISTORY_STORAGE_KEY,
+        JSON.stringify(chatHistory),
+      );
     } catch (error) {
-      // Ignore storage write errors to keep chat usable.
+      // Keep chat usable even when session storage is unavailable.
     }
   }, [chatHistory]);
 
@@ -142,14 +178,14 @@ const Chatbot = () => {
         cards: Array.isArray(data?.cards) ? data.cards : [],
         products: Array.isArray(data?.products)
           ? data.products
-            .map((product) => String(product?._id || product?.id || "").trim())
-            .filter(Boolean)
+              .map((product) => String(product?._id || product?.id || "").trim())
+              .filter(Boolean)
           : [],
       };
       setChatHistory((prev) => [...prev, aiMessage]);
     } catch (error) {
       console.error("Chatbot Error:", error);
-      pushAssistantMessage("Sorry, the chatbot is temporarily unavailable.");
+      pushAssistantMessage(t("chatbot.error"));
     } finally {
       setLoading(false);
     }
@@ -216,13 +252,13 @@ const Chatbot = () => {
         content: lowConfidence
           ? data?.reply || "Sorry couldn't understand the image provided."
           : caption
-          ? `Image summary: ${caption}\n\n${data?.reply || "Here are some matching products."}`
-          : data?.reply || "No response from image search.",
+            ? `Image summary: ${caption}\n\n${data?.reply || "Here are some matching products."}`
+            : data?.reply || "No response from image search.",
         cards: Array.isArray(data?.cards) ? data.cards : [],
         products: Array.isArray(data?.products)
           ? data.products
-            .map((product) => String(product?._id || product?.id || "").trim())
-            .filter(Boolean)
+              .map((product) => String(product?._id || product?.id || "").trim())
+              .filter(Boolean)
           : [],
       };
 
@@ -275,7 +311,7 @@ const Chatbot = () => {
     const recognition = new SpeechRecognition();
     recognitionRef.current = recognition;
 
-    recognition.lang = navigator.language || "en-US";
+    recognition.lang = language === "bn" ? "bn-BD" : navigator.language || "en-US";
     recognition.interimResults = true;
     recognition.continuous = true;
     recognition.maxAlternatives = 1;
@@ -344,8 +380,8 @@ const Chatbot = () => {
       {isOpen && (
         <div className="chat-window">
           <div className="chat-header">
-            <h4>BanglaMart Bot</h4>
-            <p>24/7 Support</p>
+            <h4>{t("chatbot.title")}</h4>
+            <p>{t("chatbot.support")}</p>
           </div>
 
           <div className="chat-messages">
@@ -358,7 +394,11 @@ const Chatbot = () => {
                         remarkPlugins={[remarkGfm]}
                         components={{
                           a: ({ node, ...props }) => (
-                            <a {...props} rel="noopener noreferrer" />
+                            <a
+                              {...props}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            />
                           ),
                         }}
                       >
@@ -375,7 +415,11 @@ const Chatbot = () => {
                       remarkPlugins={[remarkGfm]}
                       components={{
                         a: ({ node, ...props }) => (
-                          <a {...props} rel="noopener noreferrer" />
+                          <a
+                            {...props}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          />
                         ),
                       }}
                     >
@@ -385,7 +429,10 @@ const Chatbot = () => {
                   {Array.isArray(item.cards) && uniqueCards(item.cards).length > 0 && (
                     <div className="chatbot-cards-list">
                       {uniqueCards(item.cards).map((card, idx) => (
-                        <div className="chatbot-card" key={`${card?.productId || card?.name || "card"}-${idx}`}>
+                        <div
+                          className="chatbot-card"
+                          key={`${card?.productId || card?.name || "card"}-${idx}`}
+                        >
                           {card?.image && (
                             <img
                               src={card.image}
@@ -394,11 +441,16 @@ const Chatbot = () => {
                             />
                           )}
                           <div className="chatbot-card-body">
-                            <p className="chatbot-card-title">{card?.name || "Product"}</p>
-                            <p className="chatbot-card-price">
-                              {(card?.currencySymbol || "৳") + Number(card?.price || 0)}
+                            <p className="chatbot-card-title">
+                              {card?.name || "Product"}
                             </p>
-                            <p className="chatbot-card-description">{card?.description || ""}</p>
+                            <p className="chatbot-card-price">
+                              {(card?.currencySymbol || "Tk ") +
+                                Number(card?.price || 0).toLocaleString()}
+                            </p>
+                            <p className="chatbot-card-description">
+                              {card?.description || ""}
+                            </p>
                             {card?.url && (
                               <a className="chatbot-card-link" href={card.url}>
                                 View Product
@@ -455,7 +507,7 @@ const Chatbot = () => {
               {voiceButtonText}
             </button>
             <textarea
-              placeholder="Ask me anything..."
+              placeholder={t("chatbot.placeholder")}
               value={message}
               rows="1"
               onChange={(e) => setMessage(e.target.value)}
@@ -470,7 +522,7 @@ const Chatbot = () => {
               type="submit"
               disabled={loading || (!String(message || "").trim() && !pendingImage?.file)}
             >
-              Send
+              {t("chatbot.send")}
             </button>
             {pendingImage?.file && (
               <div className="pending-image-preview">

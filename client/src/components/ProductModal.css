@@ -76,12 +76,14 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.3s ease;
 }
 
-.product-modal-close-btn:hover {
-  color: #ef4444;
-  transform: rotate(90deg);
+@media (hover: hover) and (pointer: fine) {
+  .product-modal-close-btn:hover {
+    color: #ef4444;
+    background: #fef2f2;
+    border-radius: 8px;
+  }
 }
 
 .product-modal-body {
@@ -224,7 +226,6 @@
   border-radius: 6px;
   font-size: 1rem;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  transition: all 0.3s ease;
 }
 
 .product-modal-form-input:focus,
@@ -290,7 +291,6 @@
   border-radius: 8px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
   font-size: 0.875rem;
   width: 100%;
 }
@@ -309,24 +309,23 @@
   color: #1f2937;
 }
 
-.product-modal-btn-cancel:hover {
-  background-color: #d1d5db;
-}
-
 .product-modal-btn-submit {
   background-color: #ef4444;
   color: white;
 }
 
-.product-modal-btn-submit:hover {
-  background-color: #dc2626;
-  /* transform: translateY(-2px); */
-  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+@media (hover: hover) and (pointer: fine) {
+  .product-modal-btn-cancel:hover {
+    background-color: #d1d5db;
+  }
+
+  .product-modal-btn-submit:not(:disabled):hover {
+    background-color: #dc2626;
+  }
 }
 
 .product-modal-btn-submit:disabled {
   opacity: 0.5;
   cursor: not-allowed;
-  transform: none;
   background-color: #9ca3af;
 }
