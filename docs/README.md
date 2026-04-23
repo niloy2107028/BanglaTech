@@ -43,8 +43,22 @@ It supports role-based commerce flows (buyer, seller, admin), order lifecycle ma
 - Image search endpoint (vision caption + product retrieval)
 - Context-aware reply/search routing with chat history
 - Product card response payloads for UI rendering
+# BanglaMart
 
-## Tech Stack
+> A full-stack e-commerce marketplace built with the MERN stack — supporting role-based commerce flows for buyers, sellers, and admins, with an AI-powered multimodal chatbot.
+
+---
+
+## Table of Contents
+
+- [Overview](#overview)
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [Project Structure](#project-structure)
+- [Getting Started](#getting-started)
+- [Environment Variables](#environment-variables)
+- [API Reference](#api-reference)
+- [License](#license)
 
 ### Frontend
 - React 18
