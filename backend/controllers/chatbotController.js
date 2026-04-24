@@ -610,6 +610,8 @@ function extractRequestedResultLimit(message) {
   const patterns = [
     /\btop\s*(\d{1,2})\b/,
     /\bshow\s+(?:me\s+)?(?:top\s+)?(\d{1,2})\b/,
+    /\b(?:recommend|suggest|pick|choose)\s+(?:me\s+)?(\d{1,2})\b/,
+    /\b(\d{1,2})\s+(?:from|among)\s+(?:these|them)\b/,
     /\b(\d{1,2})\s*(?:products?|items?|results?|picks?)\b/,
   ];
 
@@ -952,6 +954,8 @@ exports.getChatResponse = async (req, res) => {
         }
         contextualProducts = dedupeProducts(products).slice(0, 3);
       } else {
+        const requestedRecommendationLimit = extractRequestedResultLimit(message) || 1;
+
         try {
           contextualReply = await generateRecommendationReply({
             message,
@@ -962,9 +966,35 @@ exports.getChatResponse = async (req, res) => {
           contextualReply = formatRecommendationFromProducts(products, message, getBaseUrl(req));
         }
 
-        const recommendedProduct = pickProductMentionedInReply(products, contextualReply)
-          || selectBestProduct(products, message);
-        contextualProducts = recommendedProduct ? [recommendedProduct] : dedupeProducts(products).slice(0, 1);
+        const uniqueProducts = dedupeProducts(products);
+        const recommendedProduct = pickProductMentionedInReply(uniqueProducts, contextualReply)
+          || selectBestProduct(uniqueProducts, message);
+
+        const selectedRecommendations = [];
+        const seen = new Set();
+        if (recommendedProduct) {
+          const id = String(recommendedProduct?._id || recommendedProduct?.id || "").trim();
+          const name = String(recommendedProduct?.name || "").trim().toLowerCase();
+          const key = id || name;
+          if (key) {
+            selectedRecommendations.push(recommendedProduct);
+            seen.add(key);
+          }
+        }
+
+        for (const product of uniqueProducts) {
+          const id = String(product?._id || product?.id || "").trim();
+          const name = String(product?.name || "").trim().toLowerCase();
+          const key = id || name;
+          if (!key || seen.has(key)) continue;
+          selectedRecommendations.push(product);
+          seen.add(key);
+          if (selectedRecommendations.length >= requestedRecommendationLimit) break;
+        }
+
+        contextualProducts = selectedRecommendations
+          .slice(0, requestedRecommendationLimit)
+          .slice(0, CHAT_MAX_RESULT_CARDS);
       }
 
       const contextualCards = contextualProducts.length > 0
