@@ -69,6 +69,7 @@ const chatbotRoutes = require("./routes/chatbotRoutes");
 app.use("/api/chatbot", chatbotRoutes);
 app.use("/api", chatbotRoutes);
 app.use("/api/reviews", require("./routes/reviewRoutes"));
+app.use("/api/questions", require("./routes/questionRoutes"));
 
 app.get("/", (req, res) => {
   res.json({ message: "Welcome to BanglaTech API" });

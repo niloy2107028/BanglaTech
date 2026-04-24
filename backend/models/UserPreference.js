@@ -9,7 +9,7 @@ const keywordSchema = new mongoose.Schema(
     },
     source: {
       type: String,
-      enum: ['search', 'view', 'cart', 'order', 'seed'],
+      enum: ['search', 'view', 'click', 'dwell', 'cart', 'order', 'seed'],
       default: 'view',
     },
     score: {

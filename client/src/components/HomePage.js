@@ -1,40 +1,57 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import axios from "../api";
 import { useNavigate } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faChevronLeft, faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import { useAuth } from "../context/AuthContext";
 import { useLanguage } from "../context/LanguageContext";
 
-import CategoryCard from "./CategoryCard";
 import ProductCard from "./ProductCard";
-import ProductModal from "./ProductModal";
 import ProductList from "./ProductList";
 import "./HomePage.css";
 
+function dedupeProducts(products = []) {
+  const seen = new Set();
+  const output = [];
+
+  for (const product of products) {
+    const key = String(product?._id || "").trim();
+    if (!key || seen.has(key)) continue;
+    seen.add(key);
+    output.push(product);
+  }
+
+  return output;
+}
+
 const HomePage = () => {
-  const [showModal, setShowModal] = useState(false);
   const [products, setProducts] = useState([]);
   const [recommendedProducts, setRecommendedProducts] = useState([]);
-  const [recommendationKeywords, setRecommendationKeywords] = useState([]);
-  const [recommendationsPersonalized, setRecommendationsPersonalized] =
-    useState(false);
-  const [modalMode, setModalMode] = useState("create");
-  const [currentProduct, setCurrentProduct] = useState(null);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [canScrollCategoriesLeft, setCanScrollCategoriesLeft] = useState(false);
+  const [canScrollCategoriesRight, setCanScrollCategoriesRight] = useState(false);
+  const [canScrollRecommendedLeft, setCanScrollRecommendedLeft] = useState(false);
+  const [canScrollRecommendedRight, setCanScrollRecommendedRight] = useState(false);
 
   const navigate = useNavigate();
-  const { user, isAuthenticated } = useAuth();
+  const categoryStripRef = useRef(null);
+  const recommendedStripRef = useRef(null);
+  const { isAuthenticated } = useAuth();
   const { t, translateCategoryName } = useLanguage();
 
   useEffect(() => {
     const loadHomePage = async () => {
       setLoading(true);
       try {
-        await Promise.all([
+        const [loadedCategories, featuredProducts] = await Promise.all([
           fetchCategories(),
           fetchFeaturedProducts(),
-          isAuthenticated ? fetchRecommendations() : Promise.resolve(),
         ]);
+        await fetchRecommendedProducts(featuredProducts);
+        if (!Array.isArray(loadedCategories)) {
+          setCategories([]);
+        }
       } finally {
         setLoading(false);
       }
@@ -43,81 +60,134 @@ const HomePage = () => {
     loadHomePage();
   }, [isAuthenticated]);
 
+  useEffect(() => {
+    const strip = categoryStripRef.current;
+    if (!strip) {
+      setCanScrollCategoriesLeft(false);
+      setCanScrollCategoriesRight(false);
+      return () => {};
+    }
+
+    const updateScrollControls = () => {
+      const maxLeft = Math.max(0, strip.scrollWidth - strip.clientWidth);
+      setCanScrollCategoriesLeft(strip.scrollLeft > 8);
+      setCanScrollCategoriesRight(strip.scrollLeft < maxLeft - 8);
+    };
+
+    updateScrollControls();
+    strip.addEventListener("scroll", updateScrollControls);
+    window.addEventListener("resize", updateScrollControls);
+
+    return () => {
+      strip.removeEventListener("scroll", updateScrollControls);
+      window.removeEventListener("resize", updateScrollControls);
+    };
+  }, [categories]);
+
+  useEffect(() => {
+    const strip = recommendedStripRef.current;
+    if (!strip || recommendedProducts.length === 0) {
+      setCanScrollRecommendedLeft(false);
+      setCanScrollRecommendedRight(false);
+      return () => {};
+    }
+
+    const updateScrollControls = () => {
+      const maxLeft = Math.max(0, strip.scrollWidth - strip.clientWidth);
+      setCanScrollRecommendedLeft(strip.scrollLeft > 8);
+      setCanScrollRecommendedRight(strip.scrollLeft < maxLeft - 8);
+    };
+
+    updateScrollControls();
+    strip.addEventListener("scroll", updateScrollControls);
+    window.addEventListener("resize", updateScrollControls);
+
+    return () => {
+      strip.removeEventListener("scroll", updateScrollControls);
+      window.removeEventListener("resize", updateScrollControls);
+    };
+  }, [recommendedProducts]);
+
   const fetchFeaturedProducts = async () => {
     try {
       const response = await axios.get("/api/products?featured=true");
-      setProducts(response.data.data || []);
+      const featuredProducts = Array.isArray(response.data?.data)
+        ? response.data.data
+        : [];
+      setProducts(featuredProducts);
+      return featuredProducts;
     } catch (error) {
       console.error("Error fetching featured products:", error);
       setProducts([]);
-    }
-  };
-
-  const fetchRecommendations = async () => {
-    try {
-      const response = await axios.get(
-        "/api/products/recommendations?limit=8",
-        {
-          withCredentials: true,
-        },
-      );
-      setRecommendedProducts(response.data.data || []);
-      setRecommendationKeywords(response.data.keywords || []);
-      setRecommendationsPersonalized(Boolean(response.data.personalized));
-    } catch (error) {
-      console.error("Error fetching recommendations:", error);
-      setRecommendedProducts([]);
-      setRecommendationKeywords([]);
-      setRecommendationsPersonalized(false);
+      return [];
     }
   };
 
   const fetchCategories = async () => {
     try {
       const response = await axios.get("/api/categories");
-      setCategories(response.data.data || []);
+      const nextCategories = Array.isArray(response.data?.data)
+        ? response.data.data
+        : [];
+      setCategories(nextCategories);
+      return nextCategories;
     } catch (error) {
       console.error("Error fetching categories:", error);
       setCategories([]);
+      return [];
     }
   };
 
-  const trackProductView = async (productId) => {
-    if (!isAuthenticated) return;
+  const fetchRecommendedProducts = async (featuredFallback = []) => {
+    if (!isAuthenticated) {
+      setRecommendedProducts(dedupeProducts(featuredFallback).slice(0, 18));
+      return;
+    }
 
     try {
-      await axios.post(
-        `/api/products/${productId}/track-view`,
-        {},
-        { withCredentials: true },
-      );
+      const response = await axios.get("/api/products/recommendations?limit=18", {
+        withCredentials: true,
+      });
+      const personalizedProducts = Array.isArray(response.data?.data)
+        ? response.data.data
+        : [];
+      const merged = dedupeProducts([
+        ...personalizedProducts,
+        ...featuredFallback,
+      ]).slice(0, 18);
+      setRecommendedProducts(merged);
     } catch (error) {
-      console.error("Error tracking product view:", error);
+      console.error("Error fetching recommended products:", error);
+      setRecommendedProducts(dedupeProducts(featuredFallback).slice(0, 18));
     }
   };
 
-  const handleView = (product) => {
-    trackProductView(product._id);
-    navigate(`/product/${product._id}`);
+  const handleViewCategory = (category) => {
+    const categoryName = String(category?.name || "").trim();
+    if (!categoryName) return;
+    navigate(`/category/${encodeURIComponent(categoryName)}`);
   };
 
-  const handleCreate = () => {
-    setCurrentProduct(null);
-    setModalMode("create");
-    setShowModal(true);
+  const scrollCategories = (direction) => {
+    const strip = categoryStripRef.current;
+    if (!strip) return;
+
+    const amount = Math.max(220, Math.round(strip.clientWidth * 0.8));
+    strip.scrollBy({
+      left: direction === "left" ? -amount : amount,
+      behavior: "smooth",
+    });
   };
 
-  const handleModalClose = () => {
-    setShowModal(false);
-    setCurrentProduct(null);
-  };
+  const scrollRecommended = (direction) => {
+    const strip = recommendedStripRef.current;
+    if (!strip) return;
 
-  const handleModalSave = async () => {
-    setShowModal(false);
-    await Promise.all([
-      fetchFeaturedProducts(),
-      isAuthenticated ? fetchRecommendations() : Promise.resolve(),
-    ]);
+    const amount = Math.max(300, Math.round(strip.clientWidth * 0.86));
+    strip.scrollBy({
+      left: direction === "left" ? -amount : amount,
+      behavior: "smooth",
+    });
   };
 
   if (loading) {
@@ -168,61 +238,110 @@ const HomePage = () => {
           </div>
         </section>
 
-        {isAuthenticated &&
-          recommendationsPersonalized &&
-          recommendedProducts.length > 0 && (
-            <section className="recommended-section">
-              <div className="section-header section-header-left">
-                <div>
-                  <h2>{t("home.recommendedTitle")}</h2>
-                  <p>{t("home.recommendedDescription")}</p>
-                </div>
-                {recommendationKeywords.length > 0 && (
-                  <div className="recommendation-keywords">
-                    {recommendationKeywords.slice(0, 6).map((keyword) => (
-                      <span key={keyword} className="recommendation-chip">
-                        {keyword}
-                      </span>
-                    ))}
-                  </div>
-                )}
-              </div>
-              <div className="homepage-product-grid">
-                {recommendedProducts.map((product) => (
-                  <ProductCard
-                    key={product._id}
-                    product={product}
-                    onView={handleView}
-                  />
-                ))}
-              </div>
-            </section>
-          )}
-
-        {isAuthenticated && user?.role === "seller" && (
-          <button className="add-product-btn" onClick={handleCreate}>
-            {t("home.addProduct")}
-          </button>
-        )}
-
-        <section className="categories-section">
-          <div className="section-header">
-            <h2>{t("home.shopByCategory")}</h2>
-            <p>{t("home.shopByCategoryDesc")}</p>
+        <section className="category-strip-section">
+          <div className="category-strip-head">
+            <div>
+              <h2>{t("home.shopByCategory")}</h2>
+              <p>{t("home.shopByCategoryDesc")}</p>
+            </div>
+            <div className="category-strip-controls">
+              <button
+                type="button"
+                className="category-strip-btn"
+                onClick={() => scrollCategories("left")}
+                disabled={!canScrollCategoriesLeft}
+                aria-label="Scroll categories left"
+              >
+                <FontAwesomeIcon icon={faChevronLeft} />
+              </button>
+              <button
+                type="button"
+                className="category-strip-btn"
+                onClick={() => scrollCategories("right")}
+                disabled={!canScrollCategoriesRight}
+                aria-label="Scroll categories right"
+              >
+                <FontAwesomeIcon icon={faChevronRight} />
+              </button>
+            </div>
           </div>
-          <div className="categories-grid">
+
+          <div className="category-strip-track" ref={categoryStripRef}>
+            <button
+              type="button"
+              className="category-strip-item active"
+              onClick={() => navigate("/for-you")}
+            >
+              <span className="category-strip-icon placeholder">FY</span>
+              <span className="category-strip-label">For You</span>
+            </button>
+
             {categories.map((category) => (
-              <CategoryCard
+              <button
                 key={category._id}
-                category={translateCategoryName(category.name)}
-                image={category.image}
-                onClick={() =>
-                  navigate(`/category/${encodeURIComponent(category.name)}`)
-                }
-              />
+                type="button"
+                className="category-strip-item"
+                onClick={() => handleViewCategory(category)}
+              >
+                <span className="category-strip-icon">
+                  <img
+                    src={category.image}
+                    alt={translateCategoryName(category.name)}
+                    onError={(event) => {
+                      event.target.onerror = null;
+                      event.target.src = "/images/no-image.png";
+                    }}
+                  />
+                </span>
+                <span className="category-strip-label">
+                  {translateCategoryName(category.name)}
+                </span>
+              </button>
             ))}
           </div>
         </section>
+
+        {recommendedProducts.length > 0 && (
+          <section className="recommended-strip-section">
+            <div className="recommended-strip-head">
+              <div>
+                <h2>{t("home.recommendedTitle")}</h2>
+                <p>{t("home.recommendedDescription")}</p>
+              </div>
+              <div className="recommended-strip-controls">
+                <button
+                  type="button"
+                  className="recommended-strip-btn"
+                  onClick={() => scrollRecommended("left")}
+                  disabled={!canScrollRecommendedLeft}
+                  aria-label="Scroll recommended products left"
+                >
+                  <FontAwesomeIcon icon={faChevronLeft} />
+                </button>
+                <button
+                  type="button"
+                  className="recommended-strip-btn"
+                  onClick={() => scrollRecommended("right")}
+                  disabled={!canScrollRecommendedRight}
+                  aria-label="Scroll recommended products right"
+                >
+                  <FontAwesomeIcon icon={faChevronRight} />
+                </button>
+              </div>
+            </div>
+
+            <div className="recommended-strip-track" ref={recommendedStripRef}>
+              {recommendedProducts.map((product) => (
+                <div key={product._id} className="recommended-strip-card">
+                  <ProductCard
+                    product={product}
+                    onView={(item) => navigate(`/product/${item._id}`)}
+                  />
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
 
         {products.length > 0 && (
           <section className="featured-section">
@@ -241,15 +360,6 @@ const HomePage = () => {
         )}
       </div>
 
-      {showModal && (
-        <ProductModal
-          show={showModal}
-          mode={modalMode}
-          product={currentProduct}
-          onClose={handleModalClose}
-          onSave={handleModalSave}
-        />
-      )}
     </div>
   );
 };

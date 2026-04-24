@@ -10,8 +10,8 @@
 }
 
 .navbar-container {
-  max-width: 1800px;
-  width: 95%;
+  max-width: 1600px;
+  width: 92%;
   margin: 0 auto;
   padding: 0 1rem;
 }
@@ -82,12 +82,38 @@
 
 .navbar-search-input {
   width: 100%;
-  padding: 0.9rem 1rem 0.9rem 2.9rem;
+  padding: 0.9rem 3.5rem 0.9rem 2.9rem;
   border: 1px solid rgba(148, 163, 184, 0.28);
   border-radius: 999px;
   font-size: 0.98rem;
   color: var(--text);
   background: linear-gradient(180deg, #ffffff, #f8fafc);
+}
+
+.navbar-image-search-btn {
+  position: absolute;
+  right: 0.45rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  background: linear-gradient(135deg, #f8fafc, #eef2f7);
+  color: #475569;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.navbar-image-search-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.navbar-hidden-file-input {
+  display: none;
 }
 
 .navbar-search-input:focus {
@@ -121,7 +147,8 @@
 
 @media (hover: hover) and (pointer: fine) {
   .navbar-mobile-toggle:hover,
-  .navbar-mobile-close:hover {
+  .navbar-mobile-close:hover,
+  .navbar-image-search-btn:hover {
     border-color: rgba(15, 157, 122, 0.35);
     background: #f8fafc;
     color: var(--primary-dark);
@@ -181,6 +208,7 @@
 
 .navbar-mobile-search .navbar-search-input {
   width: 100%;
+  padding-right: 3.5rem;
 }
 
 .navbar-mobile-actions {
@@ -327,5 +355,28 @@
   .navbar-language-toggle button:not(.active):hover {
     background: #e2e8f0;
     color: var(--text);
+  }
+}
+
+.navbar-theme-toggle {
+  min-width: 98px;
+  justify-content: center;
+}
+
+.navbar-theme-toggle.dark {
+  border-color: rgba(250, 204, 21, 0.42);
+  background: linear-gradient(135deg, #1f2937, #0f172a);
+  color: #fde68a;
+}
+
+.navbar-theme-toggle.light {
+  border-color: rgba(148, 163, 184, 0.24);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .navbar-theme-toggle.dark:hover {
+    border-color: rgba(250, 204, 21, 0.6);
+    background: linear-gradient(135deg, #334155, #1e293b);
+    color: #fef08a;
   }
 }

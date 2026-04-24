@@ -42,7 +42,9 @@ function readStoredChatHistory(initialMessage) {
         products: Array.isArray(item?.products) ? item.products : [],
         isDefaultGreeting: Boolean(item?.isDefaultGreeting),
       }))
-      .filter((item) => item.content.trim().length > 0);
+      .filter(
+        (item) => item.content.trim().length > 0 || (Array.isArray(item.cards) && item.cards.length > 0),
+      );
 
     return sanitized.length > 0
       ? sanitized
@@ -65,14 +67,14 @@ const Chatbot = () => {
     readStoredChatHistory(initialMessage),
   );
   const [loading, setLoading] = useState(false);
-  const [pendingImage, setPendingImage] = useState(null);
   const [isListening, setIsListening] = useState(false);
   const [voiceMode, setVoiceMode] = useState("idle");
   const [speechSupported, setSpeechSupported] = useState(true);
 
   const scrollRef = useRef();
-  const fileInputRef = useRef(null);
+  const textareaRef = useRef(null);
   const recognitionRef = useRef(null);
+  const recognitionSessionRef = useRef(0);
   const baseMessageRef = useRef("");
   const finalTranscriptRef = useRef("");
 
@@ -125,6 +127,13 @@ const Chatbot = () => {
   }, [chatHistory, isOpen]);
 
   useEffect(() => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+    textarea.style.height = "auto";
+    textarea.style.height = `${Math.min(textarea.scrollHeight, 140)}px`;
+  }, [message]);
+
+  useEffect(() => {
     if (typeof window === "undefined") return;
 
     try {
@@ -144,17 +153,20 @@ const Chatbot = () => {
     setSpeechSupported(supported);
   }, []);
 
+  useEffect(() => () => {
+    if (recognitionRef.current) {
+      try {
+        recognitionRef.current.abort();
+      } catch (error) {
+        // Ignore abort errors on unmount.
+      }
+      recognitionRef.current = null;
+    }
+  }, []);
+
   const pushAssistantMessage = (content) => {
     setChatHistory((prev) => [...prev, { role: "assistant", content }]);
   };
-
-  const fileToDataUrl = (file) =>
-    new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(String(reader.result || ""));
-      reader.onerror = () => reject(new Error("Failed to read image file"));
-      reader.readAsDataURL(file);
-    });
 
   const sendTextMessage = async (rawText) => {
     const outgoingText = String(rawText || "").trim();
@@ -172,10 +184,13 @@ const Chatbot = () => {
         history: toHistoryPayload(nextHistory),
       });
 
+      const cards = Array.isArray(data?.cards) ? data.cards : [];
+      const replyText = String(data?.reply || "").trim();
+
       const aiMessage = {
         role: "assistant",
-        content: data?.reply || "Sorry, no response was generated.",
-        cards: Array.isArray(data?.cards) ? data.cards : [],
+        content: replyText || (cards.length > 0 ? "" : "Sorry, no response was generated."),
+        cards,
         products: Array.isArray(data?.products)
           ? data.products
               .map((product) => String(product?._id || product?.id || "").trim())
@@ -191,141 +206,63 @@ const Chatbot = () => {
     }
   };
 
-  const resetPendingImage = () => {
-    setPendingImage(null);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
-  };
-
-  const handleSelectImage = (event) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    if (pendingImage?.previewUrl) {
-      URL.revokeObjectURL(pendingImage.previewUrl);
-    }
-
-    const previewUrl = URL.createObjectURL(file);
-    setPendingImage({ file, previewUrl, name: file.name || "image" });
-  };
-
-  const sendImageMessage = async () => {
-    if (!pendingImage?.file) return;
-
-    const userText = String(message || "").trim();
-    let messageImageDataUrl = "";
-
-    try {
-      messageImageDataUrl = await fileToDataUrl(pendingImage.file);
-    } catch (error) {
-      messageImageDataUrl = "";
-    }
-
-    const userMessage = {
-      role: "user",
-      content: userText || "Image shared",
-      imageDataUrl: messageImageDataUrl,
-    };
-    const nextHistory = [...chatHistory, userMessage];
-
-    setChatHistory(nextHistory);
-    setLoading(true);
-    setMessage("");
-
-    try {
-      const formData = new FormData();
-      formData.append("image", pendingImage.file);
-      if (userText) {
-        formData.append("prompt", userText);
-      }
-      formData.append("history", JSON.stringify(toHistoryPayload(nextHistory)));
-
-      const { data } = await axios.post("/api/chatbot/image-search", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-
-      const caption = String(data?.caption || "").trim();
-      const lowConfidence = Boolean(data?.lowConfidence);
-      const aiMessage = {
-        role: "assistant",
-        content: lowConfidence
-          ? data?.reply || "Sorry couldn't understand the image provided."
-          : caption
-            ? `Image summary: ${caption}\n\n${data?.reply || "Here are some matching products."}`
-            : data?.reply || "No response from image search.",
-        cards: Array.isArray(data?.cards) ? data.cards : [],
-        products: Array.isArray(data?.products)
-          ? data.products
-              .map((product) => String(product?._id || product?.id || "").trim())
-              .filter(Boolean)
-          : [],
-      };
-
-      setChatHistory((prev) => [...prev, aiMessage]);
-    } catch (error) {
-      console.error("Image Search Error:", error);
-      pushAssistantMessage("Image search is temporarily unavailable.");
-    } finally {
-      if (pendingImage?.previewUrl) {
-        URL.revokeObjectURL(pendingImage.previewUrl);
-      }
-      resetPendingImage();
-      setLoading(false);
-    }
-  };
-
   const handleSendMessage = async (e) => {
     e.preventDefault();
-    if (pendingImage?.file) {
-      await sendImageMessage();
-      return;
-    }
-
     await sendTextMessage(message);
   };
 
-  const handleVoiceInput = () => {
-    if (!speechSupported) {
-      pushAssistantMessage(
-        "Voice input is not supported in this browser. Please use Edge/Chrome, or type your message.",
-      );
-      return;
-    }
+  const getSpeechLocales = () => {
+    const browserLocale = String(navigator?.language || "en-US").trim() || "en-US";
+    const normalizedBrowserLocale = browserLocale.toLowerCase();
+    const localePool = normalizedBrowserLocale.startsWith("en")
+      ? [browserLocale, "en-US", "en-GB"]
+      : ["en-US", "en-GB", browserLocale];
 
+    return Array.from(new Set(localePool.filter(Boolean))).slice(0, 4);
+  };
+
+  const startVoiceRecognition = async ({
+    languageIndex = 0,
+    preserveTranscript = false,
+  } = {}) => {
     const SpeechRecognition =
       window.SpeechRecognition || window.webkitSpeechRecognition;
 
     if (!SpeechRecognition) {
       pushAssistantMessage(
-        "Browser speech recognition is unavailable. Please use Chrome or Edge and allow microphone access.",
+        "Voice input is unavailable in this browser. Please use Edge/Chrome.",
       );
       return;
     }
 
-    if (isListening && recognitionRef.current) {
-      recognitionRef.current.stop();
-      return;
+    const locales = getSpeechLocales();
+    const selectedLocale = locales[Math.min(languageIndex, locales.length - 1)] || "en-US";
+
+    if (!preserveTranscript) {
+      baseMessageRef.current = String(message || "").trim();
+      finalTranscriptRef.current = "";
     }
 
     const recognition = new SpeechRecognition();
+    recognitionSessionRef.current += 1;
+    const sessionId = recognitionSessionRef.current;
     recognitionRef.current = recognition;
 
-    recognition.lang = language === "bn" ? "bn-BD" : navigator.language || "en-US";
+    recognition.lang = selectedLocale;
     recognition.interimResults = true;
     recognition.continuous = true;
     recognition.maxAlternatives = 1;
 
     recognition.onstart = () => {
+      if (recognitionSessionRef.current !== sessionId) return;
       setIsListening(true);
       setVoiceMode("listening");
-      baseMessageRef.current = String(message || "").trim();
-      finalTranscriptRef.current = "";
     };
 
     recognition.onresult = (event) => {
-      let interim = "";
+      if (recognitionSessionRef.current !== sessionId) return;
 
+      let interim = "";
       for (let i = event.resultIndex; i < event.results.length; i += 1) {
         const text = event.results[i]?.[0]?.transcript || "";
         if (event.results[i].isFinal) {
@@ -347,201 +284,303 @@ const Chatbot = () => {
       setMessage(combined);
     };
 
-    recognition.onerror = (event) => {
-      console.error("Speech recognition error:", event?.error);
+    recognition.onerror = async (event) => {
+      if (recognitionSessionRef.current !== sessionId) return;
+
+      const errorCode = String(event?.error || "").toLowerCase();
+      console.error("Speech recognition error:", errorCode);
+
+      if (errorCode === "network" && languageIndex < locales.length - 1) {
+        setVoiceMode("retrying");
+        await startVoiceRecognition({
+          languageIndex: languageIndex + 1,
+          preserveTranscript: true,
+        });
+        return;
+      }
+
       setIsListening(false);
       setVoiceMode("idle");
-      pushAssistantMessage(
-        "Speech recognition failed. Check microphone permission and try again.",
-      );
+      recognitionRef.current = null;
+
+      if (["aborted", "no-speech"].includes(errorCode)) return;
+
+      if (["not-allowed", "service-not-allowed"].includes(errorCode)) {
+        pushAssistantMessage(
+          "Microphone permission blocked. Browser settings theke mic allow korun.",
+        );
+      }
     };
 
     recognition.onend = () => {
+      if (recognitionSessionRef.current !== sessionId) return;
       setIsListening(false);
       setVoiceMode("idle");
+      recognitionRef.current = null;
     };
 
-    recognition.start();
+    try {
+      recognition.start();
+    } catch (error) {
+      setIsListening(false);
+      setVoiceMode("idle");
+      recognitionRef.current = null;
+      pushAssistantMessage("Could not start microphone. Please try again.");
+    }
+  };
+
+  const handleVoiceInput = async () => {
+    if (!speechSupported) {
+      pushAssistantMessage(
+        "Voice input is not supported in this browser. Please use Edge/Chrome or type your message.",
+      );
+      return;
+    }
+
+    if (isListening && recognitionRef.current) {
+      try {
+        recognitionSessionRef.current += 1;
+        recognitionRef.current.stop();
+      } catch (error) {
+        console.error("Voice stop error:", error);
+      }
+      setIsListening(false);
+      setVoiceMode("idle");
+      recognitionRef.current = null;
+      return;
+    }
+
+    if (!window.isSecureContext) {
+      pushAssistantMessage(
+        "Voice input needs a secure context (HTTPS or localhost).",
+      );
+      return;
+    }
+
+    await startVoiceRecognition({ languageIndex: 0, preserveTranscript: false });
   };
 
   const voiceButtonText = (() => {
     if (!speechSupported) return "N/A";
     if (isListening) return "Stop";
-    if (voiceMode === "listening") return "...";
+    if (voiceMode === "retrying") return "...";
     return "Mic";
   })();
 
+  const listeningText = t("chatbot.listening", {}, "Listening...");
+  const typingText = t("chatbot.typing", {}, "Typing");
+
+  const formatRatingText = (value) => {
+    const rating = Number(value || 0);
+    if (!Number.isFinite(rating) || rating <= 0) return "";
+    return `* ${rating.toFixed(1)}`;
+  };
+
   return (
-    <div className="chatbot-wrapper">
-      <button className="chat-toggle-btn" onClick={() => setIsOpen(!isOpen)}>
-        {isOpen ? "X" : "Chat"}
+    <div className={`chatbot-wrapper ${isOpen ? "open" : ""}`}>
+      <button
+        className={`chat-toggle-btn ${isOpen ? "open" : ""}`}
+        onClick={() => setIsOpen(!isOpen)}
+        aria-label={isOpen ? "Close chat" : "Open chat"}
+      >
+        <span className="chat-toggle-indicator" />
+        <span className="chat-toggle-icon">{isOpen ? "X" : "AI"}</span>
+        <span className="chat-toggle-label">{isOpen ? "Close" : "Ask AI"}</span>
       </button>
 
       {isOpen && (
         <div className="chat-window">
           <div className="chat-header">
-            <h4>{t("chatbot.title")}</h4>
-            <p>{t("chatbot.support")}</p>
+            <div className="chat-header-main">
+              <h4>{t("chatbot.title")}</h4>
+              <p>{t("chatbot.support")}</p>
+            </div>
+            <button
+              type="button"
+              className="chat-close-btn"
+              onClick={() => setIsOpen(false)}
+              aria-label="Close chat window"
+            >
+              X
+            </button>
           </div>
 
           <div className="chat-messages">
-            {chatHistory.map((item, index) => (
-              <div key={index} className={`message-bubble ${item.role}`}>
-                <div className="message-content">
-                  {item.role === "user" && item.imageDataUrl ? (
-                    <div className="user-inline-content">
-                      <ReactMarkdown
-                        remarkPlugins={[remarkGfm]}
-                        components={{
-                          a: ({ node, ...props }) => (
-                            <a
-                              {...props}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                            />
-                          ),
-                        }}
-                      >
-                        {item.content}
-                      </ReactMarkdown>
-                      <img
-                        src={item.imageDataUrl}
-                        alt="Uploaded"
-                        className="user-inline-image"
-                      />
-                    </div>
-                  ) : (
-                    <ReactMarkdown
-                      remarkPlugins={[remarkGfm]}
-                      components={{
-                        a: ({ node, ...props }) => (
-                          <a
-                            {...props}
-                            target="_blank"
-                            rel="noopener noreferrer"
+            {chatHistory.map((item, index) => {
+              const cards = uniqueCards(item?.cards);
+              const hasCards = cards.length > 0;
+              const textContent = String(item?.content || "").trim();
+              const hasText = textContent.length > 0;
+              const showRoleLabel = !(item.role === "assistant" && hasCards && !hasText);
+
+              return (
+                <div key={index} className={`message-row ${item.role}`}>
+                  <div className={`message-bubble ${item.role}`}>
+                    {showRoleLabel && (
+                      <p className="message-role">
+                        {item.role === "user" ? "You" : "BanglaMart AI"}
+                      </p>
+                    )}
+                    <div className="message-content">
+                      {hasText && item.role === "user" && item.imageDataUrl ? (
+                        <div className="user-inline-content">
+                          <ReactMarkdown
+                            remarkPlugins={[remarkGfm]}
+                            components={{
+                              a: ({ node, ...props }) => (
+                                <a
+                                  {...props}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                />
+                              ),
+                            }}
+                          >
+                            {item.content}
+                          </ReactMarkdown>
+                          <img
+                            src={item.imageDataUrl}
+                            alt="Uploaded"
+                            className="user-inline-image"
                           />
-                        ),
-                      }}
-                    >
-                      {item.content}
-                    </ReactMarkdown>
-                  )}
-                  {Array.isArray(item.cards) && uniqueCards(item.cards).length > 0 && (
-                    <div className="chatbot-cards-list">
-                      {uniqueCards(item.cards).map((card, idx) => (
-                        <div
-                          className="chatbot-card"
-                          key={`${card?.productId || card?.name || "card"}-${idx}`}
-                        >
-                          {card?.image && (
-                            <img
-                              src={card.image}
-                              alt={card?.name || "Product"}
-                              className="chatbot-card-image"
-                            />
-                          )}
-                          <div className="chatbot-card-body">
-                            <p className="chatbot-card-title">
-                              {card?.name || "Product"}
-                            </p>
-                            <p className="chatbot-card-price">
-                              {(card?.currencySymbol || "Tk ") +
-                                Number(card?.price || 0).toLocaleString()}
-                            </p>
-                            <p className="chatbot-card-description">
-                              {card?.description || ""}
-                            </p>
-                            {card?.url && (
-                              <a className="chatbot-card-link" href={card.url}>
-                                View Product
-                              </a>
-                            )}
-                          </div>
                         </div>
-                      ))}
+                      ) : hasText ? (
+                        <ReactMarkdown
+                          remarkPlugins={[remarkGfm]}
+                          components={{
+                            a: ({ node, ...props }) => (
+                              <a
+                                {...props}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              />
+                            ),
+                          }}
+                        >
+                          {item.content}
+                        </ReactMarkdown>
+                      ) : null}
+                      {hasCards && (
+                        <div className="chatbot-cards-list">
+                          {cards.map((card, idx) => (
+                            <div
+                              className="chatbot-card"
+                              key={`${card?.productId || card?.name || "card"}-${idx}`}
+                            >
+                              {card?.image && (
+                                <img
+                                  src={card.image}
+                                  alt={card?.name || "Product"}
+                                  className="chatbot-card-image"
+                                />
+                              )}
+                              <div className="chatbot-card-body">
+                                <p className="chatbot-card-title">
+                                  {card?.name || "Product"}
+                                </p>
+                                <p className="chatbot-card-price">
+                                  {(card?.currencySymbol || "Tk ") +
+                                    Number(card?.price || 0).toLocaleString()}
+                                  {formatRatingText(card?.rating) && (
+                                    <span className="chatbot-card-rating">
+                                      {` | ${formatRatingText(card?.rating)}`}
+                                    </span>
+                                  )}
+                                </p>
+                                <p className="chatbot-card-description">
+                                  {card?.description || ""}
+                                </p>
+                                {card?.url && (
+                                  <a
+                                    className="chatbot-card-link"
+                                    href={card.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                  >
+                                    View Product
+                                  </a>
+                                )}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
                     </div>
-                  )}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
             {loading && (
-              <div className="message-bubble assistant loading-dots">
-                <span>.</span>
-                <span>.</span>
-                <span>.</span>
+              <div className="message-row assistant">
+                <div className="message-bubble assistant loading-dots typing-indicator">
+                  <p className="message-role">BanglaMart AI</p>
+                  <div className="typing-row">
+                    <span className="typing-text">{typingText}</span>
+                    <div className="loading-dots-track" aria-hidden="true">
+                      <span />
+                      <span />
+                      <span />
+                    </div>
+                  </div>
+                </div>
               </div>
             )}
             <div ref={scrollRef}></div>
           </div>
 
           <form className="chat-input-area" onSubmit={handleSendMessage}>
-            <button
-              type="button"
-              className="image-btn"
-              onClick={() => fileInputRef.current?.click()}
-              disabled={loading}
-              title="Attach image"
-            >
-              Img
-            </button>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              className="hidden-file-input"
-              onChange={handleSelectImage}
-            />
-            <button
-              type="button"
-              className={`voice-btn ${isListening ? "active" : ""}`}
-              onClick={handleVoiceInput}
-              disabled={loading || !speechSupported}
-              title={
-                !speechSupported
-                  ? "Speech not supported in this browser"
-                  : isListening
-                    ? "Stop recording"
+            <div className="chat-controls-row">
+              <button
+                type="button"
+                className={`voice-btn ${isListening ? "active listening" : ""}`}
+                onClick={handleVoiceInput}
+                disabled={loading || !speechSupported}
+                title={
+                  !speechSupported
+                    ? "Speech not supported in this browser"
+                    : isListening
+                      ? "Stop recording"
                     : "Start voice input"
-              }
-            >
-              {voiceButtonText}
-            </button>
-            <textarea
-              placeholder={t("chatbot.placeholder")}
-              value={message}
-              rows="1"
-              onChange={(e) => setMessage(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && !e.shiftKey) {
-                  e.preventDefault();
-                  handleSendMessage(e);
                 }
-              }}
-            />
-            <button
-              type="submit"
-              disabled={loading || (!String(message || "").trim() && !pendingImage?.file)}
-            >
-              {t("chatbot.send")}
-            </button>
-            {pendingImage?.file && (
-              <div className="pending-image-preview">
-                <img src={pendingImage.previewUrl} alt={pendingImage.name} />
-                <div className="pending-image-meta">
-                  <span>{pendingImage.name}</span>
-                  <button
-                    type="button"
-                    className="pending-image-remove"
-                    onClick={() => {
-                      if (pendingImage?.previewUrl) {
-                        URL.revokeObjectURL(pendingImage.previewUrl);
-                      }
-                      resetPendingImage();
-                    }}
-                  >
-                    Remove
-                  </button>
-                </div>
+              >
+                <span className="voice-btn-label">{voiceButtonText}</span>
+                {isListening && (
+                  <>
+                    <span className="voice-btn-ripple voice-btn-ripple-one" aria-hidden="true" />
+                    <span className="voice-btn-ripple voice-btn-ripple-two" aria-hidden="true" />
+                  </>
+                )}
+              </button>
+              <textarea
+                ref={textareaRef}
+                placeholder={t("chatbot.placeholder")}
+                value={message}
+                rows="1"
+                onChange={(e) => setMessage(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    handleSendMessage(e);
+                  }
+                }}
+              />
+              <button
+                type="submit"
+                className="send-btn"
+                disabled={loading || !String(message || "").trim()}
+              >
+                {t("chatbot.send")}
+              </button>
+            </div>
+            {isListening && (
+              <div className="voice-listening-indicator" aria-live="polite">
+                <span className="voice-listening-dot" />
+                <span className="voice-listening-text">{listeningText}</span>
+                <span className="voice-bars" aria-hidden="true">
+                  <i />
+                  <i />
+                  <i />
+                </span>
               </div>
             )}
           </form>
@@ -552,3 +591,4 @@ const Chatbot = () => {
 };
 
 export default Chatbot;
+

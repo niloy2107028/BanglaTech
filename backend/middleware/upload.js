@@ -4,12 +4,21 @@ const memoryStorage = multer.memoryStorage();
 
 function fileFilterByTypes(allowedMimeTypes) {
   return (req, file, cb) => {
-    if (!file || allowedMimeTypes.includes(file.mimetype)) {
+    const rawMimeType = String(file?.mimetype || "")
+      .trim()
+      .toLowerCase();
+    const normalizedMimeType = rawMimeType.split(";")[0].trim();
+
+    if (
+      !file ||
+      allowedMimeTypes.includes(rawMimeType) ||
+      allowedMimeTypes.includes(normalizedMimeType)
+    ) {
       cb(null, true);
       return;
     }
 
-    cb(new Error(`Unsupported file type: ${file.mimetype}`));
+    cb(new Error(`Unsupported file type: ${file?.mimetype || "unknown"}`));
   };
 }
 

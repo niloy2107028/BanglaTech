@@ -26,7 +26,12 @@ const {
   formatRecommendationFromProducts,
   selectBestProduct,
 } = require("../services/chatbot/formatterService");
-const CHATBOT_CACHE_VERSION = process.env.CHATBOT_CACHE_VERSION || "v14";
+const {
+  trackUserKeywords,
+  splitSearchTerms,
+  extractProductKeywords,
+} = require("../utils/recommendationKeywords");
+const CHATBOT_CACHE_VERSION = process.env.CHATBOT_CACHE_VERSION || "v16";
 const CATEGORY_CACHE_TTL_MS = 5 * 60 * 1000;
 let cachedCategoryNames = [];
 let cachedCategoryAt = 0;
@@ -305,6 +310,82 @@ function buildLocalParsedFallback(message, history) {
   };
 }
 
+async function refineParsedWithDisambiguation({
+  message,
+  history,
+  parsed,
+  hasShownProducts,
+}) {
+  if (!parsed || typeof parsed !== "object") return buildLocalParsedFallback(message, history);
+  if (parsed.needsSearch) return parsed;
+
+  try {
+    const disambiguated = await disambiguateWithHistory({
+      message,
+      history,
+      parsed,
+      hasShownProducts,
+    });
+
+    const action = String(disambiguated?.action || "").toLowerCase();
+    const intent = String(disambiguated?.intent || "").toLowerCase();
+    const queryMode = String(disambiguated?.queryMode || "").toLowerCase();
+    const shouldSearch = action === "search" || intent === "search" || intent === "recommendation";
+    if (!shouldSearch) return parsed;
+
+    const mode = queryMode === "contextual" && hasShownProducts ? "contextual" : "fresh";
+
+    return {
+      ...parsed,
+      needsSearch: true,
+      mode,
+      intent: "search",
+      action: "search",
+      queryMode: mode === "contextual" ? "contextual" : "fresh",
+      query: String(parsed.query || message || "").trim().slice(0, 120),
+    };
+  } catch (error) {
+    return parsed;
+  }
+}
+
+function tokenizeMessageForCatalogMatch(message) {
+  return String(message || "")
+    .toLowerCase()
+    .replace(/[^\p{L}\p{N}\s]/gu, " ")
+    .split(/\s+/)
+    .map((token) => token.trim())
+    .filter((token) => token.length >= 4)
+    .slice(0, 8);
+}
+
+async function inferCatalogSearchIntent(message) {
+  const tokens = tokenizeMessageForCatalogMatch(message);
+  if (tokens.length === 0) return false;
+
+  const tokenPattern = tokens
+    .map((token) => token.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
+    .join("|");
+
+  if (!tokenPattern) return false;
+  const tokenRegex = new RegExp(tokenPattern, "i");
+
+  const [categoryHit, productHit] = await Promise.all([
+    Category.findOne({ name: tokenRegex }).select("_id").lean(),
+    Product.findOne({
+      $or: [
+        { name: tokenRegex },
+        { brand: tokenRegex },
+        { categoryName: tokenRegex },
+      ],
+    })
+      .select("_id")
+      .lean(),
+  ]);
+
+  return Boolean(categoryHit || productHit);
+}
+
 function extractLatestProductIdsFromHistory(history) {
   if (!Array.isArray(history) || history.length === 0) return [];
 
@@ -522,6 +603,41 @@ function buildDeterministicSearchPayload(parsed, fallbackMessage) {
   };
 }
 
+function buildRecommendationTrackingKeywords(searchText, products) {
+  const searchTerms = splitSearchTerms(String(searchText || "")).slice(0, 16);
+  const productTerms = dedupeProducts(products)
+    .slice(0, 8)
+    .flatMap((product) => extractProductKeywords(product));
+
+  return Array.from(
+    new Set(
+      [...searchTerms, ...productTerms]
+        .map((value) => String(value || "").trim())
+        .filter(Boolean),
+    ),
+  ).slice(0, 24);
+}
+
+async function trackChatbotRecommendationSignals({
+  req,
+  searchText,
+  products,
+  source = "search",
+  weight = 2,
+}) {
+  const userId = req?.user?._id;
+  if (!userId) return;
+
+  const keywords = buildRecommendationTrackingKeywords(searchText, products);
+  if (keywords.length === 0) return;
+
+  try {
+    await trackUserKeywords(userId, keywords, source, weight);
+  } catch (error) {
+    // Do not fail chatbot responses because recommendation tracking failed.
+  }
+}
+
 exports.getChatResponse = async (req, res) => {
   try {
     const { message, history } = req.body;
@@ -545,12 +661,47 @@ exports.getChatResponse = async (req, res) => {
     }
 
     parsed = applyParsedFallbacks(parsed);
+    parsed = await refineParsedWithDisambiguation({
+      message,
+      history,
+      parsed,
+      hasShownProducts,
+    });
+
+    if (!parsed.needsSearch) {
+      try {
+        const inferredSearchIntent = await inferCatalogSearchIntent(message);
+        if (inferredSearchIntent) {
+          parsed = {
+            ...parsed,
+            needsSearch: true,
+            mode: "fresh",
+            intent: "search",
+            action: "search",
+            queryMode: "fresh",
+            query: String(parsed.query || message || "").trim().slice(0, 120),
+          };
+        }
+      } catch (error) {
+        // Keep chat responsive when fallback intent inference fails.
+      }
+    }
+
     const bypassCache = shouldBypassChatCache(parsed.intent);
 
     const chatCacheKey = makeChatCacheKey(message, history);
     if (!bypassCache) {
       const cachedReply = chatCache.get(chatCacheKey);
       if (cachedReply) {
+        if (parsed.needsSearch || String(cachedReply?.intent || "").toLowerCase() === "search") {
+          await trackChatbotRecommendationSignals({
+            req,
+            searchText: String(parsed.query || message || "").trim(),
+            products: cachedReply?.products || [],
+            source: "search",
+            weight: 2,
+          });
+        }
         return res.json(cachedReply);
       }
     }
@@ -582,6 +733,14 @@ exports.getChatResponse = async (req, res) => {
         probableProductName: parsed.productTitle,
         category: parsed.category,
       });
+
+      await trackChatbotRecommendationSignals({
+        req,
+        searchText: searchPayload.query,
+        products,
+        source: "search",
+        weight: 2,
+      });
     } else if (parsed.mode === "contextual" && hasShownProducts) {
       products = applyParsedConstraints(await resolveProductsFromHistory(history), {
         probableProductName: parsed.productTitle,
@@ -608,12 +767,15 @@ exports.getChatResponse = async (req, res) => {
       }
     }
 
+    const cards = parsed.needsSearch ? buildProductCardsPayload(products, getBaseUrl(req)) : [];
+    const replyText = String(reply || "").trim();
+
     const flowPayload = {
-      reply,
+      reply: replyText,
       intent: parsed.needsSearch ? "search" : "general",
       parsed,
       products,
-      cards: parsed.needsSearch ? buildProductCardsPayload(products, getBaseUrl(req)) : [],
+      cards,
     };
 
     if (!bypassCache) {
@@ -699,6 +861,14 @@ exports.voiceSearch = async (req, res) => {
     const uniqueProducts = applyParsedConstraints(products, parsed);
     const reply = formatProductSearchSummary(uniqueProducts, transcript);
 
+    await trackChatbotRecommendationSignals({
+      req,
+      searchText: searchPayload.query,
+      products: uniqueProducts,
+      source: "search",
+      weight: 2,
+    });
+
     return res.json({
       reply,
       transcript,
@@ -710,11 +880,19 @@ exports.voiceSearch = async (req, res) => {
   } catch (error) {
     console.error("Voice Search Error:", error);
     const status = Number(error?.status || 0);
+    const errorMessage = String(error?.message || "");
 
     if ([400, 401, 403, 429].includes(status)) {
       return res.status(status).json({
         reply: "Voice search is temporarily unavailable. Please try again later.",
         error: "Voice search provider unavailable",
+      });
+    }
+
+    if (status === 503 || errorMessage.includes("HUGGINGFACE_API_KEY")) {
+      return res.status(503).json({
+        reply: "Voice search is not configured yet. Please set the voice API key and try again.",
+        error: "Voice search configuration missing",
       });
     }
 
@@ -836,6 +1014,14 @@ exports.imageSearch = async (req, res) => {
     const constrainedProducts = applyParsedConstraints(products, parsed);
     const uniqueProducts = filterProductsForImageEntities(constrainedProducts, captionResult.entities);
 
+    await trackChatbotRecommendationSignals({
+      req,
+      searchText: combinedQuery,
+      products: uniqueProducts,
+      source: "search",
+      weight: 2,
+    });
+
     return res.json({
       reply: formatProductSearchSummary(uniqueProducts, combinedQuery),
       caption: captionResult.caption,
@@ -865,3 +1051,4 @@ exports.imageSearch = async (req, res) => {
     });
   }
 };
+

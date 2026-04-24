@@ -1,30 +1,37 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faBars,
   faCartShopping,
+  faCamera,
   faGear,
   faMagnifyingGlass,
+  faMoon,
   faRightFromBracket,
+  faStore,
+  faSun,
   faUser,
   faXmark,
 } from '@fortawesome/free-solid-svg-icons';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { useLanguage } from '../context/LanguageContext';
+import { useTheme } from '../context/ThemeContext';
 import './Navbar.css';
 
 const Navbar = () => {
   const { user, loading, isAuthenticated, logout } = useAuth();
   const { cartItemsCount } = useCart();
   const { language, setLanguage, t } = useLanguage();
+  const { isDarkMode, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams] = useSearchParams();
   const currentQuery = searchParams.get('q') || '';
   const [searchQuery, setSearchQuery] = useState(currentQuery);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const imageInputRef = useRef(null);
 
   useEffect(() => {
     setSearchQuery(currentQuery);
@@ -67,6 +74,29 @@ const Navbar = () => {
     }
   };
 
+  const openImagePicker = () => {
+    imageInputRef.current?.click();
+  };
+
+  const handleImageSearchSelect = (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    navigate('/image-search', {
+      state: {
+        imageSearchUpload: {
+          file,
+          prompt: searchQuery.trim(),
+          fileName: file.name || 'image',
+        },
+      },
+    });
+
+    if (event.target) {
+      event.target.value = '';
+    }
+  };
+
   const languageToggle = (
     <div className="navbar-language-toggle" aria-label={t('common.language')}>
       <button
@@ -86,9 +116,23 @@ const Navbar = () => {
     </div>
   );
 
+  const themeToggle = (
+    <button
+      type="button"
+      className={`navbar-button navbar-theme-toggle ${isDarkMode ? 'dark' : 'light'}`}
+      onClick={toggleTheme}
+      title={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+      aria-label={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+    >
+      <FontAwesomeIcon icon={isDarkMode ? faSun : faMoon} />
+      <span>{isDarkMode ? 'Light' : 'Dark'}</span>
+    </button>
+  );
+
   const actionItems = (
     <>
       {languageToggle}
+      {themeToggle}
 
       {!loading && isAuthenticated && user?.role === 'admin' && (
         <>
@@ -106,7 +150,7 @@ const Navbar = () => {
 
       {!loading && isAuthenticated && user?.role === 'seller' && (
         <Link to="/seller/orders" className="navbar-button">
-          <FontAwesomeIcon icon={faCartShopping} /> <span>{t('navbar.storeOrders')}</span>
+          <FontAwesomeIcon icon={faStore} /> <span>{t('navbar.sellerHub', {}, 'Seller Hub')}</span>
         </Link>
       )}
 
@@ -172,6 +216,22 @@ const Navbar = () => {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
+            <button
+              type="button"
+              className="navbar-image-search-btn"
+              onClick={openImagePicker}
+              aria-label="Image search"
+              title="Search by image"
+            >
+              <FontAwesomeIcon icon={faCamera} />
+            </button>
+            <input
+              ref={imageInputRef}
+            type="file"
+            accept="image/*"
+            className="navbar-hidden-file-input"
+            onChange={handleImageSearchSelect}
+          />
           </div>
 
           <div className="navbar-actions navbar-actions-desktop">{actionItems}</div>
@@ -211,6 +271,15 @@ const Navbar = () => {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
+          <button
+            type="button"
+            className="navbar-image-search-btn"
+            onClick={openImagePicker}
+            aria-label="Image search"
+            title="Search by image"
+          >
+            <FontAwesomeIcon icon={faCamera} />
+          </button>
         </div>
 
         <div className="navbar-mobile-actions">{actionItems}</div>
