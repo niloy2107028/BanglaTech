@@ -10,9 +10,11 @@ function getHuggingFaceApiKey() {
     "";
 
   if (!key) {
-    throw new Error(
+    const error = new Error(
       "HUGGINGFACE_API_KEY (or HF_API_KEY / HF_TOKEN) is not configured",
     );
+    error.status = 503;
+    throw error;
   }
 
   return key;

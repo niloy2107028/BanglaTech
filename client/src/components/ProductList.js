@@ -1,8 +1,8 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "../api";
-import { useAuth } from "../context/AuthContext";
 import { useLanguage } from "../context/LanguageContext";
+import { trackLocalProductSignal } from "../utils/localRecommendation";
 
 import ProductCard from "./ProductCard";
 import ProductModal from "./ProductModal";
@@ -19,18 +19,25 @@ const ProductList = ({
 }) => {
   const navigate = useNavigate();
   const [filteredProducts, setFilteredProducts] = useState([]);
-  const [priceSort, setPriceSort] = useState("");
+  const [sortBy, setSortBy] = useState("");
   const [selectedBrand, setSelectedBrand] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [minPrice, setMinPrice] = useState("");
+  const [maxPrice, setMaxPrice] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [modalMode, setModalMode] = useState("edit");
   const [currentProduct, setCurrentProduct] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const productsTopRef = useRef(null);
-  const { isAuthenticated } = useAuth();
-  const { t, formatNumber } = useLanguage();
+  const { t, formatNumber, translateCategoryName } = useLanguage();
 
   const brands = useMemo(
     () => [...new Set(products.map((p) => p.brand).filter(Boolean))].sort(),
+    [products],
+  );
+  const categories = useMemo(
+    () =>
+      [...new Set(products.map((p) => p.categoryName).filter(Boolean))].sort(),
     [products],
   );
   const totalPages = Math.max(
@@ -53,23 +60,53 @@ const ProductList = ({
 
   useEffect(() => {
     let result = [...products];
+    const minPriceRaw = String(minPrice ?? "").trim();
+    const maxPriceRaw = String(maxPrice ?? "").trim();
+    const hasMinPrice = minPriceRaw !== "";
+    const hasMaxPrice = maxPriceRaw !== "";
+    const parsedMinPrice = hasMinPrice ? Number(minPriceRaw) : null;
+    const parsedMaxPrice = hasMaxPrice ? Number(maxPriceRaw) : null;
+    const minPriceValid =
+      hasMinPrice && Number.isFinite(parsedMinPrice) && parsedMinPrice >= 0;
+    const maxPriceValid =
+      hasMaxPrice && Number.isFinite(parsedMaxPrice) && parsedMaxPrice >= 0;
 
     if (selectedBrand) {
       result = result.filter((p) => p.brand === selectedBrand);
     }
 
-    if (priceSort === "low-to-high") {
-      result.sort((a, b) => a.price - b.price);
-    } else if (priceSort === "high-to-low") {
-      result.sort((a, b) => b.price - a.price);
+    if (selectedCategory) {
+      result = result.filter(
+        (p) => String(p.categoryName || "") === String(selectedCategory),
+      );
+    }
+
+    if (minPriceValid) {
+      result = result.filter((p) => Number(p.price || 0) >= parsedMinPrice);
+    }
+
+    if (maxPriceValid) {
+      result = result.filter((p) => Number(p.price || 0) <= parsedMaxPrice);
+    }
+
+    if (sortBy === "price_low") {
+      result.sort((a, b) => Number(a.price || 0) - Number(b.price || 0));
+    } else if (sortBy === "price_high") {
+      result.sort((a, b) => Number(b.price || 0) - Number(a.price || 0));
+    } else if (sortBy === "rating_high") {
+      result.sort((a, b) => Number(b.rating || 0) - Number(a.rating || 0));
+    } else if (sortBy === "rating_low") {
+      result.sort((a, b) => Number(a.rating || 0) - Number(b.rating || 0));
+    } else if (sortBy === "sold_high") {
+      result.sort((a, b) => Number(b.soldCount || 0) - Number(a.soldCount || 0));
     }
 
     setFilteredProducts(result);
-  }, [products, priceSort, selectedBrand]);
+  }, [products, sortBy, selectedBrand, selectedCategory, minPrice, maxPrice]);
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [products, priceSort, selectedBrand]);
+  }, [products, sortBy, selectedBrand, selectedCategory, minPrice, maxPrice]);
 
   useEffect(() => {
     if (currentPage > totalPages) {
@@ -77,22 +114,8 @@ const ProductList = ({
     }
   }, [currentPage, totalPages]);
 
-  const trackProductView = async (productId) => {
-    if (!isAuthenticated) return;
-
-    try {
-      await axios.post(
-        `/api/products/${productId}/track-view`,
-        {},
-        { withCredentials: true },
-      );
-    } catch (error) {
-      console.error("Error tracking product view:", error);
-    }
-  };
-
   const handleView = (product) => {
-    trackProductView(product._id);
+    trackLocalProductSignal(product);
     navigate(`/product/${product._id}`);
   };
 
@@ -135,8 +158,11 @@ const ProductList = ({
   };
 
   const resetFilters = () => {
-    setPriceSort("");
+    setSortBy("");
     setSelectedBrand("");
+    setSelectedCategory("");
+    setMinPrice("");
+    setMaxPrice("");
   };
 
   const goToPage = (page) => {
@@ -164,16 +190,29 @@ const ProductList = ({
         <div className="productList-view-filters">
           <div className="productList-view-filter-group">
             <label className="productList-view-filter-label">
-              {t("common.sortByPrice")}
+              {t("common.sortBy", {}, "Sort by")}
             </label>
             <select
-              value={priceSort}
-              onChange={(e) => setPriceSort(e.target.value)}
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
               className="productList-view-filter-select"
             >
               <option value="">{t("common.default")}</option>
-              <option value="low-to-high">{t("common.lowToHigh")}</option>
-              <option value="high-to-low">{t("common.highToLow")}</option>
+              <option value="price_low">
+                {t("common.lowToHigh", {}, "Price: Low to High")}
+              </option>
+              <option value="price_high">
+                {t("common.highToLow", {}, "Price: High to Low")}
+              </option>
+              <option value="rating_high">
+                {t("common.highestRating", {}, "Rating: High to Low")}
+              </option>
+              <option value="rating_low">
+                {t("common.lowestRating", {}, "Rating: Low to High")}
+              </option>
+              <option value="sold_high">
+                {t("common.bestSelling", {}, "Best Selling")}
+              </option>
             </select>
           </div>
 
@@ -195,7 +234,52 @@ const ProductList = ({
             </select>
           </div>
 
-          {(priceSort || selectedBrand) && (
+          <div className="productList-view-filter-group">
+            <label className="productList-view-filter-label">
+              {t("common.category", {}, "Category")}
+            </label>
+            <select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className="productList-view-filter-select"
+            >
+              <option value="">{t("common.allCategories", {}, "All Categories")}</option>
+              {categories.map((category) => (
+                <option key={category} value={category}>
+                  {translateCategoryName(category)}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="productList-view-filter-group">
+            <label className="productList-view-filter-label">
+              {t("common.priceRange", {}, "Price Range")}
+            </label>
+            <div className="productList-view-price-range">
+              <input
+                type="number"
+                min="0"
+                step="1"
+                value={minPrice}
+                onChange={(e) => setMinPrice(e.target.value)}
+                className="productList-view-filter-input"
+                placeholder={t("common.min", {}, "Min")}
+              />
+              <span className="productList-view-price-separator">-</span>
+              <input
+                type="number"
+                min="0"
+                step="1"
+                value={maxPrice}
+                onChange={(e) => setMaxPrice(e.target.value)}
+                className="productList-view-filter-input"
+                placeholder={t("common.max", {}, "Max")}
+              />
+            </div>
+          </div>
+
+          {(sortBy || selectedBrand || selectedCategory || minPrice || maxPrice) && (
             <button
               className="productList-view-reset-btn"
               onClick={resetFilters}

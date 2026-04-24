@@ -26,6 +26,14 @@ const reviewSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    image: {
+      type: String,
+      default: "",
+    },
+    images: {
+      type: [String],
+      default: [],
+    },
     upvotes: [
       {
         type: mongoose.Schema.Types.ObjectId,
@@ -49,10 +57,35 @@ const reviewSchema = new mongoose.Schema(
           type: String,
           required: true,
         },
+        role: {
+          type: String,
+          enum: ["seller", "reviewer"],
+          required: true,
+        },
         text: {
           type: String,
           required: true,
         },
+        image: {
+          type: String,
+          default: "",
+        },
+        images: {
+          type: [String],
+          default: [],
+        },
+        upvotes: [
+          {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User",
+          },
+        ],
+        downvotes: [
+          {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User",
+          },
+        ],
         createdAt: {
           type: Date,
           default: Date.now,
@@ -62,5 +95,7 @@ const reviewSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+reviewSchema.index({ product: 1, user: 1 }, { unique: true });
 
 module.exports = mongoose.model("Review", reviewSchema);

@@ -1,0 +1,145 @@
+.for-you-page {
+  min-height: 100vh;
+}
+
+.for-you-page-container {
+  max-width: 1600px;
+  width: 92%;
+  margin: 0 auto;
+  padding: 1.25rem 0 3rem;
+}
+
+.for-you-header {
+  padding: 1.25rem;
+  border-radius: 22px;
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  background:
+    radial-gradient(circle at 10% 10%, rgba(15, 157, 122, 0.12), transparent 30%),
+    linear-gradient(130deg, #ffffff, #f8fafc);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 1.1rem;
+}
+
+.for-you-header h1 {
+  margin: 0;
+  font-size: clamp(1.8rem, 3vw, 2.6rem);
+  color: var(--text);
+  letter-spacing: -0.03em;
+}
+
+.for-you-header p {
+  margin: 0.7rem 0 0;
+  color: var(--muted);
+  line-height: 1.65;
+  max-width: 70ch;
+}
+
+.for-you-consent-popup {
+  margin: 1rem 0 1.2rem;
+  padding: 1rem;
+  border-radius: 16px;
+  border: 1px solid rgba(15, 157, 122, 0.26);
+  background: rgba(255, 255, 255, 0.92);
+}
+
+.for-you-consent-popup h3 {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.for-you-consent-popup p {
+  margin: 0.5rem 0 0;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.for-you-consent-actions {
+  margin-top: 0.85rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.for-you-consent-actions button,
+.for-you-empty button,
+.for-you-auth-actions button {
+  border: none;
+  border-radius: 999px;
+  padding: 0.62rem 1rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.for-you-consent-actions .allow,
+.for-you-empty button,
+.for-you-auth-actions button:not(.ghost) {
+  color: #ffffff;
+  background: linear-gradient(135deg, var(--primary), #14b88e);
+}
+
+.for-you-consent-actions .deny,
+.for-you-auth-actions .ghost {
+  color: #334155;
+  background: #e9eef5;
+}
+
+.for-you-loading,
+.for-you-empty,
+.for-you-auth-card {
+  margin-top: 1rem;
+  border-radius: 20px;
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  background: rgba(255, 255, 255, 0.85);
+  box-shadow: var(--shadow-sm);
+}
+
+.for-you-loading {
+  padding: 2.2rem 1rem;
+  text-align: center;
+  color: var(--muted);
+}
+
+.for-you-empty {
+  text-align: center;
+  padding: 2.2rem 1rem;
+}
+
+.for-you-empty p {
+  margin: 0 0 0.9rem;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.for-you-auth-card {
+  text-align: center;
+  padding: 2rem 1rem;
+}
+
+.for-you-auth-card h1 {
+  margin: 0;
+  font-size: clamp(1.8rem, 3vw, 2.4rem);
+}
+
+.for-you-auth-card p {
+  margin: 0.7rem auto 0;
+  max-width: 56ch;
+  color: var(--muted);
+  line-height: 1.65;
+}
+
+.for-you-auth-actions {
+  margin-top: 1rem;
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+@media (max-width: 768px) {
+  .for-you-page-container {
+    padding-top: 1rem;
+  }
+
+  .for-you-header {
+    padding: 1rem;
+  }
+}

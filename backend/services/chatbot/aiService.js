@@ -251,14 +251,15 @@ async function generateFlowReply({ message, history, parsed, products = [] }) {
     }))
     : [];
 
-  const prompt = `You are a friendly e-commerce shopping assistant.
+const prompt = `You are a friendly e-commerce shopping assistant.
 Rules:
 1) If clarification is needed, ask that one short question politely.
 2) If products are provided, use ONLY those products.
-3) If products are empty but search was needed, apologize briefly and suggest a better query.
-4) If search was not needed, reply naturally from chat history.
-5) Never invent product details.
-6) Reply in the same language style as the user.`;
+3) When products are provided, write only a short conversational summary (1-3 lines) and do not list every product one by one.
+4) If products are empty but search was needed, apologize briefly and suggest a better query.
+5) If search was not needed, reply naturally from chat history.
+6) Never invent product details.
+7) Reply in the same language style as the user.`;
 
   const payload = {
     userMessage: String(message || ""),

@@ -2,6 +2,17 @@ const UserPreference = require("../models/UserPreference");
 
 // Maximum number of keywords we store per user
 const MAX_KEYWORDS = 50;
+const RECENCY_HALF_LIFE_DAYS = 30;
+const MIN_RECENCY_MULTIPLIER = 0.35;
+const SOURCE_SCORE_MULTIPLIER = {
+  order: 1.35,
+  cart: 1.2,
+  dwell: 1.15,
+  search: 1.05,
+  click: 1,
+  view: 1,
+  seed: 0.8,
+};
 
 /**
  * Normalize a keyword:
@@ -181,6 +192,22 @@ function buildKeywordRegex(keyword) {
   return new RegExp(escapeRegex(normalized), "i");
 }
 
+function getSourceMultiplier(source) {
+  return SOURCE_SCORE_MULTIPLIER[source] || 1;
+}
+
+function getRecencyMultiplier(lastUsedAt) {
+  const timestamp = new Date(lastUsedAt);
+  if (Number.isNaN(timestamp.getTime())) return 1;
+
+  const ageInDays = Math.max(
+    0,
+    (Date.now() - timestamp.getTime()) / (1000 * 60 * 60 * 24),
+  );
+  const decay = Math.pow(0.5, ageInDays / RECENCY_HALF_LIFE_DAYS);
+  return Math.max(MIN_RECENCY_MULTIPLIER, decay);
+}
+
 /**
  * Core scoring function:
  * Calculates how relevant a product is to user keywords
@@ -215,6 +242,17 @@ function scoreProductAgainstKeywords(product, keywords = []) {
       typeof keywordEntry === "string"
         ? 1
         : Math.max(Number(keywordEntry.score) || 1, 1);
+    const source =
+      typeof keywordEntry === "string"
+        ? "seed"
+        : String(keywordEntry.source || "view").toLowerCase();
+    const sourceMultiplier = getSourceMultiplier(source);
+    const recencyMultiplier =
+      typeof keywordEntry === "string"
+        ? 1
+        : getRecencyMultiplier(keywordEntry.lastUsedAt);
+    const effectiveKeywordScore =
+      keywordScore * sourceMultiplier * recencyMultiplier;
 
     const normalizedKeyword = normalizeKeyword(keyword);
     if (!normalizedKeyword) continue;
@@ -230,7 +268,7 @@ function scoreProductAgainstKeywords(product, keywords = []) {
 
       // Assign weighted score
       score +=
-        keywordScore *
+        effectiveKeywordScore *
         (isExactName
           ? 6 // strongest
           : isCategory
@@ -261,11 +299,14 @@ function scoreProductAgainstKeywords(product, keywords = []) {
 
 module.exports = {
   MAX_KEYWORDS,
+  RECENCY_HALF_LIFE_DAYS,
   normalizeKeyword,
   splitSearchTerms,
   extractProductKeywords,
   mergeKeywords,
   trackUserKeywords,
   buildKeywordRegex,
+  getSourceMultiplier,
+  getRecencyMultiplier,
   scoreProductAgainstKeywords,
 };

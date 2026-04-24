@@ -15,6 +15,7 @@ import Footer from './components/Footer';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 import { LanguageProvider, useLanguage } from './context/LanguageContext';
+import { ThemeProvider } from './context/ThemeContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import LoginPage from './components/LoginPage';
 import RegisterPage from './components/RegisterPage';
@@ -28,6 +29,7 @@ import BecomeSeller from './components/BecomeSeller';
 import AdminDashboard from './components/AdminDashboard';
 import Chatbot from './components/Chatbot';
 import ProductDetails from './components/ProductDetails';
+import ForYouPage from './components/ForYouPage';
 
 import './App.css';
 
@@ -62,6 +64,7 @@ function AppRoutes() {
       />
       <Route path="/store" element={<HomePage />} />
       <Route path="/category/:categoryName" element={<CategoryView />} />
+      <Route path="/for-you" element={<ForYouPage />} />
       <Route path="/product/:id" element={<ProductDetails />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
@@ -116,6 +119,7 @@ function AppRoutes() {
         }
       />
       <Route path="/search" element={<SearchPage />} />
+      <Route path="/image-search" element={<SearchPage />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
@@ -123,22 +127,24 @@ function AppRoutes() {
 
 function App() {
   return (
-    <LanguageProvider>
-      <AuthProvider>
-        <CartProvider>
-          <Router>
-            <div className="app-shell">
-              <Navbar />
-              <main className="main-content">
-                <AppRoutes />
-              </main>
-              <Chatbot />
-              <Footer />
-            </div>
-          </Router>
-        </CartProvider>
-      </AuthProvider>
-    </LanguageProvider>
+    <ThemeProvider>
+      <LanguageProvider>
+        <AuthProvider>
+          <CartProvider>
+            <Router>
+              <div className="app-shell">
+                <Navbar />
+                <main className="main-content">
+                  <AppRoutes />
+                </main>
+                <Chatbot />
+                <Footer />
+              </div>
+            </Router>
+          </CartProvider>
+        </AuthProvider>
+      </LanguageProvider>
+    </ThemeProvider>
   );
 }
 
