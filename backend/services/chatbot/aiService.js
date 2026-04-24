@@ -1,4 +1,4 @@
-const MAX_HISTORY = 6;
+const MAX_HISTORY = 5;
 const REQUEST_TIMEOUT_MS = 25000;
 const { chatbotConfig } = require("../../config/chatbotConfig");
 
@@ -109,6 +109,12 @@ async function requestRouterChat({ apiKey, model, payload, signal }) {
   return { content: String(content).trim() };
 }
 
+function shouldStopHfModelLoop(error) {
+  const text = String(error?.message || "").toLowerCase();
+  return text.includes("hf chat failed (401)")
+    || text.includes("hf chat failed (403)");
+}
+
 async function createWithPreferredModels(payloadBuilder, preferredModels = []) {
   const apiKey = getHuggingFaceApiKey();
   const models = Array.from(new Set(preferredModels.filter(Boolean)));
@@ -128,6 +134,7 @@ async function createWithPreferredModels(payloadBuilder, preferredModels = []) {
       });
     } catch (error) {
       lastError = error;
+      if (shouldStopHfModelLoop(error)) break;
     } finally {
       clearTimeout(timeout);
     }
@@ -259,7 +266,9 @@ Rules:
 4) If products are empty but search was needed, apologize briefly and suggest a better query.
 5) If search was not needed, reply naturally from chat history.
 6) Never invent product details.
-7) Reply in the same language style as the user.`;
+7) Reply in the same language style as the user.
+8) Use recent chat history to maintain conversation memory and intent continuity.
+9) Do not reset with generic greetings on every turn unless user is actually greeting.`;
 
   const payload = {
     userMessage: String(message || ""),
@@ -353,7 +362,9 @@ Rules:
 1) Never invent product names, prices, or stock.
 2) If user needs product details, ask them to search products.
 3) Keep answers concise and in user's language.
-4) Be helpful for general questions, policies, and guidance.`;
+4) Be helpful for general questions, policies, and guidance.
+5) Always use recent chat history to preserve context between turns.
+6) Avoid repeating a generic greeting if the conversation is already ongoing.`;
 
   const completion = await createWithPreferredModels(
     (model) => ({

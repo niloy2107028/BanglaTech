@@ -27,6 +27,7 @@ function dedupeProducts(products = []) {
 const HomePage = () => {
   const [products, setProducts] = useState([]);
   const [recommendedProducts, setRecommendedProducts] = useState([]);
+  const [recommendationsPersonalized, setRecommendationsPersonalized] = useState(false);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [canScrollCategoriesLeft, setCanScrollCategoriesLeft] = useState(false);
@@ -48,7 +49,7 @@ const HomePage = () => {
           fetchCategories(),
           fetchFeaturedProducts(),
         ]);
-        await fetchRecommendedProducts(featuredProducts);
+        await fetchRecommendedProducts();
         if (!Array.isArray(loadedCategories)) {
           setCategories([]);
         }
@@ -138,9 +139,10 @@ const HomePage = () => {
     }
   };
 
-  const fetchRecommendedProducts = async (featuredFallback = []) => {
+  const fetchRecommendedProducts = async () => {
     if (!isAuthenticated) {
-      setRecommendedProducts(dedupeProducts(featuredFallback).slice(0, 18));
+      setRecommendedProducts([]);
+      setRecommendationsPersonalized(false);
       return;
     }
 
@@ -151,14 +153,12 @@ const HomePage = () => {
       const personalizedProducts = Array.isArray(response.data?.data)
         ? response.data.data
         : [];
-      const merged = dedupeProducts([
-        ...personalizedProducts,
-        ...featuredFallback,
-      ]).slice(0, 18);
-      setRecommendedProducts(merged);
+      setRecommendedProducts(dedupeProducts(personalizedProducts).slice(0, 18));
+      setRecommendationsPersonalized(Boolean(response.data?.personalized));
     } catch (error) {
       console.error("Error fetching recommended products:", error);
-      setRecommendedProducts(dedupeProducts(featuredFallback).slice(0, 18));
+      setRecommendedProducts([]);
+      setRecommendationsPersonalized(false);
     }
   };
 
@@ -301,7 +301,7 @@ const HomePage = () => {
           </div>
         </section>
 
-        {recommendedProducts.length > 0 && (
+        {isAuthenticated && recommendationsPersonalized && recommendedProducts.length > 0 && (
           <section className="recommended-strip-section">
             <div className="recommended-strip-head">
               <div>

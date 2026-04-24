@@ -33,6 +33,8 @@ const {
 } = require("../utils/recommendationKeywords");
 const CHATBOT_CACHE_VERSION = process.env.CHATBOT_CACHE_VERSION || "v16";
 const CATEGORY_CACHE_TTL_MS = 5 * 60 * 1000;
+const CHAT_CACHE_HISTORY_LIMIT = 5;
+const CHAT_MAX_RESULT_CARDS = 12;
 let cachedCategoryNames = [];
 let cachedCategoryAt = 0;
 
@@ -64,13 +66,31 @@ function makeChatCacheKey(message, history) {
     v: CHATBOT_CACHE_VERSION,
     message: String(message || ""),
     history: Array.isArray(history)
-      ? history.slice(-4).map((item) => ({
+      ? history.slice(-CHAT_CACHE_HISTORY_LIMIT).map((item) => ({
         role: item?.role,
         content: String(item?.content || ""),
         products: Array.isArray(item?.products) ? item.products.slice(0, 8) : [],
       }))
       : [],
   });
+}
+
+function normalizeIncomingHistory(history) {
+  if (!Array.isArray(history)) return [];
+
+  return history
+    .slice(-CHAT_CACHE_HISTORY_LIMIT)
+    .map((item) => ({
+      role: item?.role === "assistant" ? "assistant" : "user",
+      content: String(item?.content || "").trim().slice(0, 2000),
+      products: Array.isArray(item?.products)
+        ? item.products
+          .map((value) => String(value || "").trim())
+          .filter(Boolean)
+          .slice(0, 8)
+        : [],
+    }))
+    .filter((item) => item.content.length > 0);
 }
 
 async function getCategoryNames() {
@@ -330,13 +350,30 @@ async function refineParsedWithDisambiguation({
     const action = String(disambiguated?.action || "").toLowerCase();
     const intent = String(disambiguated?.intent || "").toLowerCase();
     const queryMode = String(disambiguated?.queryMode || "").toLowerCase();
+    const nextMode = queryMode === "contextual" && hasShownProducts
+      ? "contextual"
+      : queryMode === "fresh"
+        ? "fresh"
+        : parsed?.mode || "casual";
+    const normalizedParsed = {
+      ...parsed,
+      action,
+      intent,
+      queryMode,
+      mode: nextMode,
+    };
     const shouldSearch = action === "search" || intent === "search" || intent === "recommendation";
-    if (!shouldSearch) return parsed;
+    if (!shouldSearch) {
+      return {
+        ...normalizedParsed,
+        needsSearch: false,
+      };
+    }
 
     const mode = queryMode === "contextual" && hasShownProducts ? "contextual" : "fresh";
 
     return {
-      ...parsed,
+      ...normalizedParsed,
       needsSearch: true,
       mode,
       intent: "search",
@@ -566,6 +603,126 @@ function applyParsedConstraints(products, parsed) {
   return result;
 }
 
+function extractRequestedResultLimit(message) {
+  const text = String(message || "").toLowerCase();
+  if (!text) return null;
+
+  const patterns = [
+    /\btop\s*(\d{1,2})\b/,
+    /\bshow\s+(?:me\s+)?(?:top\s+)?(\d{1,2})\b/,
+    /\b(?:recommend|suggest|pick|choose)\s+(?:me\s+)?(\d{1,2})\b/,
+    /\b(\d{1,2})\s+(?:from|among)\s+(?:these|them)\b/,
+    /\b(\d{1,2})\s*(?:products?|items?|results?|picks?)\b/,
+  ];
+
+  for (const pattern of patterns) {
+    const match = text.match(pattern);
+    const value = Number(match?.[1] || 0);
+    if (!Number.isFinite(value) || value <= 0) continue;
+    return Math.min(CHAT_MAX_RESULT_CARDS, Math.max(1, value));
+  }
+
+  return null;
+}
+
+function isLikelyContextFollowup(message) {
+  const text = String(message || "").toLowerCase();
+  if (!text) return false;
+
+  const followupPatterns = [
+    /\bamong\s+these\b/,
+    /\bwhich\s+one\b/,
+    /\brecommend\b/,
+    /\bwhy\b/,
+    /\bcompare\b/,
+    /\bdifference\b/,
+    /\bvs\b/,
+    /\bbetween\b/,
+    /\bthis\s+one\b/,
+    /\bthat\s+one\b/,
+    /\bthese\b/,
+    /\bthose\b/,
+  ];
+
+  return followupPatterns.some((pattern) => pattern.test(text));
+}
+
+function detectContextualIntent(message, parsed) {
+  const parsedIntent = String(parsed?.intent || "").toLowerCase();
+  if (["recommendation", "compare", "explain"].includes(parsedIntent)) {
+    return parsedIntent;
+  }
+
+  const text = String(message || "").toLowerCase();
+  if (!text) return "";
+
+  if (/\bcompare|difference|vs|between\b/.test(text)) return "compare";
+  if (/\brecommend|which\s+one|best\b/.test(text)) return "recommendation";
+  if (/\bexplain|use case|details|tell me about\b/.test(text)) return "explain";
+  return "";
+}
+
+function messageMentionsCategory(message, category) {
+  const text = String(message || "").toLowerCase().trim();
+  const categoryText = String(category || "").toLowerCase().trim();
+  if (!text || !categoryText) return false;
+  if (text.includes(categoryText)) return true;
+
+  const tokens = categoryText
+    .replace(/[^\p{L}\p{N}\s]/gu, " ")
+    .split(/\s+/)
+    .map((token) => token.trim())
+    .filter((token) => token.length > 2);
+
+  return tokens.some((token) => text.includes(token));
+}
+
+function resolveSearchQuery(message, parsed, hasShownProducts) {
+  const messageQuery = String(message || "").trim();
+  const parsedQuery = String(parsed?.query || "").trim();
+  if (!parsedQuery) return messageQuery;
+
+  if (hasShownProducts && !isLikelyContextFollowup(message)) {
+    return messageQuery || parsedQuery;
+  }
+
+  return parsedQuery;
+}
+
+function resolveSearchCategory(message, parsed, hasShownProducts) {
+  const parsedCategory = String(parsed?.category || "").trim();
+  if (!parsedCategory) return "";
+
+  if (
+    hasShownProducts
+    && !isLikelyContextFollowup(message)
+    && !messageMentionsCategory(message, parsedCategory)
+  ) {
+    return "";
+  }
+
+  return parsedCategory;
+}
+
+function resolveDisplayProducts({ products, message, parsed, reply }) {
+  let selected = dedupeProducts(products);
+  if (selected.length === 0) return [];
+
+  const requestedLimit = extractRequestedResultLimit(message);
+  if (requestedLimit) {
+    selected = selected.slice(0, requestedLimit);
+  }
+
+  if (!parsed?.needsSearch && selected.length > 1) {
+    const mentioned = pickProductMentionedInReply(selected, reply);
+    if (mentioned) {
+      selected = [mentioned];
+    }
+  }
+
+  return selected.slice(0, CHAT_MAX_RESULT_CARDS);
+}
+
 async function runProductSearch(parsed, limit = 12) {
   const cacheKey = makeSearchCacheKey({ ...parsed, limit });
   const cached = searchCache.get(cacheKey);
@@ -640,7 +797,8 @@ async function trackChatbotRecommendationSignals({
 
 exports.getChatResponse = async (req, res) => {
   try {
-    const { message, history } = req.body;
+    const message = req.body?.message;
+    const history = normalizeIncomingHistory(req.body?.history);
     if (!message || !String(message).trim()) {
       return res.status(400).json({ message: "Message is required" });
     }
@@ -668,9 +826,25 @@ exports.getChatResponse = async (req, res) => {
       hasShownProducts,
     });
 
-    if (!parsed.needsSearch) {
+    const forceContextFollowup = hasShownProducts && isLikelyContextFollowup(message);
+    if (forceContextFollowup) {
+      const contextualIntent = detectContextualIntent(message, parsed);
+      parsed = {
+        ...parsed,
+        needsSearch: false,
+        mode: "contextual",
+        action: "reply_from_context",
+        queryMode: "contextual",
+        intent: contextualIntent || String(parsed?.intent || "general").toLowerCase(),
+      };
+    }
+
+    if (!parsed.needsSearch && !forceContextFollowup) {
+      const skipForcedSearch = hasShownProducts && isLikelyContextFollowup(message);
       try {
-        const inferredSearchIntent = await inferCatalogSearchIntent(message);
+        const inferredSearchIntent = skipForcedSearch
+          ? false
+          : await inferCatalogSearchIntent(message);
         if (inferredSearchIntent) {
           parsed = {
             ...parsed,
@@ -723,15 +897,17 @@ exports.getChatResponse = async (req, res) => {
 
     let products = [];
     if (parsed.needsSearch) {
+      const normalizedQuery = resolveSearchQuery(message, parsed, hasShownProducts);
+      const normalizedCategory = resolveSearchCategory(message, parsed, hasShownProducts);
       const searchPayload = {
         intent: "search",
-        query: String(parsed.query || message || "").trim(),
-        category: String(parsed.category || "").trim(),
+        query: String(normalizedQuery || "").trim(),
+        category: String(normalizedCategory || "").trim(),
       };
       products = await runProductSearch(searchPayload, 12);
       products = applyParsedConstraints(products, {
         probableProductName: parsed.productTitle,
-        category: parsed.category,
+        category: normalizedCategory,
       });
 
       await trackChatbotRecommendationSignals({
@@ -741,11 +917,102 @@ exports.getChatResponse = async (req, res) => {
         source: "search",
         weight: 2,
       });
-    } else if (parsed.mode === "contextual" && hasShownProducts) {
+    } else if ((parsed.mode === "contextual" || isLikelyContextFollowup(message)) && hasShownProducts) {
       products = applyParsedConstraints(await resolveProductsFromHistory(history), {
         probableProductName: parsed.productTitle,
         category: parsed.category,
       });
+    }
+
+    const contextualIntent = (!parsed.needsSearch && products.length > 0 && hasShownProducts)
+      ? detectContextualIntent(message, parsed)
+      : "";
+    if (contextualIntent) {
+      let contextualReply = "";
+      let contextualProducts = products;
+
+      if (contextualIntent === "compare") {
+        try {
+          contextualReply = await generateProductComparison({
+            message,
+            history,
+            products,
+          });
+        } catch (error) {
+          contextualReply = formatComparisonFromProducts(products, message);
+        }
+        contextualProducts = dedupeProducts(products).slice(0, 2);
+      } else if (contextualIntent === "explain") {
+        try {
+          contextualReply = await generateProductExplanation({
+            message,
+            history,
+            products,
+          });
+        } catch (error) {
+          contextualReply = formatProductUseCases(products);
+        }
+        contextualProducts = dedupeProducts(products).slice(0, 3);
+      } else {
+        const requestedRecommendationLimit = extractRequestedResultLimit(message) || 1;
+
+        try {
+          contextualReply = await generateRecommendationReply({
+            message,
+            history,
+            products,
+          });
+        } catch (error) {
+          contextualReply = formatRecommendationFromProducts(products, message, getBaseUrl(req));
+        }
+
+        const uniqueProducts = dedupeProducts(products);
+        const recommendedProduct = pickProductMentionedInReply(uniqueProducts, contextualReply)
+          || selectBestProduct(uniqueProducts, message);
+
+        const selectedRecommendations = [];
+        const seen = new Set();
+        if (recommendedProduct) {
+          const id = String(recommendedProduct?._id || recommendedProduct?.id || "").trim();
+          const name = String(recommendedProduct?.name || "").trim().toLowerCase();
+          const key = id || name;
+          if (key) {
+            selectedRecommendations.push(recommendedProduct);
+            seen.add(key);
+          }
+        }
+
+        for (const product of uniqueProducts) {
+          const id = String(product?._id || product?.id || "").trim();
+          const name = String(product?.name || "").trim().toLowerCase();
+          const key = id || name;
+          if (!key || seen.has(key)) continue;
+          selectedRecommendations.push(product);
+          seen.add(key);
+          if (selectedRecommendations.length >= requestedRecommendationLimit) break;
+        }
+
+        contextualProducts = selectedRecommendations
+          .slice(0, requestedRecommendationLimit)
+          .slice(0, CHAT_MAX_RESULT_CARDS);
+      }
+
+      const contextualCards = contextualProducts.length > 0
+        ? buildProductCardsPayload(contextualProducts, getBaseUrl(req))
+        : [];
+
+      const contextualPayload = {
+        reply: String(contextualReply || "").trim() || formatNoResultsMessage(),
+        intent: contextualIntent,
+        parsed,
+        products: contextualProducts,
+        cards: contextualCards,
+      };
+
+      if (!bypassCache) {
+        chatCache.set(chatCacheKey, contextualPayload, chatCacheTtlMsByIntent(contextualIntent));
+      }
+      return res.json(contextualPayload);
     }
 
     let reply = "";
@@ -762,19 +1029,32 @@ exports.getChatResponse = async (req, res) => {
         try {
           reply = await generateGeneralReply({ message, history });
         } catch (error) {
-          reply = "Hello! How can I help you today?";
+          throw error;
         }
       }
     }
 
-    const cards = parsed.needsSearch ? buildProductCardsPayload(products, getBaseUrl(req)) : [];
-    const replyText = String(reply || "").trim();
+    const displayProducts = resolveDisplayProducts({
+      products,
+      message,
+      parsed,
+      reply,
+    });
+    const cards = displayProducts.length > 0
+      ? buildProductCardsPayload(displayProducts, getBaseUrl(req))
+      : [];
+
+    let replyText = String(reply || "").trim();
+    if (parsed.needsSearch && cards.length > 0) {
+      // Card grid is the detailed result view; keep search text concise.
+      replyText = formatProductSearchSummary(displayProducts, message);
+    }
 
     const flowPayload = {
       reply: replyText,
       intent: parsed.needsSearch ? "search" : "general",
       parsed,
-      products,
+      products: parsed.needsSearch ? displayProducts : products,
       cards,
     };
 
@@ -921,6 +1201,7 @@ exports.imageSearch = async (req, res) => {
         history = [];
       }
     }
+    history = normalizeIncomingHistory(history);
     const categoryNames = await getCategoryNames();
 
     const captionResult = await requestImageCaption(req.file, prompt, {
@@ -944,7 +1225,7 @@ exports.imageSearch = async (req, res) => {
       try {
         greetReply = await generateGeneralReply({ message: prompt || "hi", history });
       } catch (error) {
-        greetReply = "Hello! How can I help you today?";
+        throw error;
       }
 
       return res.json({

@@ -6,6 +6,7 @@ import { useLanguage } from "../context/LanguageContext";
 import "./Chatbot.css";
 
 const CHAT_HISTORY_STORAGE_KEY = "banglamart_chat_history_v1";
+const CHAT_HISTORY_PAYLOAD_LIMIT = 5;
 
 function getDefaultChatHistory(initialMessage) {
   return [
@@ -73,13 +74,15 @@ const Chatbot = () => {
 
   const scrollRef = useRef();
   const textareaRef = useRef(null);
+  const chatHistoryRef = useRef(chatHistory);
+  const latestMessageRef = useRef("");
   const recognitionRef = useRef(null);
   const recognitionSessionRef = useRef(0);
   const baseMessageRef = useRef("");
   const finalTranscriptRef = useRef("");
 
   const toHistoryPayload = (messages) =>
-    messages.slice(-10).map((item) => ({
+    messages.slice(-CHAT_HISTORY_PAYLOAD_LIMIT).map((item) => ({
       role: item?.role,
       content: String(item?.content || ""),
       products: Array.isArray(item?.products)
@@ -127,10 +130,18 @@ const Chatbot = () => {
   }, [chatHistory, isOpen]);
 
   useEffect(() => {
+    chatHistoryRef.current = chatHistory;
+  }, [chatHistory]);
+
+  useEffect(() => {
     const textarea = textareaRef.current;
     if (!textarea) return;
     textarea.style.height = "auto";
     textarea.style.height = `${Math.min(textarea.scrollHeight, 140)}px`;
+  }, [message]);
+
+  useEffect(() => {
+    latestMessageRef.current = String(message || "");
   }, [message]);
 
   useEffect(() => {
@@ -165,23 +176,34 @@ const Chatbot = () => {
   }, []);
 
   const pushAssistantMessage = (content) => {
-    setChatHistory((prev) => [...prev, { role: "assistant", content }]);
+    setChatHistory((prev) => {
+      const updatedHistory = [...prev, { role: "assistant", content }];
+      chatHistoryRef.current = updatedHistory;
+      return updatedHistory;
+    });
   };
 
   const sendTextMessage = async (rawText) => {
     const outgoingText = String(rawText || "").trim();
     if (!outgoingText) return;
 
+    const historySnapshot = Array.isArray(chatHistoryRef.current)
+      ? chatHistoryRef.current
+      : [];
     const userMessage = { role: "user", content: outgoingText };
-    const nextHistory = [...chatHistory, userMessage];
+    const nextHistory = [...historySnapshot, userMessage];
+    const requestHistory = toHistoryPayload(nextHistory);
+
+    chatHistoryRef.current = nextHistory;
     setChatHistory(nextHistory);
     setMessage("");
+    latestMessageRef.current = "";
     setLoading(true);
 
     try {
       const { data } = await axios.post("/api/chatbot/chat", {
         message: outgoingText,
-        history: toHistoryPayload(nextHistory),
+        history: requestHistory,
       });
 
       const cards = Array.isArray(data?.cards) ? data.cards : [];
@@ -197,7 +219,11 @@ const Chatbot = () => {
               .filter(Boolean)
           : [],
       };
-      setChatHistory((prev) => [...prev, aiMessage]);
+      setChatHistory((prev) => {
+        const updatedHistory = [...prev, aiMessage];
+        chatHistoryRef.current = updatedHistory;
+        return updatedHistory;
+      });
     } catch (error) {
       console.error("Chatbot Error:", error);
       pushAssistantMessage(t("chatbot.error"));
@@ -206,9 +232,52 @@ const Chatbot = () => {
     }
   };
 
+  const stopVoiceBeforeSend = async () => {
+    if (!isListening || !recognitionRef.current) return;
+
+    try {
+      recognitionRef.current.stop();
+    } catch (error) {
+      try {
+        recognitionRef.current.abort();
+      } catch (abortError) {
+        // Ignore stop/abort errors and continue sending.
+      }
+    }
+
+    await new Promise((resolve) => {
+      const startedAt = Date.now();
+      const maxWaitMs = 700;
+
+      const waitForStop = () => {
+        if (!recognitionRef.current || !isListening) {
+          resolve();
+          return;
+        }
+
+        if (Date.now() - startedAt >= maxWaitMs) {
+          resolve();
+          return;
+        }
+
+        window.setTimeout(waitForStop, 40);
+      };
+
+      waitForStop();
+    });
+
+    setIsListening(false);
+    setVoiceMode("idle");
+    recognitionRef.current = null;
+  };
+
   const handleSendMessage = async (e) => {
-    e.preventDefault();
-    await sendTextMessage(message);
+    if (typeof e?.preventDefault === "function") {
+      e.preventDefault();
+    }
+
+    await stopVoiceBeforeSend();
+    await sendTextMessage(latestMessageRef.current);
   };
 
   const getSpeechLocales = () => {
@@ -281,6 +350,7 @@ const Chatbot = () => {
         .join(" ")
         .trim();
 
+      latestMessageRef.current = combined;
       setMessage(combined);
     };
 
