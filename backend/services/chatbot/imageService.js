@@ -8,10 +8,14 @@ const IMAGE_CAPTION_SYSTEM_PROMPT =
   "You are an image description assistant. Your ONLY job is to describe what you see in the image - the product, its color, style, brand if visible, and physical features. Do NOT answer any questions. Do NOT say whether something is available. Just describe the image in 2-3 sentences.";
 
 function getHfApiKey() {
-  const key = process.env.HF_API_KEY2;
+  const key =
+    process.env.HUGGINGFACE_API_KEY ||
+    process.env.HF_API_KEY ||
+    process.env.HF_TOKEN ||
+    "";
 
   if (!key || !String(key).trim()) {
-    throw new Error("Missing Hugging Face API key. Set HF_API_KEY2 in .env.");
+    throw new Error("Missing Hugging Face API key. Set HUGGINGFACE_API_KEY (or HF_API_KEY / HF_TOKEN) in .env.");
   }
 
   return String(key).trim();

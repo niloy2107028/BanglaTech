@@ -70,6 +70,13 @@ const categories = [
 
 const users = [
   {
+    name: "Admin",
+    email: "admin@gmail.com",
+    password: "admin123",
+    role: "admin",
+    isVerified: true,
+  },
+  {
     name: "Tushar",
     email: "tushar.seller@banglamart.com",
     password: "seller123",
