@@ -4,7 +4,7 @@ const User = require("../models/User");
 const clearCookieOptions = {
   expires: new Date(0),
   httpOnly: true,
-  sameSite: "lax",
+  sameSite: "none",
   secure: process.env.NODE_ENV === "production",
 };
 

@@ -65,7 +65,7 @@ const sendTokenResponse = (user, statusCode, req, res, redirect = false) => {
     // 7 days from now
     httpOnly: true,
     // JS cannot access this cookie → prevents XSS attacks
-    sameSite: "lax",
+    sameSite: "none",
     secure: process.env.NODE_ENV === "production",
     // Only send over HTTPS in production
   };
