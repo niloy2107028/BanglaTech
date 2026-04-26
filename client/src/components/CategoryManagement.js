@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from '../api';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faXmark, faPenToSquare, faTrash, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faXmark, faPenToSquare, faTrash, faPlus, faLink, faUpload } from '@fortawesome/free-solid-svg-icons';
 import { useLanguage } from '../context/LanguageContext';
 import './CategoryManagement.css';
 
@@ -12,6 +12,10 @@ const CategoryManagement = () => {
   const [modalMode, setModalMode] = useState('create');
   const [currentCategory, setCurrentCategory] = useState(null);
   const [formData, setFormData] = useState({ name: '', description: '', image: '' });
+  const [imageMode, setImageMode] = useState('url');
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState('');
+  const fileInputRef = useRef(null);
   const { t, translateCategoryName } = useLanguage();
 
   useEffect(() => { fetchCategories(); }, []);
@@ -37,6 +41,9 @@ const CategoryManagement = () => {
     setCurrentCategory(null);
     setModalMode('create');
     setFormData({ name: '', description: '', image: '' });
+    setImageMode('url');
+    setImageFile(null);
+    setImagePreview('');
     setShowModal(true);
   };
 
@@ -44,7 +51,25 @@ const CategoryManagement = () => {
     setCurrentCategory(category);
     setModalMode('edit');
     setFormData({ name: category.name, description: category.description || '', image: category.image || '' });
+    setImageMode('url');
+    setImageFile(null);
+    setImagePreview('');
     setShowModal(true);
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setImageFile(file);
+    const reader = new FileReader();
+    reader.onload = (ev) => setImagePreview(ev.target.result);
+    reader.readAsDataURL(file);
+  };
+
+  const handleRemoveFile = () => {
+    setImageFile(null);
+    setImagePreview('');
+    if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
   const handleDelete = async (id) => {
@@ -62,10 +87,23 @@ const CategoryManagement = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      if (modalMode === 'create') {
-        await axios.post('/api/categories', formData, { withCredentials: true });
+      const useFile = imageMode === 'upload' && imageFile;
+      if (useFile) {
+        const fd = new FormData();
+        fd.append('name', formData.name);
+        fd.append('description', formData.description);
+        fd.append('image', imageFile);
+        if (modalMode === 'create') {
+          await axios.post('/api/categories', fd, { withCredentials: true });
+        } else {
+          await axios.put(`/api/categories/${currentCategory._id}`, fd, { withCredentials: true });
+        }
       } else {
-        await axios.put(`/api/categories/${currentCategory._id}`, formData, { withCredentials: true });
+        if (modalMode === 'create') {
+          await axios.post('/api/categories', formData, { withCredentials: true });
+        } else {
+          await axios.put(`/api/categories/${currentCategory._id}`, formData, { withCredentials: true });
+        }
       }
       setShowModal(false);
       fetchCategories();
@@ -149,18 +187,44 @@ const CategoryManagement = () => {
 
                 <div className="form-group">
                   <label className="form-label">{t('category.imageUrl')}</label>
-                  <input type="text" name="image" value={formData.image} onChange={handleChange} placeholder={t('category.imageUrlPlaceholder')} className="form-input" />
-                  <p className="form-hint">{t('category.imageHint')}</p>
-                </div>
-
-                {formData.image && (
-                  <div className="image-preview-section">
-                    <label className="form-label">{t('category.imagePreview')}</label>
-                    <div className="preview-container">
-                      <img src={formData.image} alt="Preview" className="preview-img" onError={(e) => { e.target.src = 'https://via.placeholder.com/200?text=Invalid+URL'; }} />
-                    </div>
+                  <div className="cat-image-tabs">
+                    <button type="button" className={`cat-image-tab${imageMode === 'url' ? ' active' : ''}`} onClick={() => setImageMode('url')}>
+                      <FontAwesomeIcon icon={faLink} /> URL
+                    </button>
+                    <button type="button" className={`cat-image-tab${imageMode === 'upload' ? ' active' : ''}`} onClick={() => setImageMode('upload')}>
+                      <FontAwesomeIcon icon={faUpload} /> Upload
+                    </button>
                   </div>
-                )}
+
+                  {imageMode === 'url' ? (
+                    <>
+                      <input type="text" name="image" value={formData.image} onChange={handleChange} placeholder={t('category.imageUrlPlaceholder')} className="form-input" />
+                      {formData.image && (
+                        <div className="cat-preview-wrap">
+                          <img src={formData.image} alt="Preview" className="cat-preview-img" onError={(e) => { e.target.src = 'https://via.placeholder.com/200?text=Invalid+URL'; }} />
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    <div className="cat-upload-area">
+                      {imagePreview ? (
+                        <div className="cat-preview-wrap">
+                          <img src={imagePreview} alt="Preview" className="cat-preview-img" />
+                          <button type="button" className="cat-preview-remove" onClick={handleRemoveFile}>
+                            <FontAwesomeIcon icon={faTrash} /> Remove
+                          </button>
+                        </div>
+                      ) : (
+                        <label className="cat-upload-zone" htmlFor="cat-img-upload">
+                          <FontAwesomeIcon icon={faUpload} className="cat-upload-icon" />
+                          <span className="cat-upload-title">Click to upload image</span>
+                          <span className="cat-upload-hint">JPG, PNG, WebP · max 8 MB</span>
+                          <input id="cat-img-upload" ref={fileInputRef} type="file" accept="image/jpeg,image/png,image/webp,image/gif" onChange={handleFileChange} style={{ display: 'none' }} />
+                        </label>
+                      )}
+                    </div>
+                  )}
+                </div>
 
                 <div className="admin-modal-footer">
                   <button type="button" className="btn-cancel" onClick={() => setShowModal(false)}>{t('common.cancel')}</button>

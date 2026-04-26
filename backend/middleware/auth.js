@@ -8,8 +8,39 @@ const clearCookieOptions = {
   secure: process.env.NODE_ENV === "production",
 };
 
-async function attachUserIfTokenValid(req) {
-  const token = req.cookies.token;
+function extractBearerToken(authorizationHeader) {
+  const headerValue = String(authorizationHeader || "").trim();
+  if (!headerValue) return "";
+
+  const [scheme, token] = headerValue.split(" ");
+  if (String(scheme || "").toLowerCase() !== "bearer") return "";
+  return String(token || "").trim();
+}
+
+function extractTokenFromRequest(req = {}) {
+  const cookieToken = String(req?.cookies?.token || "").trim();
+  if (cookieToken) {
+    return {
+      token: cookieToken,
+      source: "cookie",
+    };
+  }
+
+  const bearerToken = extractBearerToken(req?.headers?.authorization);
+  if (bearerToken) {
+    return {
+      token: bearerToken,
+      source: "bearer",
+    };
+  }
+
+  return {
+    token: "",
+    source: "none",
+  };
+}
+
+async function attachUserIfTokenValid(req, token) {
   if (!token) return null;
 
   try {
@@ -24,7 +55,7 @@ async function attachUserIfTokenValid(req) {
 }
 
 exports.protect = async (req, res, next) => {
-  const token = req.cookies.token;
+  const { token, source } = extractTokenFromRequest(req);
 
   if (!token) {
     return res
@@ -32,9 +63,11 @@ exports.protect = async (req, res, next) => {
       .json({ success: false, message: "Not authorized, please login" });
   }
 
-  const user = await attachUserIfTokenValid(req);
+  const user = await attachUserIfTokenValid(req, token);
   if (!user) {
-    res.cookie("token", "", clearCookieOptions);
+    if (source === "cookie") {
+      res.cookie("token", "", clearCookieOptions);
+    }
     return res.status(401).json({
       success: false,
       message: "Invalid token or user no longer exists. Please login again",
@@ -45,7 +78,8 @@ exports.protect = async (req, res, next) => {
 };
 
 exports.optionalProtect = async (req, res, next) => {
-  await attachUserIfTokenValid(req);
+  const { token } = extractTokenFromRequest(req);
+  await attachUserIfTokenValid(req, token);
   next();
 };
 
@@ -60,3 +94,5 @@ exports.authorize = (...roles) => {
     next();
   };
 };
+
+exports.extractTokenFromRequest = extractTokenFromRequest;

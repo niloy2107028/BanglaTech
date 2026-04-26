@@ -1,13 +1,18 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBoxOpen,
+  faChevronLeft,
+  faChevronRight,
   faClock,
+  faFire,
   faPlus,
   faStore,
   faTruckFast,
+  faTrash,
   faUser,
+  faXmark,
 } from "@fortawesome/free-solid-svg-icons";
 import axios from "../api";
 import { useLanguage } from "../context/LanguageContext";
@@ -18,18 +23,79 @@ import "./SellerOrders.css";
 const SellerOrders = () => {
   const [orders, setOrders] = useState([]);
   const [ownedProducts, setOwnedProducts] = useState([]);
+  const [topProducts, setTopProducts] = useState([]);
   const [ordersLoading, setOrdersLoading] = useState(true);
   const [productsLoading, setProductsLoading] = useState(true);
   const [showProductModal, setShowProductModal] = useState(false);
+  const [dismissedOrderIds, setDismissedOrderIds] = useState(
+    () => new Set(JSON.parse(localStorage.getItem('seller_dismissed_orders') || '[]'))
+  );
+  const topScrollRef = useRef(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
   const navigate = useNavigate();
-  const { t, formatDate, formatNumber, translateOrderStatus } = useLanguage();
+  const { t, formatDate, formatNumber, formatCurrency, translateOrderStatus } = useLanguage();
 
   useEffect(() => {
     const initSellerWorkspace = async () => {
-      await Promise.all([fetchSellerOrders(), fetchOwnedProducts()]);
+      await Promise.all([fetchSellerOrders(), fetchOwnedProducts(), fetchTopProducts()]);
     };
     initSellerWorkspace();
   }, []);
+
+  useEffect(() => {
+    const track = topScrollRef.current;
+    if (!track) return;
+    const update = () => {
+      setCanScrollLeft(track.scrollLeft > 4);
+      setCanScrollRight(track.scrollLeft + track.clientWidth < track.scrollWidth - 4);
+    };
+    update();
+    track.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update);
+    return () => {
+      track.removeEventListener('scroll', update);
+      window.removeEventListener('resize', update);
+    };
+  }, [topProducts]);
+
+  const fetchTopProducts = async () => {
+    try {
+      const res = await axios.get('/api/products/top-selling', { withCredentials: true });
+      setTopProducts(res.data.data || []);
+    } catch (error) {
+      console.error('Error fetching top products:', error);
+    }
+  };
+
+  const scrollTop = (direction) => {
+    const track = topScrollRef.current;
+    if (!track) return;
+    const amount = Math.max(260, Math.round(track.clientWidth * 0.75));
+    track.scrollBy({ left: direction === 'left' ? -amount : amount, behavior: 'smooth' });
+  };
+
+  const isOrderClearable = (order) =>
+    Array.isArray(order.orderItems) &&
+    order.orderItems.length > 0 &&
+    order.orderItems.every(item => item.status === 'Delivered' || item.status === 'Cancelled');
+
+  const dismissOrder = (orderId) => {
+    setDismissedOrderIds(prev => {
+      const next = new Set([...prev, orderId]);
+      localStorage.setItem('seller_dismissed_orders', JSON.stringify([...next]));
+      return next;
+    });
+  };
+
+  const clearAllOrders = () => {
+    const allIds = orders.filter(isOrderClearable).map(o => o._id);
+    setDismissedOrderIds(prev => {
+      const next = new Set([...prev, ...allIds]);
+      localStorage.setItem('seller_dismissed_orders', JSON.stringify([...next]));
+      return next;
+    });
+  };
 
   const fetchSellerOrders = async ({ withLoader = true } = {}) => {
     if (withLoader) setOrdersLoading(true);
@@ -121,6 +187,8 @@ const SellerOrders = () => {
     [orders],
   );
 
+  const visibleOrders = orders.filter(o => !dismissedOrderIds.has(o._id));
+  const clearableVisible = visibleOrders.filter(isOrderClearable);
   const pendingItems = orderItems.filter((item) => item.status === "Pending").length;
   const shippingItems = orderItems.filter((item) => item.status === "Shipped").length;
   const deliveredItems = orderItems.filter((item) => item.status === "Delivered").length;
@@ -204,24 +272,31 @@ const SellerOrders = () => {
         </section>
 
         <section className="seller-orders-section">
-          <div className="seller-section-head">
-            <h2>{t("sellerOrders.orderQueueTitle", {}, "Order Queue")}</h2>
-            <p>
-              {t(
-                "sellerOrders.orderQueueDescription",
-                {},
-                "Update fulfillment status quickly and keep buyers informed.",
-              )}
-            </p>
+          <div className="seller-section-head seller-section-head--row">
+            <div>
+              <h2>{t("sellerOrders.orderQueueTitle", {}, "Order Queue")}</h2>
+              <p>
+                {t(
+                  "sellerOrders.orderQueueDescription",
+                  {},
+                  "Update fulfillment status quickly and keep buyers informed.",
+                )}
+              </p>
+            </div>
+            {clearableVisible.length > 0 && (
+              <button type="button" className="seller-clear-all-btn" onClick={clearAllOrders}>
+                <FontAwesomeIcon icon={faTrash} /> Clear All
+              </button>
+            )}
           </div>
 
           {ordersLoading ? (
             <div className="seller-orders-loading">{t("sellerOrders.loading")}</div>
-          ) : orders.length === 0 ? (
+          ) : visibleOrders.length === 0 ? (
             <div className="seller-orders-empty">{t("sellerOrders.empty")}</div>
           ) : (
             <div className="seller-orders-list">
-              {orders.map((order) => (
+              {visibleOrders.map((order) => (
                 <div key={order._id} className="seller-order-card">
                   <div className="seller-order-header">
                     <div className="customer-info">
@@ -232,7 +307,19 @@ const SellerOrders = () => {
                         {t("sellerOrders.customer")}: {order.shippingAddress.phone}
                       </span>
                     </div>
-                    <div className="order-date">{formatDate(order.createdAt)}</div>
+                    <div className="seller-order-header-right">
+                      <div className="order-date">{formatDate(order.createdAt)}</div>
+                      {isOrderClearable(order) && (
+                        <button
+                          type="button"
+                          className="seller-dismiss-btn"
+                          onClick={() => dismissOrder(order._id)}
+                          title="Dismiss order"
+                        >
+                          <FontAwesomeIcon icon={faXmark} />
+                        </button>
+                      )}
+                    </div>
                   </div>
 
                   <div className="seller-order-items">
@@ -282,6 +369,46 @@ const SellerOrders = () => {
             </div>
           )}
         </section>
+
+        {topProducts.length > 0 && (
+          <section className="seller-trending-section">
+            <div className="seller-section-head seller-section-head--row">
+              <div>
+                <h2>
+                  <FontAwesomeIcon icon={faFire} className="seller-trending-icon" />
+                  {t('sellerOrders.topSellingTitle', {}, 'Top 20 — Marketplace Best Sellers')}
+                </h2>
+                <p>{t('sellerOrders.topSellingDesc', {}, 'Products ranked by total units sold across the marketplace.')}</p>
+              </div>
+              <div className="seller-top-scroll-btns">
+                <button type="button" className="seller-top-scroll-btn" onClick={() => scrollTop('left')} disabled={!canScrollLeft}>
+                  <FontAwesomeIcon icon={faChevronLeft} />
+                </button>
+                <button type="button" className="seller-top-scroll-btn" onClick={() => scrollTop('right')} disabled={!canScrollRight}>
+                  <FontAwesomeIcon icon={faChevronRight} />
+                </button>
+              </div>
+            </div>
+            <div className="seller-top-track" ref={topScrollRef}>
+              {topProducts.map((p, idx) => (
+                <div key={p._id} className="seller-top-card" onClick={() => navigate(`/product/${p._id}`)}>
+                  <span className="seller-top-rank">#{idx + 1}</span>
+                  <div className="seller-top-img-wrap">
+                    <img src={p.image} alt={p.name} className="seller-top-img" />
+                  </div>
+                  <div className="seller-top-info">
+                    <span className="seller-top-name">{p.name}</span>
+                    <span className="seller-top-brand">{p.brand}</span>
+                    <div className="seller-top-meta">
+                      <span className="seller-top-price">{formatCurrency(p.price)}</span>
+                      <span className="seller-top-sold">{formatNumber(p.soldCount)} sold</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
 
         <section className="seller-catalog-section">
           {productsLoading ? (

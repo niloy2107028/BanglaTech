@@ -83,7 +83,7 @@
 .order-item {
   display: flex;
   gap: 16px;
-  align-items: center;
+  align-items: flex-start;
 }
 
 .item-img {
@@ -129,25 +129,27 @@
   }
 }
 
-.item-cancellation-msg {
-  font-size: 0.85rem;
-  color: #ef4444;
-  margin-top: 4px;
-  background-color: #fef2f2;
-  padding: 8px 12px;
-  border-radius: 6px;
-  border-left: 3px solid #ef4444;
-}
-
 .item-meta {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
+  margin-top: 2px;
 }
 
 .item-qty-price {
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   color: #6b7280;
+}
+
+.item-cancellation-msg {
+  font-size: 0.84rem;
+  color: #b91c1c;
+  background-color: #fef2f2;
+  padding: 7px 11px;
+  border-radius: 6px;
+  border-left: 3px solid #ef4444;
+  width: fit-content;
+  max-width: 100%;
 }
 
 .item-meta {
@@ -224,4 +226,72 @@
   padding: 100px 0;
   font-weight: 600;
   color: #6b7280;
+}
+
+.orders-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 30px;
+}
+
+.orders-title-row .orders-title {
+  margin-bottom: 0;
+}
+
+.orders-clear-all-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 16px;
+  border-radius: 999px;
+  border: 1px solid rgba(203, 213, 225, 0.8);
+  background: #fff;
+  color: #64748b;
+  font-size: 0.84rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  white-space: nowrap;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .orders-clear-all-btn:hover {
+    background: #fee2e2;
+    border-color: #fca5a5;
+    color: #dc2626;
+  }
+}
+
+.order-header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.order-dismiss-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid rgba(203, 213, 225, 0.7);
+  background: #f8fafc;
+  color: #94a3b8;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  flex-shrink: 0;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .order-dismiss-btn:hover {
+    background: #fee2e2;
+    border-color: #fca5a5;
+    color: #dc2626;
+  }
 }

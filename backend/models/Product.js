@@ -22,7 +22,7 @@ const productSchema = new mongoose.Schema(
       // It connects to Category model.
       // This is called reference / relationship
       // You can use later: Product.find().populate("category")
-      required: [true, "Category is required"],
+      default: null,
     },
     seller: {
       type: mongoose.Schema.Types.ObjectId,
@@ -32,7 +32,7 @@ const productSchema = new mongoose.Schema(
     },
     categoryName: {
       type: String,
-      required: true,
+      default: "",
     },
     // Why store both category & categoryName?
     // category → for relationship

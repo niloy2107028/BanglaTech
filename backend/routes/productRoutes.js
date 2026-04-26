@@ -11,6 +11,7 @@ const {
   leaveProductViewer,
   getProductViewerCount,
   getMyProducts,
+  getTopSellingProducts,
   getProduct,
   createProduct,
   updateProduct,
@@ -18,12 +19,15 @@ const {
 } = require('../controllers/productController');
 
 const { protect, authorize } = require('../middleware/auth');
+const { imageUpload } = require('../middleware/upload');
+const productImageUpload = imageUpload.single('image');
 
 router.get('/', getAllProducts);
 router.get('/recommendations', protect, getRecommendedProducts);
 router.post('/recommendations/track-search', protect, trackSearchKeywords);
 router.get('/mine', protect, authorize('seller', 'admin'), getMyProducts);
-router.post('/', protect, authorize('seller'), createProduct);
+router.get('/top-selling', protect, authorize('seller', 'admin'), getTopSellingProducts);
+router.post('/', protect, authorize('seller'), productImageUpload, createProduct);
 router.post('/:id/track-click', protect, trackProductClick);
 router.post('/:id/track-dwell', protect, trackProductDwell);
 router.post('/:id/track-view', protect, trackProductView);
@@ -33,7 +37,7 @@ router.post('/:id/viewers/leave', leaveProductViewer);
 router
   .route('/:id')
   .get(getProduct)
-  .put(protect, authorize('seller', 'admin'), updateProduct)
+  .put(protect, authorize('seller', 'admin'), productImageUpload, updateProduct)
   .delete(protect, authorize('seller', 'admin'), deleteProduct);
 
 module.exports = router;

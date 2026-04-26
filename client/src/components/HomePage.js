@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import axios from "../api";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronLeft, faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import { useAuth } from "../context/AuthContext";
@@ -40,16 +40,16 @@ const HomePage = () => {
   const recommendedStripRef = useRef(null);
   const { isAuthenticated } = useAuth();
   const { t, translateCategoryName } = useLanguage();
+  const location = useLocation();
 
   useEffect(() => {
     const loadHomePage = async () => {
       setLoading(true);
       try {
-        const [loadedCategories, featuredProducts] = await Promise.all([
+        const [loadedCategories] = await Promise.all([
           fetchCategories(),
           fetchFeaturedProducts(),
         ]);
-        await fetchRecommendedProducts();
         if (!Array.isArray(loadedCategories)) {
           setCategories([]);
         }
@@ -60,6 +60,10 @@ const HomePage = () => {
 
     loadHomePage();
   }, [isAuthenticated]);
+
+  useEffect(() => {
+    fetchRecommendedProducts();
+  }, [location.key, isAuthenticated]);
 
   useEffect(() => {
     const strip = categoryStripRef.current;

@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const Review = require("../models/Review");
 const Product = require("../models/Product");
 const Order = require("../models/Order");
+const { uploadToCloudinary, deleteAllFromCloudinary } = require("../services/cloudinaryService");
 const MAX_REVIEW_IMAGES = 3;
 const MAX_REVIEW_IMAGE_BYTES = 2 * 1024 * 1024;
 const MAX_REVIEW_TOTAL_IMAGE_BYTES = 5 * 1024 * 1024;
@@ -77,13 +78,6 @@ function parseBoolean(value) {
   return normalized === "true" || normalized === "1" || normalized === "yes";
 }
 
-function makeImageDataUrl(file) {
-  if (!file || !file.buffer || !file.mimetype) return "";
-  const base64 = file.buffer.toString("base64");
-  if (!base64) return "";
-  return `data:${file.mimetype};base64,${base64}`;
-}
-
 function normalizeImageList(values) {
   return (Array.isArray(values) ? values : [])
     .map((item) => String(item || "").trim())
@@ -129,7 +123,7 @@ function applyEntityImages(entity, urls) {
   entity.image = list[0] || "";
 }
 
-function extractIncomingImageUrls(req) {
+async function extractIncomingImageUrls(req) {
   const files = [];
 
   if (req.file) {
@@ -172,10 +166,10 @@ function extractIncomingImageUrls(req) {
     throw error;
   }
 
-  return files
-    .map((file) => makeImageDataUrl(file))
-    .filter(Boolean)
-    .slice(0, MAX_REVIEW_IMAGES);
+  const urls = await Promise.all(
+    files.map((file) => uploadToCloudinary(file.buffer, "banglatech/reviews")),
+  );
+  return urls.filter(Boolean).slice(0, MAX_REVIEW_IMAGES);
 }
 
 async function hasVerifiedPurchaseForProduct(userId, productId) {
@@ -240,7 +234,7 @@ exports.createReview = async (req, res) => {
     const userId = req.user._id;
     const rating = Number(req.body?.rating);
     const comment = String(req.body?.comment || "").trim();
-    const images = extractIncomingImageUrls(req);
+    const images = await extractIncomingImageUrls(req);
 
     if (!Number.isFinite(rating) || rating < 1 || rating > 5) {
       return res.status(400).json({
@@ -330,7 +324,7 @@ exports.updateReview = async (req, res) => {
     const removeImage = parseBoolean(req.body?.removeImage);
     const retainedImages = parseRetainedImageUrls(req.body?.retainedImages);
     const hasRetainedImages = retainedImages !== null;
-    const nextImages = extractIncomingImageUrls(req);
+    const nextImages = await extractIncomingImageUrls(req);
 
     if (nextRatingRaw !== undefined) {
       const parsedRating = Number(nextRatingRaw);
@@ -354,7 +348,8 @@ exports.updateReview = async (req, res) => {
       review.comment = comment || "Image review";
     }
 
-    let resolvedImages = getEntityImageList(review);
+    const oldImages = getEntityImageList(review);
+    let resolvedImages = [...oldImages];
     if (removeImage) {
       resolvedImages = [];
     }
@@ -373,7 +368,9 @@ exports.updateReview = async (req, res) => {
       resolvedImages = [...resolvedImages, ...nextImages];
     }
 
-    applyEntityImages(review, resolvedImages);
+    const finalImages = normalizeImageList(resolvedImages);
+    const removedImages = oldImages.filter((url) => !finalImages.includes(url));
+    applyEntityImages(review, finalImages);
 
     if (!review.comment && getEntityImageList(review).length === 0) {
       return res.status(400).json({
@@ -384,6 +381,7 @@ exports.updateReview = async (req, res) => {
 
     await review.save();
     await refreshProductRating(review.product);
+    if (removedImages.length > 0) deleteAllFromCloudinary(removedImages);
     return res.status(200).json({ success: true, data: review });
   } catch (error) {
     return res.status(error.statusCode || 500).json({ success: false, message: error.message });
@@ -408,9 +406,13 @@ exports.deleteReview = async (req, res) => {
     }
 
     const productId = review.product;
+    const allImages = [
+      ...getEntityImageList(review),
+      ...(review.replies || []).flatMap((r) => getEntityImageList(r)),
+    ];
     await review.deleteOne();
     await refreshProductRating(productId);
-
+    if (allImages.length > 0) deleteAllFromCloudinary(allImages);
     return res.status(200).json({ success: true, message: "Review deleted" });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
@@ -558,7 +560,7 @@ exports.voteReview = async (req, res) => {
 exports.replyToReview = async (req, res) => {
   try {
     const text = String(req.body?.text || "").trim();
-    const images = extractIncomingImageUrls(req);
+    const images = await extractIncomingImageUrls(req);
     if (!text && images.length === 0) {
       return res.status(400).json({
         success: false,
@@ -634,14 +636,15 @@ exports.updateReply = async (req, res) => {
     const removeImage = parseBoolean(req.body?.removeImage);
     const retainedImages = parseRetainedImageUrls(req.body?.retainedImages);
     const hasRetainedImages = retainedImages !== null;
-    const nextImages = extractIncomingImageUrls(req);
+    const nextImages = await extractIncomingImageUrls(req);
 
     if (textInput !== undefined) {
       const nextText = String(textInput || "").trim();
       reply.text = nextText || "Image reply";
     }
 
-    let resolvedImages = getEntityImageList(reply);
+    const oldReplyImages = getEntityImageList(reply);
+    let resolvedImages = [...oldReplyImages];
     if (removeImage) {
       resolvedImages = [];
     }
@@ -660,7 +663,9 @@ exports.updateReply = async (req, res) => {
       resolvedImages = [...resolvedImages, ...nextImages];
     }
 
-    applyEntityImages(reply, resolvedImages);
+    const finalReplyImages = normalizeImageList(resolvedImages);
+    const removedReplyImages = oldReplyImages.filter((url) => !finalReplyImages.includes(url));
+    applyEntityImages(reply, finalReplyImages);
 
     if (!reply.text && getEntityImageList(reply).length === 0) {
       return res.status(400).json({
@@ -670,6 +675,7 @@ exports.updateReply = async (req, res) => {
     }
 
     await review.save();
+    if (removedReplyImages.length > 0) deleteAllFromCloudinary(removedReplyImages);
     return res.status(200).json({ success: true, data: review });
   } catch (error) {
     return res.status(error.statusCode || 500).json({ success: false, message: error.message });
@@ -698,8 +704,10 @@ exports.deleteReply = async (req, res) => {
       });
     }
 
+    const deletedReplyImages = getEntityImageList(reply);
     reply.deleteOne();
     await review.save();
+    if (deletedReplyImages.length > 0) deleteAllFromCloudinary(deletedReplyImages);
     return res.status(200).json({ success: true, data: review });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
