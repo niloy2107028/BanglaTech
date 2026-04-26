@@ -293,6 +293,91 @@ exports.getMyOrders = async (req, res) => {
   }
 };
 
+// @desc    Get sales stats for admin (total + per seller)
+// @route   GET /api/orders/admin/sales-stats
+// @access  Private (Admin only)
+exports.getSalesStats = async (req, res) => {
+  try {
+    const User = require("../models/User");
+
+    // Fetch all orders as plain objects
+    const orders = await Order.find({}).lean();
+
+    const deliveredOrderIds = new Set();
+    let totalRevenue = 0;
+
+    // Map: sellerId (string) -> stats object
+    const sellerMap = {};
+
+    for (const order of orders) {
+      const orderIdStr = order._id.toString();
+      for (const item of order.orderItems || []) {
+        // Count revenue only after the item is delivered
+        if (item.status !== "Delivered") continue;
+
+        const price = Number(item.price) || 0;
+        const qty = Number(item.qty) || 0;
+        const revenue = price * qty;
+        deliveredOrderIds.add(orderIdStr);
+        totalRevenue += revenue;
+
+        const sellerId = item.seller ? item.seller.toString() : "__unknown__";
+        const sellerName = item.sellerName || "Unknown Seller";
+
+        if (!sellerMap[sellerId]) {
+          sellerMap[sellerId] = {
+            sellerId: item.seller || null,
+            sellerName,
+            sellerEmail: "—",
+            orderIds: new Set(),
+            totalItemsSold: 0,
+            totalRevenue: 0,
+          };
+        }
+
+        sellerMap[sellerId].orderIds.add(orderIdStr);
+        sellerMap[sellerId].totalItemsSold += qty;
+        sellerMap[sellerId].totalRevenue += revenue;
+      }
+    }
+
+    // Enrich with email and convert Sets to counts
+    const sellers = await Promise.all(
+      Object.values(sellerMap).map(async (s) => {
+        if (s.sellerId) {
+          const user = await User.findById(s.sellerId).select("email").lean();
+          if (user) s.sellerEmail = user.email;
+        }
+        return {
+          sellerId: s.sellerId,
+          sellerName: s.sellerName,
+          sellerEmail: s.sellerEmail,
+          totalOrders: s.orderIds.size,
+          totalItemsSold: s.totalItemsSold,
+          totalRevenue: s.totalRevenue,
+        };
+      })
+    );
+
+    // Sort by revenue descending
+    sellers.sort((a, b) => b.totalRevenue - a.totalRevenue);
+
+    const totalOrders = deliveredOrderIds.size;
+
+    res.json({
+      success: true,
+      data: { totalRevenue, totalOrders, sellers },
+    });
+  } catch (error) {
+    console.error("SALES STATS ERROR:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error fetching sales stats",
+      error: error.message,
+    });
+  }
+};
+
 // @desc    Get order by ID
 // @route   GET /api/orders/:id
 // @access  Private

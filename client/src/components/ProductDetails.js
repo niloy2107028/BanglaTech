@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "../api";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -20,7 +20,6 @@ import ReviewSection from "./ReviewSection";
 import QnASection from "./QnASection";
 import "./ProductDetails.css";
 
-const MIN_DWELL_TRACK_MS = 5000;
 const VIEWER_PING_INTERVAL_MS = 5000;
 const VIEWER_SESSION_KEY = "bt_live_viewer_token";
 
@@ -57,8 +56,6 @@ const ProductDetails = () => {
   const [liveViewerCount, setLiveViewerCount] = useState(0);
   const [canScrollRelatedLeft, setCanScrollRelatedLeft] = useState(false);
   const [canScrollRelatedRight, setCanScrollRelatedRight] = useState(false);
-  const viewStartMsRef = useRef(0);
-  const dwellSentRef = useRef(false);
   const relatedScrollRef = useRef(null);
 
   useEffect(() => {
@@ -142,33 +139,6 @@ const ProductDetails = () => {
     };
   }, [id]);
 
-  const sendDwellSignal = useCallback((reason) => {
-    if (!isAuthenticated || !product?._id || dwellSentRef.current) return;
-
-    const startedAt = Number(viewStartMsRef.current || 0);
-    if (!startedAt) return;
-
-    const dwellMs = Math.max(0, Date.now() - startedAt);
-    if (dwellMs < MIN_DWELL_TRACK_MS) return;
-
-    dwellSentRef.current = true;
-
-    const endpoint = `/api/products/${product._id}/track-dwell`;
-    const payload = { dwellMs, reason };
-
-    try {
-      fetch(endpoint, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-        credentials: "include",
-        keepalive: true,
-      });
-    } catch (error) {
-      // Keep product browsing smooth even if dwell tracking fails.
-    }
-  }, [isAuthenticated, product?._id]);
-
   useEffect(() => {
     if (!product?._id) return;
 
@@ -176,34 +146,12 @@ const ProductDetails = () => {
 
     if (!isAuthenticated) return;
 
-    viewStartMsRef.current = Date.now();
-    dwellSentRef.current = false;
-
     axios
       .post(`/api/products/${product._id}/track-click`, {}, { withCredentials: true })
       .catch(() => {
         // Keep product browsing smooth even if click tracking fails.
       });
-
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === "hidden") {
-        sendDwellSignal("visibility_hidden");
-      }
-    };
-
-    const handlePageHide = () => {
-      sendDwellSignal("page_hide");
-    };
-
-    document.addEventListener("visibilitychange", handleVisibilityChange);
-    window.addEventListener("pagehide", handlePageHide);
-
-    return () => {
-      sendDwellSignal("unmount");
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
-      window.removeEventListener("pagehide", handlePageHide);
-    };
-  }, [isAuthenticated, product, sendDwellSignal]);
+  }, [isAuthenticated, product]);
 
   useEffect(() => {
     if (!product?._id) return () => {};

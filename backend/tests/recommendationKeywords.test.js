@@ -91,3 +91,22 @@ test("scoreProductAgainstKeywords ranks exact name match higher", () => {
 
   assert.equal(matchingScore > nonMatchingScore, true);
 });
+
+test("scoreProductAgainstKeywords ignores rating/review boosts without keyword match", () => {
+  const score = scoreProductAgainstKeywords(
+    {
+      name: "Office Chair",
+      brand: "BrandX",
+      categoryName: "Furniture",
+      description: "Comfortable seating",
+      specifications: {},
+      rating: 5,
+      reviews: 200,
+      featured: true,
+      stock: 10,
+    },
+    [{ value: "gaming laptop", source: "order", score: 5, lastUsedAt: new Date() }],
+  );
+
+  assert.equal(score, 0);
+});

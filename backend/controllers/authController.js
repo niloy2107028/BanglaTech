@@ -247,6 +247,14 @@ exports.deleteUser = async (req, res) => {
     if (!user) {
       return res.status(404).json({ success: false, message: "User not found" });
     }
+
+    if (user.role === "admin") {
+      return res.status(403).json({
+        success: false,
+        message: "Admin accounts cannot be removed",
+      });
+    }
+
     await user.deleteOne();
     res.json({ success: true, message: "User removed" });
   } catch (error) {
