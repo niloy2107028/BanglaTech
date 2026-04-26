@@ -1,6 +1,8 @@
 # Environment files
 .env
+.env.local
 client/.env
+client/.env.local
 
 # Editor settings
 .vscode/
