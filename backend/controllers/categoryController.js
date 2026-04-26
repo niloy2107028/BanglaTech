@@ -1,4 +1,11 @@
 const Category = require("../models/Category");
+const { uploadToCloudinary, deleteFromCloudinary } = require("../services/cloudinaryService");
+
+async function applyFileImage(req) {
+  if (req.file && req.file.buffer) {
+    req.body.image = await uploadToCloudinary(req.file.buffer, "banglatech/categories");
+  }
+}
 
 // @desc    Get all categories
 // @route   GET /api/categories
@@ -54,6 +61,7 @@ exports.getCategory = async (req, res) => {
 // @access  Admin
 exports.createCategory = async (req, res) => {
   try {
+    await applyFileImage(req);
     const category = await Category.create(req.body);
 
     res.status(201).json({
@@ -81,6 +89,10 @@ exports.createCategory = async (req, res) => {
 // @access  Admin
 exports.updateCategory = async (req, res) => {
   try {
+    const existing = await Category.findById(req.params.id).select("image").lean();
+    const oldImage = existing?.image || "";
+    await applyFileImage(req);
+    const newImage = req.body.image;
     const category = await Category.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
       runValidators: true,
@@ -92,6 +104,8 @@ exports.updateCategory = async (req, res) => {
         message: "Category not found",
       });
     }
+
+    if (newImage && newImage !== oldImage && oldImage) deleteFromCloudinary(oldImage);
 
     res.json({
       success: true,
@@ -120,6 +134,8 @@ exports.deleteCategory = async (req, res) => {
         message: "Category not found",
       });
     }
+
+    if (category.image) deleteFromCloudinary(category.image);
 
     res.json({
       success: true,

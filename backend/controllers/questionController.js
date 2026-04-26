@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const Question = require("../models/Question");
 const Product = require("../models/Product");
+const { uploadToCloudinary, deleteAllFromCloudinary } = require("../services/cloudinaryService");
 const MAX_QNA_IMAGES = 3;
 const MAX_QNA_IMAGE_BYTES = 2 * 1024 * 1024;
 const MAX_QNA_TOTAL_IMAGE_BYTES = 5 * 1024 * 1024;
@@ -92,13 +93,6 @@ function parseRetainedImageUrls(value) {
   return normalizeImageList(parsed);
 }
 
-function makeImageDataUrl(file) {
-  if (!file || !file.buffer || !file.mimetype) return "";
-  const base64 = file.buffer.toString("base64");
-  if (!base64) return "";
-  return `data:${file.mimetype};base64,${base64}`;
-}
-
 function normalizeImageList(values) {
   return (Array.isArray(values) ? values : [])
     .map((item) => String(item || "").trim())
@@ -119,7 +113,7 @@ function applyEntityImages(entity, urls) {
   entity.image = list[0] || "";
 }
 
-function extractIncomingImageUrls(req) {
+async function extractIncomingImageUrls(req) {
   const files = [];
 
   if (req.file) {
@@ -162,10 +156,10 @@ function extractIncomingImageUrls(req) {
     throw error;
   }
 
-  return files
-    .map((file) => makeImageDataUrl(file))
-    .filter(Boolean)
-    .slice(0, MAX_QNA_IMAGES);
+  const urls = await Promise.all(
+    files.map((file) => uploadToCloudinary(file.buffer, "banglatech/questions")),
+  );
+  return urls.filter(Boolean).slice(0, MAX_QNA_IMAGES);
 }
 
 async function findProductSellerId(productId) {
@@ -180,7 +174,7 @@ exports.createQuestion = async (req, res) => {
   try {
     const productId = req.params.productId;
     const questionText = String(req.body?.question || "").trim();
-    const images = extractIncomingImageUrls(req);
+    const images = await extractIncomingImageUrls(req);
 
     if (!questionText && images.length === 0) {
       return res.status(400).json({
@@ -240,13 +234,14 @@ exports.updateQuestion = async (req, res) => {
     const removeImage = parseBoolean(req.body?.removeImage);
     const retainedImages = parseRetainedImageUrls(req.body?.retainedImages);
     const hasRetainedImages = retainedImages !== null;
-    const nextImages = extractIncomingImageUrls(req);
+    const nextImages = await extractIncomingImageUrls(req);
 
     if (nextText !== undefined) {
       question.question = String(nextText || "").trim() || "Image question";
     }
 
-    let resolvedImages = getEntityImageList(question);
+    const oldQImages = getEntityImageList(question);
+    let resolvedImages = [...oldQImages];
     if (removeImage) {
       resolvedImages = [];
     }
@@ -265,7 +260,9 @@ exports.updateQuestion = async (req, res) => {
       resolvedImages = [...resolvedImages, ...nextImages];
     }
 
-    applyEntityImages(question, resolvedImages);
+    const finalQImages = normalizeImageList(resolvedImages);
+    const removedQImages = oldQImages.filter((url) => !finalQImages.includes(url));
+    applyEntityImages(question, finalQImages);
 
     if (!question.question && getEntityImageList(question).length === 0) {
       return res.status(400).json({
@@ -275,6 +272,7 @@ exports.updateQuestion = async (req, res) => {
     }
 
     await question.save();
+    if (removedQImages.length > 0) deleteAllFromCloudinary(removedQImages);
     return res.status(200).json({ success: true, data: question });
   } catch (error) {
     return res.status(error.statusCode || 500).json({ success: false, message: error.message });
@@ -298,7 +296,12 @@ exports.deleteQuestion = async (req, res) => {
       });
     }
 
+    const allImages = [
+      ...getEntityImageList(question),
+      ...(question.messages || []).flatMap((m) => getEntityImageList(m)),
+    ];
     await question.deleteOne();
+    if (allImages.length > 0) deleteAllFromCloudinary(allImages);
     return res.status(200).json({ success: true, message: "Question deleted" });
   } catch (error) {
     return res.status(error.statusCode || 500).json({ success: false, message: error.message });
@@ -431,7 +434,7 @@ exports.voteQuestion = async (req, res) => {
 exports.answerQuestion = async (req, res) => {
   try {
     const text = String(req.body?.text || "").trim();
-    const images = extractIncomingImageUrls(req);
+    const images = await extractIncomingImageUrls(req);
     if (!text && images.length === 0) {
       return res.status(400).json({
         success: false,
@@ -474,7 +477,7 @@ exports.answerQuestion = async (req, res) => {
 exports.replyToQuestion = async (req, res) => {
   try {
     const text = String(req.body?.text || "").trim();
-    const images = extractIncomingImageUrls(req);
+    const images = await extractIncomingImageUrls(req);
     if (!text && images.length === 0) {
       return res.status(400).json({
         success: false,
@@ -552,13 +555,14 @@ exports.updateQuestionMessage = async (req, res) => {
     const removeImage = parseBoolean(req.body?.removeImage);
     const retainedImages = parseRetainedImageUrls(req.body?.retainedImages);
     const hasRetainedImages = retainedImages !== null;
-    const nextImages = extractIncomingImageUrls(req);
+    const nextImages = await extractIncomingImageUrls(req);
 
     if (nextText !== undefined) {
       message.text = String(nextText || "").trim() || "Image message";
     }
 
-    let resolvedImages = getEntityImageList(message);
+    const oldMsgImages = getEntityImageList(message);
+    let resolvedImages = [...oldMsgImages];
     if (removeImage) {
       resolvedImages = [];
     }
@@ -577,7 +581,9 @@ exports.updateQuestionMessage = async (req, res) => {
       resolvedImages = [...resolvedImages, ...nextImages];
     }
 
-    applyEntityImages(message, resolvedImages);
+    const finalMsgImages = normalizeImageList(resolvedImages);
+    const removedMsgImages = oldMsgImages.filter((url) => !finalMsgImages.includes(url));
+    applyEntityImages(message, finalMsgImages);
 
     if (!message.text && getEntityImageList(message).length === 0) {
       return res.status(400).json({
@@ -587,6 +593,7 @@ exports.updateQuestionMessage = async (req, res) => {
     }
 
     await question.save();
+    if (removedMsgImages.length > 0) deleteAllFromCloudinary(removedMsgImages);
     return res.status(200).json({ success: true, data: question });
   } catch (error) {
     return res.status(error.statusCode || 500).json({ success: false, message: error.message });
@@ -615,8 +622,10 @@ exports.deleteQuestionMessage = async (req, res) => {
       });
     }
 
+    const deletedMsgImages = getEntityImageList(message);
     message.deleteOne();
     await question.save();
+    if (deletedMsgImages.length > 0) deleteAllFromCloudinary(deletedMsgImages);
     return res.status(200).json({ success: true, data: question });
   } catch (error) {
     return res.status(error.statusCode || 500).json({ success: false, message: error.message });

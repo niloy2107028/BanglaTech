@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const Product = require("../models/Product");
+const { uploadToCloudinary, deleteFromCloudinary } = require("../services/cloudinaryService");
 const Category = require("../models/Category");
 const Order = require("../models/Order");
 const UserPreference = require("../models/UserPreference");
@@ -616,8 +617,23 @@ exports.getProduct = async (req, res) => {
 // @desc    Create new product
 // @route   POST /api/products
 // @access  Private
+function coerceProductFields(body) {
+  if (body.price !== undefined) body.price = Number(body.price);
+  if (body.originalPrice !== undefined) body.originalPrice = Number(body.originalPrice) || undefined;
+  if (body.stock !== undefined) body.stock = Number(body.stock);
+  if (body.featured !== undefined) body.featured = body.featured === true || body.featured === 'true';
+}
+
+async function applyFileImage(req) {
+  if (req.file && req.file.buffer) {
+    req.body.image = await uploadToCloudinary(req.file.buffer, "banglatech/products");
+  }
+}
+
 exports.createProduct = async (req, res) => {
   try {
+    await applyFileImage(req);
+    coerceProductFields(req.body);
     req.body.seller = req.user.id;
 
     if (req.body.category) {
@@ -671,7 +687,11 @@ exports.updateProduct = async (req, res) => {
       });
     }
 
-    if (req.user.role !== "admin") {
+    const oldImage = product.image || "";
+    await applyFileImage(req);
+    coerceProductFields(req.body);
+
+    if (req.user.role !== 'admin') {
       delete req.body.seller;
     }
 
@@ -682,12 +702,15 @@ exports.updateProduct = async (req, res) => {
       }
     }
 
+    const newImage = req.body.image;
     Object.assign(product, req.body);
     await product.save();
     await product.populate("category", "name");
     await product.populate("seller", "name email role");
 
     onCatalogMutation();
+
+    if (newImage && newImage !== oldImage && oldImage) deleteFromCloudinary(oldImage);
 
     res.json({
       success: true,
@@ -727,9 +750,11 @@ exports.deleteProduct = async (req, res) => {
       });
     }
 
+    const imageToDelete = product.image || "";
     await product.deleteOne();
 
     onCatalogMutation();
+    if (imageToDelete) deleteFromCloudinary(imageToDelete);
 
     res.json({
       success: true,
@@ -742,5 +767,51 @@ exports.deleteProduct = async (req, res) => {
       message: "Error deleting product",
       error: error.message,
     });
+  }
+};
+
+// @desc    Get top 20 products by sold count (marketplace-wide)
+// @route   GET /api/products/top-selling
+// @access  Private (seller, admin)
+exports.getTopSellingProducts = async (req, res) => {
+  try {
+    const limit = 20;
+
+    const topSold = await Order.aggregate([
+      { $unwind: "$orderItems" },
+      { $match: { "orderItems.status": { $ne: "Cancelled" } } },
+      {
+        $group: {
+          _id: "$orderItems.product",
+          soldCount: { $sum: { $ifNull: ["$orderItems.qty", 0] } },
+        },
+      },
+      { $sort: { soldCount: -1 } },
+      { $limit: limit },
+    ]);
+
+    const soldCountMap = new Map(topSold.map((t) => [String(t._id), t.soldCount]));
+
+    let products;
+    if (topSold.length > 0) {
+      const productIds = topSold.map((t) => t._id);
+      products = await Product.find({ _id: { $in: productIds } })
+        .populate("category", "name")
+        .lean();
+    } else {
+      products = await Product.find({})
+        .sort({ rating: -1, featured: -1 })
+        .limit(limit)
+        .populate("category", "name")
+        .lean();
+    }
+
+    const enriched = products
+      .map((p) => ({ ...p, soldCount: soldCountMap.get(String(p._id)) || 0 }))
+      .sort((a, b) => b.soldCount - a.soldCount);
+
+    return res.json({ success: true, data: enriched });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
   }
 };

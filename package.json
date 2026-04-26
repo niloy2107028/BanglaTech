@@ -8,6 +8,7 @@
     "dev": "nodemon backend/server.js",
     "client": "npm run dev --prefix client",
     "dev:full": "concurrently \"npm run dev\" \"npm run client\"",
+    "test": "node --test --test-isolation=none backend/tests/searchCorrection.test.js backend/tests/recommendationKeywords.test.js backend/tests/authMiddleware.test.js",
     "seed": "node backend/seed.js",
     "install-all": "npm install && cd client && npm install"
   },
@@ -21,6 +22,7 @@
   "dependencies": {
     "bcryptjs": "^3.0.3",
     "chromadb": "^1.10.5",
+    "cloudinary": "^2.10.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",

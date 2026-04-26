@@ -29,6 +29,29 @@ router.delete("/users/:id", protect, authorize("admin"), deleteUser);
 router.put("/users/:id/role", protect, authorize("admin"), updateUserRole);
 
 // Google OAuth
+router.get("/google/mobile", (req, res, next) => {
+  const redirectUri = String(req.query?.redirectUri || "").trim();
+
+  if (!redirectUri) {
+    return res.status(400).json({
+      success: false,
+      message: "redirectUri is required",
+    });
+  }
+
+  const state = Buffer.from(
+    JSON.stringify({
+      mobile: true,
+      redirectUri,
+    }),
+  ).toString("base64url");
+
+  return passport.authenticate("google", {
+    scope: ["profile", "email"],
+    state,
+  })(req, res, next);
+});
+
 router.get(
   "/google",
   passport.authenticate("google", { scope: ["profile", "email"] }),

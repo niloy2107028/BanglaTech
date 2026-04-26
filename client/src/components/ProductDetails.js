@@ -45,7 +45,8 @@ const ProductDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { addToCart } = useCart();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
+  const isBuyer = !user || user.role === 'buyer';
   const { formatCurrency, formatNumber } = useLanguage();
   
   const [product, setProduct] = useState(null);
@@ -155,24 +156,16 @@ const ProductDetails = () => {
     const endpoint = `/api/products/${product._id}/track-dwell`;
     const payload = { dwellMs, reason };
 
-    let sentByBeacon = false;
-    if (typeof navigator !== "undefined" && typeof navigator.sendBeacon === "function") {
-      try {
-        const blob = new Blob([JSON.stringify(payload)], {
-          type: "application/json",
-        });
-        sentByBeacon = navigator.sendBeacon(endpoint, blob);
-      } catch (error) {
-        sentByBeacon = false;
-      }
-    }
-
-    if (!sentByBeacon) {
-      axios
-        .post(endpoint, payload, { withCredentials: true })
-        .catch(() => {
-          // Keep product browsing smooth even if dwell tracking fails.
-        });
+    try {
+      fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+        credentials: "include",
+        keepalive: true,
+      });
+    } catch (error) {
+      // Keep product browsing smooth even if dwell tracking fails.
     }
   }, [isAuthenticated, product?._id]);
 
@@ -446,28 +439,29 @@ const ProductDetails = () => {
             </div>
           )}
 
-          <div className="purchase-actions">
-            {product.inStock && (
-              <div className="quantity-selector">
-                <button className="qty-btn" onClick={decrementQty}>
-                  <FontAwesomeIcon icon={faMinus} />
-                </button>
-                <div className="qty-value">{quantity}</div>
-                <button className="qty-btn" onClick={incrementQty}>
-                  <FontAwesomeIcon icon={faPlus} />
-                </button>
-              </div>
-            )}
-            
-            <button 
-              className="add-to-cart-big-btn" 
-              onClick={handleAddToCart}
-              disabled={!product.inStock}
-            >
-              <FontAwesomeIcon icon={faCartPlus} />
-              {product.inStock ? "Add to Cart" : "Out of Stock"}
-            </button>
-          </div>
+          {isBuyer && (
+            <div className="purchase-actions">
+              {product.inStock && (
+                <div className="quantity-selector">
+                  <button className="qty-btn" onClick={decrementQty}>
+                    <FontAwesomeIcon icon={faMinus} />
+                  </button>
+                  <div className="qty-value">{quantity}</div>
+                  <button className="qty-btn" onClick={incrementQty}>
+                    <FontAwesomeIcon icon={faPlus} />
+                  </button>
+                </div>
+              )}
+              <button
+                className="add-to-cart-big-btn"
+                onClick={handleAddToCart}
+                disabled={!product.inStock}
+              >
+                <FontAwesomeIcon icon={faCartPlus} />
+                {product.inStock ? "Add to Cart" : "Out of Stock"}
+              </button>
+            </div>
+          )}
 
           <div className="seller-section">
             <div className="seller-avatar">

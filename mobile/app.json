@@ -1,0 +1,22 @@
+{
+  "expo": {
+    "name": "BanglaTech",
+    "slug": "banglatech-mobile",
+    "scheme": "banglatech",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "android": {
+      "package": "com.banglatech.mobile"
+    },
+    "newArchEnabled": true,
+    "plugins": [
+      "expo-asset",
+      "expo-secure-store",
+      "expo-font"
+    ]
+  }
+}

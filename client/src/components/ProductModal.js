@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from '../api';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faXmark } from '@fortawesome/free-solid-svg-icons';
+import { faXmark, faUpload, faLink, faImage, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { useLanguage } from '../context/LanguageContext';
 import './ProductModal.css';
 
@@ -9,15 +9,12 @@ const emptyForm = {
   name: '',
   brand: '',
   category: '',
-  categoryName: '',
   price: '',
   originalPrice: '',
   description: '',
   image: '',
   stock: '',
   featured: false,
-  rating: '',
-  reviews: '',
 };
 
 const ProductModal = ({ show, mode, product, onClose, onSave }) => {
@@ -25,19 +22,17 @@ const ProductModal = ({ show, mode, product, onClose, onSave }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [categories, setCategories] = useState([]);
+  const [imageMode, setImageMode] = useState('url'); // 'url' | 'upload'
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState('');
+  const fileInputRef = useRef(null);
   const { t, formatCurrency, translateCategoryName } = useLanguage();
 
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const response = await axios.get('/api/categories');
-        setCategories(response.data.data || []);
-      } catch (fetchError) {
-        console.error('Error fetching categories:', fetchError);
-      }
-    };
+  const viewCategoryName =
+    product?.category?.name || product?.categoryName || '';
 
-    fetchCategories();
+  useEffect(() => {
+    axios.get('/api/categories').then(res => setCategories(res.data.data || [])).catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -45,11 +40,7 @@ const ProductModal = ({ show, mode, product, onClose, onSave }) => {
       setFormData({
         name: product.name || '',
         brand: product.brand || '',
-        category:
-          typeof product.category === 'object' && product.category !== null
-            ? product.category._id
-            : product.category,
-        categoryName: product.category?.name || product.categoryName || '',
+        category: product.category?._id || product.category || '',
         price: product.price || '',
         originalPrice: product.originalPrice || '',
         description: product.description || '',
@@ -59,8 +50,14 @@ const ProductModal = ({ show, mode, product, onClose, onSave }) => {
         rating: product.rating || '',
         reviews: product.reviews || '',
       });
+      setImageFile(null);
+      setImagePreview('');
+      setImageMode('url');
     } else if (mode === 'create') {
       setFormData(emptyForm);
+      setImageFile(null);
+      setImagePreview('');
+      setImageMode('url');
     }
   }, [product, mode]);
 
@@ -69,17 +66,66 @@ const ProductModal = ({ show, mode, product, onClose, onSave }) => {
     setFormData((prev) => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
   };
 
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setImageFile(file);
+    const reader = new FileReader();
+    reader.onload = (ev) => setImagePreview(ev.target.result);
+    reader.readAsDataURL(file);
+  };
+
+  const handleRemoveFile = () => {
+    setImageFile(null);
+    setImagePreview('');
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError('');
 
     try {
-      if (mode === 'create') {
-        await axios.post('/api/products', formData, { withCredentials: true });
-      } else if (mode === 'edit') {
-        await axios.put(`/api/products/${product._id}`, formData, { withCredentials: true });
+      const useFile = imageMode === 'upload' && imageFile;
+
+      if (useFile) {
+        const fd = new FormData();
+        fd.append('name', formData.name);
+        fd.append('brand', formData.brand);
+        if (formData.category) fd.append('category', formData.category);
+        fd.append('price', formData.price);
+        if (formData.originalPrice) fd.append('originalPrice', formData.originalPrice);
+        fd.append('stock', formData.stock);
+        fd.append('description', formData.description);
+        fd.append('featured', formData.featured);
+        fd.append('image', imageFile);
+
+        if (mode === 'create') {
+          await axios.post('/api/products', fd, { withCredentials: true });
+        } else if (mode === 'edit') {
+          await axios.put(`/api/products/${product._id}`, fd, { withCredentials: true });
+        }
+      } else {
+        const payload = {
+          name: formData.name,
+          brand: formData.brand,
+          category: formData.category || undefined,
+          price: formData.price,
+          originalPrice: formData.originalPrice || undefined,
+          stock: formData.stock,
+          description: formData.description,
+          featured: formData.featured,
+          image: formData.image,
+        };
+
+        if (mode === 'create') {
+          await axios.post('/api/products', payload, { withCredentials: true });
+        } else if (mode === 'edit') {
+          await axios.put(`/api/products/${product._id}`, payload, { withCredentials: true });
+        }
       }
+
       onSave();
     } catch (err) {
       setError(err.response?.data?.message || 'An error occurred');
@@ -108,16 +154,23 @@ const ProductModal = ({ show, mode, product, onClose, onSave }) => {
           {isViewMode ? (
             <div className="product-modal-view">
               <div className="product-modal-view-image-wrapper">
-                <img src={formData.image} alt={formData.name} className="product-modal-view-image" />
+                {formData.image
+                  ? <img src={formData.image} alt={formData.name} className="product-modal-view-image" />
+                  : <div className="product-modal-view-image-placeholder"><FontAwesomeIcon icon={faImage} /></div>
+                }
               </div>
               <div className="product-modal-view-details">
                 <div className="product-modal-view-row"><strong>{t('product.productName')}:</strong><span>{formData.name}</span></div>
                 <div className="product-modal-view-row"><strong>{t('common.brand')}:</strong><span>{formData.brand}</span></div>
-                <div className="product-modal-view-row"><strong>{t('navbar.categories')}:</strong><span>{translateCategoryName(formData.categoryName)}</span></div>
+                {viewCategoryName && (
+                  <div className="product-modal-view-row"><strong>{t('navbar.categories')}:</strong><span>{translateCategoryName(viewCategoryName)}</span></div>
+                )}
                 <div className="product-modal-view-row"><strong>{t('product.price')}:</strong><span className="product-modal-view-price">{formatCurrency(formData.price)}</span></div>
                 {formData.originalPrice && <div className="product-modal-view-row"><strong>{t('product.originalPrice')}:</strong><span className="product-modal-view-original-price">{formatCurrency(formData.originalPrice)}</span></div>}
                 <div className="product-modal-view-row"><strong>{t('product.stock')}:</strong><span>{formData.stock} {t('product.units')}</span></div>
-                <div className="product-modal-view-row"><strong>{t('product.rating')}:</strong><span>{formData.rating} / 5 ({formData.reviews} {t('common.reviews')})</span></div>
+                {formData.rating && (
+                  <div className="product-modal-view-row"><strong>{t('product.rating')}:</strong><span>{formData.rating} / 5 ({formData.reviews} {t('common.reviews')})</span></div>
+                )}
                 <div className="product-modal-view-row"><strong>{t('product.featured')}:</strong><span>{formData.featured ? t('common.yes') : t('common.no')}</span></div>
                 <div className="product-modal-view-description"><strong>{t('product.description')}:</strong><p>{formData.description}</p></div>
               </div>
@@ -137,47 +190,94 @@ const ProductModal = ({ show, mode, product, onClose, onSave }) => {
                 </div>
               </div>
 
+              <div className="product-modal-form-group">
+                <label>{t('navbar.categories')}</label>
+                <select
+                  name="category"
+                  value={formData.category}
+                  onChange={handleChange}
+                  className="product-modal-form-input"
+                >
+                  <option value="">{t('product.selectCategory') || '— Select category —'}</option>
+                  {categories.map(cat => (
+                    <option key={cat._id} value={cat._id}>{translateCategoryName(cat.name)}</option>
+                  ))}
+                </select>
+              </div>
+
               <div className="product-modal-form-row">
-                <div className="product-modal-form-group">
-                  <label>{t('navbar.categories')} *</label>
-                  <select name="category" value={formData.category} onChange={handleChange} required className="product-modal-form-input">
-                    <option value="">{t('category.categoryName')}</option>
-                    {categories.map((cat) => (
-                      <option key={cat._id} value={cat._id}>{translateCategoryName(cat.name)}</option>
-                    ))}
-                  </select>
-                </div>
                 <div className="product-modal-form-group">
                   <label>{t('product.price')} (৳) *</label>
                   <input type="number" name="price" value={formData.price} onChange={handleChange} required min="0" placeholder={t('product.price')} className="product-modal-form-input" />
                 </div>
-              </div>
-
-              <div className="product-modal-form-row">
                 <div className="product-modal-form-group">
                   <label>{t('product.originalPrice')} (৳)</label>
                   <input type="number" name="originalPrice" value={formData.originalPrice} onChange={handleChange} min="0" placeholder={t('product.originalPrice')} className="product-modal-form-input" />
                 </div>
-                <div className="product-modal-form-group">
-                  <label>{t('product.stock')} *</label>
-                  <input type="number" name="stock" value={formData.stock} onChange={handleChange} required min="0" placeholder={t('product.stock')} className="product-modal-form-input" />
-                </div>
-              </div>
-
-              <div className="product-modal-form-row">
-                <div className="product-modal-form-group">
-                  <label>{t('product.rating')} (0-5)</label>
-                  <input type="number" name="rating" value={formData.rating} onChange={handleChange} min="0" max="5" step="0.1" placeholder={t('product.rating')} className="product-modal-form-input" />
-                </div>
-                <div className="product-modal-form-group">
-                  <label>{t('common.reviews')}</label>
-                  <input type="number" name="reviews" value={formData.reviews} onChange={handleChange} min="0" placeholder={t('common.reviews')} className="product-modal-form-input" />
-                </div>
               </div>
 
               <div className="product-modal-form-group">
-                <label>{t('category.imageUrl')} *</label>
-                <input type="url" name="image" value={formData.image} onChange={handleChange} required placeholder={t('category.imageUrl')} className="product-modal-form-input" />
+                <label>{t('product.stock')} *</label>
+                <input type="number" name="stock" value={formData.stock} onChange={handleChange} required min="0" placeholder={t('product.stock')} className="product-modal-form-input" />
+              </div>
+
+              {/* Image field — URL or Upload */}
+              <div className="product-modal-form-group">
+                <label>{t('product.image') || 'Product Image'} *</label>
+                <div className="product-modal-image-tabs">
+                  <button
+                    type="button"
+                    className={`product-modal-image-tab${imageMode === 'url' ? ' active' : ''}`}
+                    onClick={() => setImageMode('url')}
+                  >
+                    <FontAwesomeIcon icon={faLink} /> URL
+                  </button>
+                  <button
+                    type="button"
+                    className={`product-modal-image-tab${imageMode === 'upload' ? ' active' : ''}`}
+                    onClick={() => setImageMode('upload')}
+                  >
+                    <FontAwesomeIcon icon={faUpload} /> Upload
+                  </button>
+                </div>
+
+                {imageMode === 'url' ? (
+                  <input
+                    type="url"
+                    name="image"
+                    value={formData.image}
+                    onChange={handleChange}
+                    required={imageMode === 'url'}
+                    placeholder="https://example.com/image.jpg"
+                    className="product-modal-form-input"
+                  />
+                ) : (
+                  <div className="product-modal-upload-area">
+                    {imagePreview ? (
+                      <div className="product-modal-preview-wrap">
+                        <img src={imagePreview} alt="Preview" className="product-modal-preview-img" />
+                        <button type="button" className="product-modal-preview-remove" onClick={handleRemoveFile}>
+                          <FontAwesomeIcon icon={faTrash} /> Remove
+                        </button>
+                      </div>
+                    ) : (
+                      <label className="product-modal-upload-zone" htmlFor="product-img-upload">
+                        <FontAwesomeIcon icon={faUpload} className="product-modal-upload-icon" />
+                        <span className="product-modal-upload-title">Click to upload image</span>
+                        <span className="product-modal-upload-hint">JPG, PNG, WebP · max 8 MB</span>
+                        <input
+                          id="product-img-upload"
+                          ref={fileInputRef}
+                          type="file"
+                          accept="image/jpeg,image/png,image/webp,image/gif"
+                          onChange={handleFileChange}
+                          required={imageMode === 'upload'}
+                          style={{ display: 'none' }}
+                        />
+                      </label>
+                    )}
+                  </div>
+                )}
               </div>
 
               <div className="product-modal-form-group">

@@ -4,15 +4,61 @@ const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 const sendEmail = require("../utils/sendEmail");
 
-// Helper: create JWT and send as HTTP-only cookie
-const sendTokenResponse = (user, statusCode, res, redirect = false) => {
-  // token generate kore response er cookie te pathay
-  const token = jwt.sign(
+function isMobileAuthRequest(req = {}) {
+  const headerHint = String(req.headers?.["x-client-type"] || "").trim().toLowerCase();
+  const bodyHint = String(req.body?.clientType || "").trim().toLowerCase();
+  const queryHint = String(req.query?.clientType || req.query?.platform || "")
+    .trim()
+    .toLowerCase();
+
+  return headerHint === "mobile" || bodyHint === "mobile" || queryHint === "mobile";
+}
+
+function buildAuthToken(user) {
+  return jwt.sign(
     { id: user._id, role: user.role },
-    // Payload: user id and role
     process.env.JWT_SECRET,
     { expiresIn: process.env.JWT_EXPIRE },
   );
+}
+
+function getPublicUserPayload(user) {
+  return {
+    _id: user._id,
+    name: user.name,
+    email: user.email,
+    role: user.role,
+  };
+}
+
+function parseGoogleState(rawState = "") {
+  if (!rawState) return null;
+  try {
+    const decoded = Buffer.from(String(rawState), "base64url").toString("utf8");
+    const state = JSON.parse(decoded);
+    return state && typeof state === "object" ? state : null;
+  } catch {
+    return null;
+  }
+}
+
+function isAllowedMobileRedirectUri(redirectUri = "") {
+  if (!redirectUri || typeof redirectUri !== "string") return false;
+
+  const allowList = String(
+    process.env.MOBILE_AUTH_ALLOWED_REDIRECT_PREFIXES || "banglatech://,exp://",
+  )
+    .split(",")
+    .map((prefix) => prefix.trim())
+    .filter(Boolean);
+
+  return allowList.some((prefix) => redirectUri.startsWith(prefix));
+}
+
+// Helper: create JWT and send as HTTP-only cookie
+const sendTokenResponse = (user, statusCode, req, res, redirect = false) => {
+  // token generate kore response er cookie te pathay
+  const token = buildAuthToken(user);
 
   const cookieOptions = {
     expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
@@ -24,7 +70,10 @@ const sendTokenResponse = (user, statusCode, res, redirect = false) => {
     // Only send over HTTPS in production
   };
 
-  res.cookie("token", token, cookieOptions);
+  const mobileRequest = isMobileAuthRequest(req);
+  if (!mobileRequest) {
+    res.cookie("token", token, cookieOptions);
+  }
 
   if (redirect) {
     return res.redirect(process.env.CLIENT_URL || "http://localhost:3000/");
@@ -32,12 +81,8 @@ const sendTokenResponse = (user, statusCode, res, redirect = false) => {
 
   res.status(statusCode).json({
     success: true,
-    user: {
-      _id: user._id,
-      name: user.name,
-      email: user.email,
-      role: user.role,
-    },
+    token: mobileRequest ? token : undefined,
+    user: getPublicUserPayload(user),
   });
 };
 
@@ -129,7 +174,7 @@ exports.verifyEmail = async (req, res) => {
     // Delete pending user record
     await PendingUser.deleteOne({ email: pendingUser.email });
 
-    sendTokenResponse(user, 201, res);
+    sendTokenResponse(user, 201, req, res);
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -230,7 +275,20 @@ exports.updateUserRole = async (req, res) => {
 // @desc    Google OAuth Callback
 // @route   GET /api/auth/google/callback
 exports.googleCallback = (req, res) => {
-  sendTokenResponse(req.user, 200, res, true);
+  const state = parseGoogleState(req.query?.state);
+
+  if (state?.mobile === true && isAllowedMobileRedirectUri(state.redirectUri)) {
+    const token = buildAuthToken(req.user);
+    const userPayload = getPublicUserPayload(req.user);
+    const redirectTarget = new URL(state.redirectUri);
+
+    redirectTarget.searchParams.set("token", token);
+    redirectTarget.searchParams.set("user", JSON.stringify(userPayload));
+
+    return res.redirect(redirectTarget.toString());
+  }
+
+  sendTokenResponse(req.user, 200, req, res, true);
 };
 
 // @desc    Forgot password
@@ -328,7 +386,7 @@ exports.resetPassword = async (req, res) => {
     user.resetPasswordOTPExpire = undefined;
     await user.save();
 
-    sendTokenResponse(user, 200, res);
+    sendTokenResponse(user, 200, req, res);
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -368,7 +426,7 @@ exports.login = async (req, res) => {
       });
     }
 
-    sendTokenResponse(user, 200, res);
+    sendTokenResponse(user, 200, req, res);
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }

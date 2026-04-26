@@ -2,14 +2,39 @@ import React, { useState, useEffect } from 'react';
 import axios from '../api';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBox, faClock, faCheckCircle, faTruck, faTimesCircle } from '@fortawesome/free-solid-svg-icons';
+import { faBox, faClock, faCheckCircle, faTruck, faTimesCircle, faXmark, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { useLanguage } from '../context/LanguageContext';
 import './OrderHistory.css';
 
 const OrderHistory = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [dismissedOrderIds, setDismissedOrderIds] = useState(
+    () => new Set(JSON.parse(localStorage.getItem('buyer_dismissed_orders') || '[]'))
+  );
   const { t, formatCurrency, formatDate, translateOrderStatus } = useLanguage();
+
+  const isOrderClearable = (order) =>
+    Array.isArray(order.orderItems) &&
+    order.orderItems.length > 0 &&
+    order.orderItems.every(item => item.status === 'Delivered' || item.status === 'Cancelled');
+
+  const dismissOrder = (orderId) => {
+    setDismissedOrderIds(prev => {
+      const next = new Set([...prev, orderId]);
+      localStorage.setItem('buyer_dismissed_orders', JSON.stringify([...next]));
+      return next;
+    });
+  };
+
+  const clearAllOrders = () => {
+    const clearableIds = orders.filter(isOrderClearable).map(o => o._id);
+    setDismissedOrderIds(prev => {
+      const next = new Set([...prev, ...clearableIds]);
+      localStorage.setItem('buyer_dismissed_orders', JSON.stringify([...next]));
+      return next;
+    });
+  };
 
   const fetchOrders = async () => {
     setLoading(true);
@@ -74,29 +99,51 @@ const OrderHistory = () => {
     return <div className="orders-loading">{t('orders.loadingOrders')}</div>;
   }
 
+  const visibleOrders = orders.filter(o => !dismissedOrderIds.has(o._id));
+  const clearableVisible = visibleOrders.filter(isOrderClearable);
+
   return (
     <div className="orders-page">
       <div className="orders-container">
-        <h1 className="orders-title">{t('orders.title')}</h1>
-        {orders.length === 0 ? (
+        <div className="orders-title-row">
+          <h1 className="orders-title">{t('orders.title')}</h1>
+          {clearableVisible.length > 0 && (
+            <button type="button" className="orders-clear-all-btn" onClick={clearAllOrders}>
+              <FontAwesomeIcon icon={faTrash} /> Clear All
+            </button>
+          )}
+        </div>
+        {visibleOrders.length === 0 ? (
           <div className="orders-empty">
-            <p>{t('orders.empty')}</p>
+            <p>{orders.length === 0 ? t('orders.empty') : t('orders.allCleared', {}, 'All orders have been cleared.')}</p>
             <Link to="/" className="btn-primary">{t('orders.startShopping')}</Link>
           </div>
         ) : (
           <div className="orders-list">
-            {orders.map((order) => (
+            {visibleOrders.map((order) => (
               <div key={order._id} className="order-card">
                 <div className="order-header">
                   <div className="order-info">
                     <span className="order-id">{t('orders.order')} #{order._id.slice(-8).toUpperCase()}</span>
                     <span className="order-date">{t('orders.placedOn')} {formatDate(order.createdAt)}</span>
                   </div>
-                  <div
-                    className="order-status"
-                    style={{ backgroundColor: `${getStatusColor(order.status)}15`, color: getStatusColor(order.status) }}
-                  >
-                    <FontAwesomeIcon icon={getStatusIcon(order.status)} /> {translateOrderStatus(order.status)}
+                  <div className="order-header-right">
+                    <div
+                      className="order-status"
+                      style={{ backgroundColor: `${getStatusColor(order.status)}15`, color: getStatusColor(order.status) }}
+                    >
+                      <FontAwesomeIcon icon={getStatusIcon(order.status)} /> {translateOrderStatus(order.status)}
+                    </div>
+                    {isOrderClearable(order) && (
+                      <button
+                        type="button"
+                        className="order-dismiss-btn"
+                        onClick={() => dismissOrder(order._id)}
+                        title="Remove from history"
+                      >
+                        <FontAwesomeIcon icon={faXmark} />
+                      </button>
+                    )}
                   </div>
                 </div>
                 <div className="order-items">
@@ -114,12 +161,12 @@ const OrderHistory = () => {
                         </div>
                         <div className="item-meta">
                           <span className="item-qty-price">{item.qty} x {formatCurrency(item.price)}</span>
-                          {item.status === 'Cancelled' && item.cancellationReason && (
-                            <div className="item-cancellation-msg">
-                              <strong>{t('orders.cancellationNote')}</strong> {item.cancellationReason}
-                            </div>
-                          )}
                         </div>
+                        {item.status === 'Cancelled' && item.cancellationReason && (
+                          <div className="item-cancellation-msg">
+                            <strong>{t('orders.cancellationNote')}</strong> {item.cancellationReason}
+                          </div>
+                        )}
                       </div>
                     </div>
                   ))}

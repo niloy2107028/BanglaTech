@@ -1,4 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faMagnifyingGlass, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
 import axios from "../api";
 import { useLanguage } from "../context/LanguageContext";
@@ -19,6 +21,7 @@ const ProductList = ({
 }) => {
   const navigate = useNavigate();
   const [filteredProducts, setFilteredProducts] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState("");
   const [selectedBrand, setSelectedBrand] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
@@ -60,6 +63,14 @@ const ProductList = ({
 
   useEffect(() => {
     let result = [...products];
+    const query = searchQuery.trim().toLowerCase();
+    if (query) {
+      result = result.filter(
+        (p) =>
+          String(p.name || "").toLowerCase().includes(query) ||
+          String(p.brand || "").toLowerCase().includes(query),
+      );
+    }
     const minPriceRaw = String(minPrice ?? "").trim();
     const maxPriceRaw = String(maxPrice ?? "").trim();
     const hasMinPrice = minPriceRaw !== "";
@@ -102,11 +113,11 @@ const ProductList = ({
     }
 
     setFilteredProducts(result);
-  }, [products, sortBy, selectedBrand, selectedCategory, minPrice, maxPrice]);
+  }, [products, searchQuery, sortBy, selectedBrand, selectedCategory, minPrice, maxPrice]);
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [products, sortBy, selectedBrand, selectedCategory, minPrice, maxPrice]);
+  }, [products, searchQuery, sortBy, selectedBrand, selectedCategory, minPrice, maxPrice]);
 
   useEffect(() => {
     if (currentPage > totalPages) {
@@ -158,6 +169,7 @@ const ProductList = ({
   };
 
   const resetFilters = () => {
+    setSearchQuery("");
     setSortBy("");
     setSelectedBrand("");
     setSelectedCategory("");
@@ -185,6 +197,27 @@ const ProductList = ({
               count: formatNumber(filteredProducts.length),
             })}
           </p>
+        </div>
+
+        <div className="productList-view-search-bar">
+          <FontAwesomeIcon icon={faMagnifyingGlass} className="productList-view-search-icon" />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder={t("common.searchProducts", {}, "Search products…")}
+            className="productList-view-search-input"
+          />
+          {searchQuery && (
+            <button
+              type="button"
+              className="productList-view-search-clear"
+              onClick={() => setSearchQuery("")}
+              aria-label="Clear search"
+            >
+              <FontAwesomeIcon icon={faXmark} />
+            </button>
+          )}
         </div>
 
         <div className="productList-view-filters">
@@ -279,7 +312,7 @@ const ProductList = ({
             </div>
           </div>
 
-          {(sortBy || selectedBrand || selectedCategory || minPrice || maxPrice) && (
+          {(searchQuery || sortBy || selectedBrand || selectedCategory || minPrice || maxPrice) && (
             <button
               className="productList-view-reset-btn"
               onClick={resetFilters}
