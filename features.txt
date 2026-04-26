@@ -1,0 +1,83 @@
+Complete feature list (BanglaMart)
+Role-based account system (buyer, seller, admin)
+User registration with email/password
+OTP-based email verification before full activation
+Resend OTP support
+Login with JWT auth
+Secure auth using HTTP-only cookies
+Logout flow
+“Get current user” session restore (/me)
+Forgot password with OTP flow
+Reset password after OTP verification
+Google OAuth login
+Google OAuth callback handling
+Admin user list view
+Admin user deletion
+Admin role update (promote/change role)
+Public category listing
+Public category details
+Admin category create
+Admin category update
+Admin category delete
+Category image upload support
+Public product listing
+Public product details
+Seller product create
+Seller/Admin product update
+Seller/Admin product delete
+Seller “my products” view
+Seller/Admin top-selling products
+Product recommendation endpoint (personalized)
+Search keyword tracking for recommendations
+Product click tracking
+Product dwell-time tracking
+Product view tracking
+Product live viewer count endpoint
+Viewer ping/leave tracking
+Product image upload support
+Buyer cart view
+Add to cart
+Update cart item quantity
+Remove cart item
+Clear full cart
+Buyer checkout / order creation
+Buyer order history (my orders)
+Order details by ID
+Buyer cancel eligible order item
+Seller order list
+Seller updates order item status
+Admin sales stats endpoint
+Buyer applies to become seller
+Buyer checks own seller application status
+Admin views seller applications
+Admin approves/rejects seller applications
+Product review list (public)
+Review permissions check per product
+Verified-purchase review creation logic
+Review update/delete by owner rules
+Review voting
+Review replies
+Reply update/delete
+Reply voting
+Review image upload (multiple images)
+Product Q&A list (public per product)
+Create question
+Update/delete question
+Vote on question
+Seller/admin answer support flow
+Threaded message/reply in Q&A
+Update/delete Q&A messages
+Q&A image upload support
+AI chatbot text chat endpoint
+Chat history-aware follow-up responses
+Structured product-card style chatbot responses
+AI image search (upload image → product retrieval)
+AI voice search endpoint (audio upload + transcription flow)
+Optional logged-in context in chatbot routes
+Cloudinary integration for media storage
+Multer file upload validation (image/audio types + size limits)
+CORS allowlist handling by frontend origin
+Route-level protection middleware (protect, authorize, optionalProtect)
+MongoDB/Mongoose persistence layer
+Seed script for initial data setup
+Automated tests for auth/recommendation/search-correction modules
