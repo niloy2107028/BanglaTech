@@ -6,6 +6,7 @@ import './AdminDashboard.css';
 const AdminDashboard = () => {
   const [users, setUsers] = useState([]);
   const [applications, setApplications] = useState([]);
+  const [salesStats, setSalesStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('overview');
   const { t, formatDate } = useLanguage();
@@ -25,12 +26,14 @@ const AdminDashboard = () => {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const [usersRes, appsRes] = await Promise.all([
+      const [usersRes, appsRes, salesRes] = await Promise.all([
         axios.get('/api/auth/users', { withCredentials: true }),
         axios.get('/api/sellers/applications', { withCredentials: true }),
+        axios.get('/api/orders/admin/sales-stats', { withCredentials: true }),
       ]);
       setUsers(usersRes.data.data || []);
       setApplications(appsRes.data.data || []);
+      setSalesStats(salesRes.data.data || null);
     } catch (err) {
       console.error('Error fetching admin data:', err);
     } finally {
@@ -72,7 +75,7 @@ const AdminDashboard = () => {
       const res = await axios.delete(`/api/auth/users/${userId}`, { withCredentials: true });
       if (res.data.success) fetchData();
     } catch (err) {
-      alert(t('admin.deleteUserError'));
+      alert(err?.response?.data?.message || t('admin.deleteUserError'));
     }
   };
 
@@ -97,6 +100,7 @@ const AdminDashboard = () => {
           <button className={activeTab === 'overview' ? 'active' : ''} onClick={() => setActiveTab('overview')}>{t('admin.overview')}</button>
           <button className={activeTab === 'applications' ? 'active' : ''} onClick={() => setActiveTab('applications')}>{t('admin.sellerRequests')} ({stats.pendingApps})</button>
           <button className={activeTab === 'users' ? 'active' : ''} onClick={() => setActiveTab('users')}>{t('admin.userList')}</button>
+          <button className={activeTab === 'sales' ? 'active' : ''} onClick={() => setActiveTab('sales')}>Sales Analytics</button>
         </div>
 
         {activeTab === 'overview' && (
@@ -168,9 +172,91 @@ const AdminDashboard = () => {
                       <td>{u.email}</td>
                       <td><span className={`role-pill ${u.role}`}>{t(`role.${u.role}`, {}, u.role)}</span></td>
                       <td>{formatDate(u.createdAt)}</td>
-                      <td><button className="btn-delete" onClick={() => handleDeleteUser(u._id)}>{t('admin.remove')}</button></td>
+                      <td>
+                        {u.role === 'admin' ? (
+                          <span className="text-muted">Protected</span>
+                        ) : (
+                          <button className="btn-delete" onClick={() => handleDeleteUser(u._id)}>{t('admin.remove')}</button>
+                        )}
+                      </td>
                     </tr>
                   ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'sales' && (
+          <div className="admin-section">
+            <div className="section-header">
+              <h2>Sales Analytics</h2>
+              <p className="section-sub">Revenue includes delivered items only</p>
+            </div>
+
+            {/* Summary cards */}
+            <div className="sales-summary-grid">
+              <div className="sales-summary-card sales-summary-card--primary">
+                <div className="sales-summary-icon">৳</div>
+                <div>
+                  <div className="sales-summary-label">Total Revenue</div>
+                  <div className="sales-summary-value">৳{(salesStats?.totalRevenue || 0).toLocaleString()}</div>
+                </div>
+              </div>
+              <div className="sales-summary-card">
+                <div className="sales-summary-icon sales-summary-icon--blue">📦</div>
+                <div>
+                  <div className="sales-summary-label">Total Orders</div>
+                  <div className="sales-summary-value">{salesStats?.totalOrders || 0}</div>
+                </div>
+              </div>
+              <div className="sales-summary-card">
+                <div className="sales-summary-icon sales-summary-icon--green">🏪</div>
+                <div>
+                  <div className="sales-summary-label">Active Sellers</div>
+                  <div className="sales-summary-value">{salesStats?.sellers?.length || 0}</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Seller leaderboard */}
+            <div className="table-wrapper" style={{ marginTop: '24px' }}>
+              <div className="sales-table-header">
+                <span className="sales-table-title">Seller Leaderboard</span>
+                <span className="sales-table-sub">Ranked by revenue</span>
+              </div>
+              <table className="admin-table">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Seller</th>
+                    <th>Email</th>
+                    <th>Orders</th>
+                    <th>Items Sold</th>
+                    <th>Revenue</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {(salesStats?.sellers || []).length === 0 ? (
+                    <tr><td colSpan={6} style={{ textAlign: 'center', padding: '48px', color: '#94a3b8' }}>No sales data yet</td></tr>
+                  ) : (
+                    (salesStats?.sellers || []).map((seller, idx) => {
+                      return (
+                        <tr key={seller.sellerId || idx} className={idx === 0 ? 'sales-row-top' : ''}>
+                          <td>
+                            <span className={`sales-rank sales-rank--${idx === 0 ? 'gold' : idx === 1 ? 'silver' : idx === 2 ? 'bronze' : 'default'}`}>
+                              {idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : idx + 1}
+                            </span>
+                          </td>
+                          <td><span className="seller-name-cell">{seller.sellerName}</span></td>
+                          <td className="text-muted">{seller.sellerEmail}</td>
+                          <td><span className="sales-badge sales-badge--blue">{seller.totalOrders}</span></td>
+                          <td><span className="sales-badge sales-badge--purple">{seller.totalItemsSold}</span></td>
+                          <td><span className="sales-revenue">৳{seller.totalRevenue.toLocaleString()}</span></td>
+                        </tr>
+                      );
+                    })
+                  )}
                 </tbody>
               </table>
             </div>

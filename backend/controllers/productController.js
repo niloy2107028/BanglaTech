@@ -28,9 +28,6 @@ const {
   normalizeText,
 } = require("../utils/searchCorrection");
 
-const MIN_DWELL_MS = 5000;
-const MAX_DWELL_MS = 10 * 60 * 1000;
-
 function onCatalogMutation() {
   invalidateChatbotCaches();
   markVectorIndexStale();
@@ -58,13 +55,6 @@ async function fetchProductsWithQuery(query, pageNumber, limit) {
 
 async function findProductForTracking(productId) {
   return Product.findById(productId).populate("category", "name");
-}
-
-function resolveDwellWeight(dwellMs) {
-  if (dwellMs >= 180000) return 4;
-  if (dwellMs >= 60000) return 3;
-  if (dwellMs >= 20000) return 2;
-  return 1;
 }
 
 async function getSoldCountMap(productIds = []) {
@@ -349,7 +339,7 @@ exports.trackSearchKeywords = async (req, res) => {
       req.user._id,
       keywords,
       "search",
-      2,
+      1,
     );
 
     res.json({
@@ -383,13 +373,13 @@ exports.trackProductClick = async (req, res) => {
     const preference = await trackUserKeywords(
       req.user._id,
       extractProductKeywords(product),
-      "click",
-      1,
+      "view",
+      2,
     );
 
     res.json({
       success: true,
-      message: "Product click tracked",
+      message: "Product view tracked",
       keywords: preference?.keywords?.slice(0, 10) || [],
     });
   } catch (error) {
@@ -405,57 +395,11 @@ exports.trackProductClick = async (req, res) => {
 // @route   POST /api/products/:id/track-dwell
 // @access  Private
 exports.trackProductDwell = async (req, res) => {
-  try {
-    const rawDwellMs = Number(req.body?.dwellMs);
-    if (!Number.isFinite(rawDwellMs) || rawDwellMs <= 0) {
-      return res.status(400).json({
-        success: false,
-        message: "Valid dwellMs is required",
-      });
-    }
-
-    const dwellMs = Math.min(Math.max(Math.round(rawDwellMs), 0), MAX_DWELL_MS);
-
-    if (dwellMs < MIN_DWELL_MS) {
-      return res.json({
-        success: true,
-        tracked: false,
-        message: "Dwell time below tracking threshold",
-      });
-    }
-
-    const product = await findProductForTracking(req.params.id);
-
-    if (!product) {
-      return res.status(404).json({
-        success: false,
-        message: "Product not found",
-      });
-    }
-
-    const dwellWeight = resolveDwellWeight(dwellMs);
-    const preference = await trackUserKeywords(
-      req.user._id,
-      extractProductKeywords(product),
-      "dwell",
-      dwellWeight,
-    );
-
-    return res.json({
-      success: true,
-      tracked: true,
-      message: "Product dwell tracked",
-      dwellMs,
-      dwellWeight,
-      keywords: preference?.keywords?.slice(0, 10) || [],
-    });
-  } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: "Error tracking product dwell",
-      error: error.message,
-    });
-  }
+  return res.json({
+    success: true,
+    tracked: false,
+    message: "Dwell tracking is disabled",
+  });
 };
 
 // @desc    Ping current product viewer presence

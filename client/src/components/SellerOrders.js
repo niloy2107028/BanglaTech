@@ -9,7 +9,6 @@ import {
   faFire,
   faPlus,
   faStore,
-  faTruckFast,
   faTrash,
   faUser,
   faXmark,
@@ -190,7 +189,6 @@ const SellerOrders = () => {
   const visibleOrders = orders.filter(o => !dismissedOrderIds.has(o._id));
   const clearableVisible = visibleOrders.filter(isOrderClearable);
   const pendingItems = orderItems.filter((item) => item.status === "Pending").length;
-  const shippingItems = orderItems.filter((item) => item.status === "Shipped").length;
   const deliveredItems = orderItems.filter((item) => item.status === "Delivered").length;
 
   return (
@@ -246,16 +244,6 @@ const SellerOrders = () => {
               <div>
                 <p>{t("sellerOrders.pendingLabel", {}, "Pending Items")}</p>
                 <strong>{formatNumber(pendingItems)}</strong>
-              </div>
-            </div>
-
-            <div className="seller-metric-card">
-              <span className="seller-metric-icon">
-                <FontAwesomeIcon icon={faTruckFast} />
-              </span>
-              <div>
-                <p>{t("sellerOrders.shippedLabel", {}, "Shipped Items")}</p>
-                <strong>{formatNumber(shippingItems)}</strong>
               </div>
             </div>
 

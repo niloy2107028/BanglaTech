@@ -370,3 +370,162 @@
   font-weight: 600;
   color: #64748b;
 }
+
+/* ── Sales Analytics ── */
+.stat-value--green {
+  color: #059669;
+}
+
+.section-header h2 {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin-bottom: 4px;
+}
+
+.section-sub {
+  color: #64748b;
+  font-size: 0.9rem;
+  margin-bottom: 24px;
+}
+
+.sales-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin-top: 8px;
+}
+
+.sales-summary-card {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  transition: box-shadow 0.2s, border-color 0.2s;
+}
+
+.sales-summary-card:hover {
+  border-color: rgba(15,157,122,0.3);
+  box-shadow: 0 6px 18px rgba(15,23,42,0.08);
+}
+
+.sales-summary-card--primary {
+  background: linear-gradient(135deg, #ecfdf5 0%, #f0fdf4 100%);
+  border-color: #6ee7b7;
+}
+
+.sales-summary-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #059669, #10b981);
+  color: white;
+  font-size: 1.3rem;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.sales-summary-icon--blue {
+  background: linear-gradient(135deg, #2563eb, #3b82f6);
+}
+
+.sales-summary-icon--green {
+  background: linear-gradient(135deg, #7c3aed, #8b5cf6);
+}
+
+.sales-summary-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #64748b;
+  margin-bottom: 4px;
+}
+
+.sales-summary-value {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #0f172a;
+  line-height: 1;
+}
+
+.sales-table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 24px;
+  border-bottom: 1px solid #e2e8f0;
+  background: #f8fafc;
+}
+
+.sales-table-title {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.sales-table-sub {
+  font-size: 0.8rem;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.sales-row-top {
+  background: linear-gradient(90deg, rgba(254,242,208,0.4) 0%, transparent 100%);
+}
+
+.sales-rank {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  font-weight: 800;
+}
+
+.sales-rank--gold   { background: #fef3c7; color: #92400e; }
+.sales-rank--silver { background: #f1f5f9; color: #475569; }
+.sales-rank--bronze { background: #fff7ed; color: #9a3412; }
+.sales-rank--default {
+  background: #f8fafc;
+  color: #64748b;
+  font-size: 0.85rem;
+}
+
+.seller-name-cell {
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.text-muted {
+  color: #94a3b8;
+  font-size: 0.875rem;
+}
+
+.sales-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3px 10px;
+  border-radius: 9999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.sales-badge--blue   { background: #dbeafe; color: #1e40af; }
+.sales-badge--purple { background: #ede9fe; color: #5b21b6; }
+
+.sales-revenue {
+  font-weight: 800;
+  color: #059669;
+  font-size: 1rem;
+}

@@ -7,6 +7,7 @@ const {
   getSellerOrders,
   updateOrderItemStatus,
   cancelOrderItem,
+  getSalesStats,
 } = require("../controllers/orderController");
 const { protect, authorize } = require("../middleware/auth");
 
@@ -25,6 +26,7 @@ router.put(
   authorize("buyer"),
   cancelOrderItem,
 );
+router.get("/admin/sales-stats", authorize("admin"), getSalesStats);
 router.get("/:id", getOrderById);
 
 module.exports = router;

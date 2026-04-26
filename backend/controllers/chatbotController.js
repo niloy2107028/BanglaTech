@@ -780,7 +780,7 @@ async function trackChatbotRecommendationSignals({
   searchText,
   products,
   source = "search",
-  weight = 2,
+  weight = 1,
 }) {
   const userId = req?.user?._id;
   if (!userId) return;
@@ -873,7 +873,7 @@ exports.getChatResponse = async (req, res) => {
             searchText: String(parsed.query || message || "").trim(),
             products: cachedReply?.products || [],
             source: "search",
-            weight: 2,
+            weight: 1,
           });
         }
         return res.json(cachedReply);
@@ -915,7 +915,7 @@ exports.getChatResponse = async (req, res) => {
         searchText: searchPayload.query,
         products,
         source: "search",
-        weight: 2,
+        weight: 1,
       });
     } else if ((parsed.mode === "contextual" || isLikelyContextFollowup(message)) && hasShownProducts) {
       products = applyParsedConstraints(await resolveProductsFromHistory(history), {
@@ -1146,7 +1146,7 @@ exports.voiceSearch = async (req, res) => {
       searchText: searchPayload.query,
       products: uniqueProducts,
       source: "search",
-      weight: 2,
+      weight: 1,
     });
 
     return res.json({
@@ -1300,7 +1300,7 @@ exports.imageSearch = async (req, res) => {
       searchText: combinedQuery,
       products: uniqueProducts,
       source: "search",
-      weight: 2,
+      weight: 1,
     });
 
     return res.json({
